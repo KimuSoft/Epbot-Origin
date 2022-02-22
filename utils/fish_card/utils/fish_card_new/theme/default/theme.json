@@ -1,0 +1,7 @@
+{
+    "default": [
+        {"text": "{name}이(가) 낚였다!", "position": [71, 7], "size": 24},
+        {"text": "{cost}$", "position": [80, 59], "size": 20},
+        {"text": "{cost}$", "position": [80, 59], "size": 20, "owner": true}
+    ]
+}

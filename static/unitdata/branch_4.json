@@ -1,0 +1,47 @@
+{
+    
+	"CSB": {
+		"name": "청소부",
+		"description": "청소부 아저씨 잘 부탁드려요! 그랜드 피아노요...? 저쪽에 버려 주세요!",
+		"cost": 300,
+		"tier": 1,
+		"branch": 4,
+		"effects": {
+			"0_rank": -50
+		}
+	},
+	"CSC": {
+		"name": "청소차",
+		"description": "청소차라니 든든하네요! 뭐든지 처리해 줄 것 같아요! 어? 행운의 편지... 그, 그건 물에 도로 버리세요!",
+		"cost": 1700,
+		"tier": 2,
+		"branch": 4,
+		"effects": {
+			"maintenance": 3,
+			"0_rank": -120
+		}
+	},
+	"JYGY": {
+		"name": "자연공원",
+		"description": "https://ko.wikipedia.org/wiki/자연공원",
+		"cost": 55000,
+		"tier": 4,
+		"branch": 3,
+		"effects": {
+			"_exp": 1.6,
+			"maintenance": 20,
+			"fee": 25
+		}
+	},
+	"HGBB": {
+		"name": "환경 관리 본부",
+		"description": "전 세계의 환경 관련 단체가 모두 집결한 환경 관리 본부는 쓰레기를 철저하게 단속합니다. 자, 잠깐 거대한 운석은 단속하지 말아 주세요!",
+		"cost": 8700,
+		"tier": 3,
+		"branch": 4,
+		"effects": {
+			"maintenance": 7,
+			"0_rank": -500
+		}
+	}
+}

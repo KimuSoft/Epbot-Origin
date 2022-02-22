@@ -1,0 +1,40 @@
+{
+    "SMJ": {
+		"name": "쓰레기 매립장",
+		"description": "정부가 낚시터 부지에 쓰레기 매립장 유치를 권유하네요! 낚시터에는 안 좋겠지만... 그래도 유지비를 덜어 주겠다네요! 괜찮을까요?",
+		"cost": 1300,
+		"tier": 2,
+		"branch": 7,
+		"effects": {
+			"_price": 0.9,
+			"0_rank": 130,
+			"maintenance": -13
+		}
+	},
+	"SSG": {
+		"name": "쓰레기 소각장",
+		"description": "정부가 낚시터 부지에 쓰레기 소각장을 지으면 재정 지원을 해 준대요! 그런데 우리 쓰레기는 여기 못 버리나요...?",
+		"cost": 6200,
+		"tier": 3,
+		"branch": 7,
+		"effects": {
+			"_price": 0.8,
+			"0_rank": 100,
+			"maintenance": -18
+		}
+	},
+	"APC": {
+		"name": "어류 폐기물 처리소",
+		"description": "물고기 찌꺼기들을 이 메마른 땅에 매립해 보죠!",
+		"cost": 100,
+		"tier": 2,
+		"biome": 0,
+		"branch": 7,
+		"effects": {
+			"_exp": 20,
+			"maintenance": -999,
+			"0_rank": -10000,
+			"probability": 100
+		}
+	}
+}

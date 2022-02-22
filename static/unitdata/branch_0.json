@@ -1,0 +1,24 @@
+{
+	"HG": {
+		"name": "항구",
+		"description": "항구를 통해 무역에 나섭니다. 무역을 통해 벌어온 돈으로 유지비를 아낄 수 있겠죠?",
+		"cost": 2000,
+		"tier": 2,
+		"branch": 0,
+		"effects": {
+			"0_rank": 30,
+			"maintenance": -10
+		}
+	},
+	"DSHSS": {
+		"name": "담수화 시설",
+		"description": "바닷물을 마실 수 있는 물로 정화해 주는 시설이에요!",
+		"cost": 5000,
+		"tier": 3,
+		"biome": 1,
+		"branch": 0,
+		"effects": {
+			"maintenance": -3
+		}
+	}
+}

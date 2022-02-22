@@ -1,0 +1,36 @@
+{
+    "name": "기본 테마",
+    "default": [
+        {"text": "{name}이(가) 낚였다!", "position": [71, 7], "size": 24, "color": [255, 255, 255], "rarity": 1},
+        {"text": "와! {name}을(를) 낚았다!!!", "position": [71, 7], "size": 24, "color": [255, 255, 255], "rarity": 2},
+        {"text": "월척이야! {name}을 낚다니!!!", "position": [71, 7], "size": 24, "rarity": 3},
+        {"text": "이건... {name}(이)잖아?!?!", "position": [71, 7], "size": 24, "rarity": 4},
+        {"text": "{name}(이)라고?!?! 가능한 거야???", "position": [71, 7], "size": 24, "color": [255, 255, 255], "rarity": 5},
+        {"text": "세상에... 살면서 {name}을(를) 볼 수 있다니...", "position": [71, 7], "size": 24, "color": [255, 255, 255], "rarity": 6},
+        {"text": "{cost}$", "position": [80, 59], "size": 20},
+        {"text": "{fees}$ ({maintenance_p}%)", "position": [72, 85], "size": 16, "owner": true, "color": [50, 0, 0]},
+        {"text": "낚시터 주인", "position": [72, 38], "size": 8, "owner": true, "color": [255, 255, 255]},
+        {"text": "{fees}$ ({fees_p}%)", "position": [72, 85], "size": 16, "owner": false, "color": [50, 0, 0]},
+        {"text": "{bonus}$ ({bonus_p}%)", "position": [72, 105], "size": 16, "color": [0, 50, 0]},
+        {"text": "{profit}$", "position": [85, 145], "size": 24},
+        {"text": "{name}", "position": [350, 65], "size": 20},
+        {"text": "{length}cm", "position": [350, 90], "size": 14},
+        {"text": "(평균 {average_length}cm)", "position": [350, 108], "size": 12},
+        {"text": "{cost}$", "position": [350, 123], "size": 14},
+        {"text": "(평균 {average_cost}$)", "position": [350, 141], "size": 12},
+        {"text": "{time}시에 '{roomname}'에서", "position": [290, 160], "size": 8},
+        {"text": "『{username}』", "position": [290, 170], "size": 8}
+    ],
+    "rank-0": [
+        {"text": "{name}을(를) 낚아 버렸어...", "position": [71, 7], "size": 24, "color": [255, 255, 255]},
+        {"text": "{profit}$", "position": [80, 59], "size": 20},
+        {"text": "낚시터 주인", "position": [72, 38], "size": 8, "owner": true, "color": [255, 255, 255]},
+        {"text": "{name}", "position": [350, 65], "size": 20},
+        {"text": "{length}cm", "position": [350, 90], "size": 14},
+        {"text": "(평균 {average_length}cm)", "position": [350, 108], "size": 12},
+        {"text": "{cost}$", "position": [350, 123], "size": 14},
+        {"text": "(평균 {average_cost}$)", "position": [350, 141], "size": 12},
+        {"text": "{time}시에 '{roomname}'에서", "position": [290, 160], "size": 8},
+        {"text": "『{username}』", "position": [290, 170], "size": 8}
+    ]
+}

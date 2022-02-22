@@ -1,0 +1,35 @@
+{
+	"HBJS": {
+		"name": "화력 발전소",
+		"description": "화력 발전이라... 유치하면 전기세 걱정은 덜겠네요. 환경에는 별로 안 좋다는 게 흠이지만요.",
+		"cost": 1500,
+		"tier": 2,
+		"branch": 9,
+		"effects": {
+			"maintenance": -15,
+			"3_rank": -30,
+			"4_rank": -5
+		}
+	},
+	"SBJS": {
+		"name": "수력 발전소",
+		"description": "댐을 건설해야 하는 것도 환경에 좋지는 않지만 여긴 어차피 낚시터잖아요?",
+		"cost": 5500,
+		"tier": 2,
+		"biome": [2, 3],
+		"branch": 9,
+		"effects": {
+			"maintenance": -10
+		}
+	},
+	"SBJG": {
+		"name": "소형 발전기",
+		"description": "작은 발전기! 이걸로 전기세를 아껴보자구요!",
+		"cost": 800,
+		"tier": 1,
+		"branch": 9,
+		"effects": {
+			"maintenance": -3
+		}
+	}
+}

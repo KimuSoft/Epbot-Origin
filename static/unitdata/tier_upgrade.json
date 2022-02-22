@@ -1,0 +1,110 @@
+{
+	"_TIER0": {
+		"name": "공공 낚시터",
+		"description": "이제 이 낚시터는 국가의 것입니다! 프롤레타리아의 독재!",
+		"cost": 0,
+		"tier": 0,
+		"branch": 10,
+		"effects": {
+			"fee": -100,
+			"1_rank": -100,
+			"probability": 5,
+			"_exp": 0,
+			"maintenance": 7
+		}
+	},
+	"_TIER2": {
+		"name": "낚시터 2단계 확장",
+		"description": "조금 더 넓어진 낚시터! 뭘 더 지을 수 있을까요?",
+		"cost": 1000,
+		"tier": 1,
+		"branch": 10,
+		"effects": {
+			"fee": 5,
+			"1_rank": -50,
+			"_exp": 1.05,
+			"maintenance": 5
+		}
+	},
+	"_TIER3": {
+		"name": "낚시터 3단계 확장",
+		"description": "흠... 낚시터가 롯○월드 크기일 필요가... 있겠죠?",
+		"cost": 6500,
+		"tier": 2,
+		"branch": 10,
+		"effects": {
+			"fee": 10,
+			"1_rank": -150,
+			"2_rank": 50,
+			"_exp": 1.15,
+			"maintenance": 10,
+			"fake": 5
+		}
+	},
+	"_TIER4": {
+		"name": "낚시터 4단계 확장",
+		"description": "에버○드랑 비슷한 규모의 낚시터예요! 여기에는 방류장... 여기에는 고등학교를 지으면... 이거 낚시터 맞죠?",
+		"cost": 50000,
+		"tier": 3,
+		"branch": 10,
+		"effects": {
+			"1_rank": -250,
+			"2_rank": 200,
+			"3_rank": 50,
+			"_exp": 1.5,
+			"maintenance": 25,
+			"fake": 10
+		}
+	},
+	"_TIER5": {
+		"name": "낚시터 5단계 확장",
+		"description": "저는 5티어 낚시터를 추가할 생각이 없었습니다. 장난으로 만들었는데 해 버려서 어쩔 수 없이 추가한 겁니다. 청정수 분들은 4티어를 끝으로 생각해 주세요.",
+		"cost": 1000000,
+		"tier": 4,
+		"branch": 10,
+		"effects": {
+			"1_rank": -500,
+			"2_rank": 300,
+			"3_rank": 150,
+			"4_rank": 50,
+			"_exp": 2,
+			"maintenance": 40,
+			"fake": 20
+		}
+	},
+	"_TIER6": {
+		"name": "낚시터 6단계 확장",
+		"description": "제발 그만해",
+		"cost": 10000000,
+		"tier": 5,
+		"branch": 10,
+		"effects": {
+			"1_rank": -750,
+			"2_rank": 500,
+			"3_rank": 300,
+			"4_rank": 150,
+			"5_rank": 5,
+			"_exp": 4,
+			"maintenance": 50,
+			"fake": 40
+		}
+	},
+	"_TIER7": {
+		"name": "디스토피아",
+		"description": "어마무시한 자산으로 지구 전체가 당신의 낚시터가 되었지만, 지나친 개발로 지구가 멸망해 버렸습니다.",
+		"cost": 100000000,
+		"tier": 6,
+		"branch": 10,
+		"effects": {
+			"0_rank": -9999999,
+			"1_rank": -9999999,
+			"2_rank": -9999999,
+			"3_rank": -9999999,
+			"4_rank": -9999999,
+			"5_rank": -9999999,
+			"_exp": 9999999,
+			"maintenance": 99,
+			"fake": 100
+		}
+	}
+}

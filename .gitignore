@@ -1,0 +1,8 @@
+/.vscode
+/logs
+/__pycache__
+__pycache__
+static/fish_image/*.png
+venv
+
+config.py

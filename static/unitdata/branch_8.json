@@ -1,0 +1,47 @@
+{
+    
+	"CDHG": {
+		"name": "초등학교",
+		"description": "주변 초등학교에서 좋은 걸 배워 온 이프가 낚시할 때 저를 덜 낚네요!",
+		"cost": 1600,
+		"tier": 2,
+		"branch": 8,
+		"effects": {
+			"maintenance": 2,
+			"fake": -5
+		}
+	},
+	"KDS": {
+		"name": "교도소",
+		"description": "시에서 교도소를 낚시터 부지에 건설하면 지원금을 준다고 합니다! 이프 교육에는 좋지 않겠지만 말이죠...",
+		"cost": 1600,
+		"tier": 2,
+		"branch": 8,
+		"effects": {
+			"maintenance": -8,
+			"fake": 8
+		}
+	},
+	"JHG": {
+		"name": "중학교",
+		"description": "역시 교육은 중요해요! 이프가 낚싯대로 저를 낚는 일이 확실히 줄었어요!",
+		"cost": 1600,
+		"tier": 3,
+		"branch": 8,
+		"effects": {
+			"maintenance": 3,
+			"fake": -10
+		}
+	},
+	"KZN": {
+		"name": "카지노",
+		"description": "❗❗❗ 앗!!! 카드가 전혀 안 섞인다!!! ...또 낚았어요! 사람이지만요.",
+		"cost": 8300,
+		"tier": 3,
+		"branch": 8,
+		"effects": {
+			"maintenance": -14,
+			"fake": 30
+		}
+	}
+}

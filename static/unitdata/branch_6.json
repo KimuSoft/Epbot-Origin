@@ -1,0 +1,37 @@
+{
+    "NDS": {
+		"name": "농어 동상",
+		"description": "농어 모양의 동상... 아무 효능은 없지만 놔 두니 예쁘네요!",
+		"cost": 500,
+		"tier": 1,
+		"branch": 6
+	},
+	"GDS": {
+		"name": "가오리 동상",
+		"description": "가오리 모양의 동상! 아무 효능은 없지만 멋있어요!",
+		"cost": 3000,
+		"tier": 2,
+		"branch": 6
+	},
+	"DGDS": {
+		"name": "돌고래 동상",
+		"description": "돌고래 모양의 동상! 아무 효능은 없지만 멋있어요!",
+		"cost": 10000,
+		"tier": 3,
+		"branch": 6
+	},
+	"SDS": {
+		"name": "상어 동상",
+		"description": "상어 모양의 동상! 아무 효능은 없지만 멋있어요!",
+		"cost": 100000,
+		"tier": 4,
+		"branch": 6
+	},
+	"MDS": {
+		"name": "메갈로돈 동상",
+		"description": "전설의 메갈로돈 모양의 동상! 아무 효능은 없지만 멋있어요!",
+		"cost": 1000000,
+		"tier": 5,
+		"branch": 6
+	}
+}

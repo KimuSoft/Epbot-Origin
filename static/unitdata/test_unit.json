@@ -1,0 +1,35 @@
+{
+	"TEST": {
+		"name": "실험실",
+		"description": "여기에 설명을 입력해 주세요",
+		"cost": 99999999999,
+		"branch": 1,
+		"tier": 5,
+		"effects": {
+			"fee": 1,
+			"feerange": 1,
+			"feemin_down": 1,
+			"feemax_up": 1,
+			"probability": 10,
+			"0_rank": 3,
+			"1_rank": 3,
+			"2_rank": 3,
+			"3_rank": 3,
+			"4_rank": 99999999,
+			"fake": 0.3,
+			"_price": 1.3,
+			"_exp": 1.3,
+			"maintenance": 10
+		}
+	},
+	"WARP": {
+		"name": "평행 세계 접속기",
+		"description": "로꾸거 로꾸거",
+		"cost": 100000,
+		"branch": 999,
+		"tier": 5,
+		"effects": {
+			"_price": -1
+		}
+	}
+}

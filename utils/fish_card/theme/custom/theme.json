@@ -1,0 +1,95 @@
+{
+    "font": "Cafe24Ohsquare.ttf",
+    "name": "심플한 바다 테마",
+    "default": [
+        {"text": "{profit}$", "position": [102, 38], "size": 24, "color": [45, 85, 150]},
+        {"text": "+{cost}$", "position": [85, 66], "size": 14, "color": [45, 85, 150]},
+        {"text": "{fee}$", "position": [85, 82], "size": 14, "color": [45, 85, 150]},
+        {"text": "{maintenance}$", "position": [85, 98], "size": 14, "color": [45, 85, 150]},
+        {"text": "{bonus}$", "position": [85, 114], "size": 14, "color": [45, 85, 150]},
+        {"text": "낚시터 주인", "position": [47, 32], "size": 10, "color": [255, 255, 255], "owner": true},
+
+        {"text": "No. {id}", "position": [301, 29], "size": 16, "color": [45, 85, 150]},
+        {"text": "{name}", "position": [292, 44], "size": 28, "color": [45, 85, 150]},
+        {"text": "{length}cm", "position": [278, 77], "size": 14, "color": [45, 85, 150]},
+        {"text": "(평균 {average_length}cm)", "position": [353, 80], "size": 12, "color": [45, 85, 150]},
+        {"text": "{cost}$", "position": [278, 95], "size": 14, "color": [45, 85, 150]},
+        {"text": "(평균 {average_cost}$)", "position": [353, 98], "size": 12, "color": [45, 85, 150]},
+        {"text": "{username} / {roomname} / {time}", "position": [277, 119], "size": 8, "color": [20, 20, 20]}
+    ],
+    "rank-0": [
+        {"text": "{profit}$", "position": [102, 80], "size": 24},
+
+        {"text": "No. {id}", "position": [301, 29], "size": 16, "color": [255, 255, 255]},
+        {"text": "{name}", "position": [292, 45], "size": 28, "color": [255, 255, 255]},
+        {"text": "{length}cm", "position": [278, 77], "size": 14, "color": [255, 255, 255]},
+        {"text": "(평균 {average_length}cm)", "position": [353, 80], "size": 12, "color": [255, 255, 255]},
+        {"text": "{cost}$", "position": [278, 95], "size": 14, "color": [255, 255, 255]},
+        {"text": "(평균 {average_cost}$)", "position": [353, 98], "size": 12, "color": [255, 255, 255]},
+        {"text": "{username} / {roomname} / {time}", "position": [277, 119], "size": 8, "color": [200, 200, 200]}
+    ],
+    "rank-2": [
+        {"text": "{profit}$", "position": [102, 38], "size": 24, "color": [28, 88, 85]},
+        {"text": "+{cost}$", "position": [85, 66], "size": 14, "color": [28, 88, 85]},
+        {"text": "{fee}$", "position": [85, 82], "size": 14, "color": [28, 88, 85]},
+        {"text": "{maintenance}$", "position": [85, 98], "size": 14, "color": [28, 88, 85]},
+        {"text": "{bonus}$", "position": [85, 114], "size": 14, "color": [28, 88, 85]},
+        {"text": "낚시터 주인", "position": [47, 32], "size": 10, "color": [255, 255, 255]},
+
+        {"text": "No. {id}", "position": [301, 29], "size": 16, "color": [28, 88, 85]},
+        {"text": "{name}", "position": [292, 44], "size": 28, "color": [28, 88, 85]},
+        {"text": "{length}cm", "position": [278, 77], "size": 14, "color": [28, 88, 85]},
+        {"text": "(평균 {average_length}cm)", "position": [353, 80], "size": 12, "color": [28, 88, 85]},
+        {"text": "{cost}$", "position": [278, 95], "size": 14, "color": [28, 88, 85]},
+        {"text": "(평균 {average_cost}$)", "position": [353, 98], "size": 12, "color": [28, 88, 85]},
+        {"text": "{username} / {roomname} / {time}", "position": [277, 119], "size": 8, "color": [20, 20, 20]}
+    ],
+    "rank-3": [
+        {"text": "{profit}$", "position": [102, 38], "size": 24, "color": [204, 0, 204]},
+        {"text": "+{cost}$", "position": [85, 66], "size": 14, "color": [204, 0, 204]},
+        {"text": "{fee}$", "position": [85, 82], "size": 14, "color": [204, 0, 204]},
+        {"text": "{maintenance}$", "position": [85, 98], "size": 14, "color": [204, 0, 204]},
+        {"text": "{bonus}$", "position": [85, 114], "size": 14, "color": [204, 0, 204]},
+        {"text": "낚시터 주인", "position": [47, 32], "size": 10, "color": [255, 255, 255]},
+
+        {"text": "No. {id}", "position": [301, 29], "size": 16, "color": [204, 0, 204]},
+        {"text": "{name}", "position": [292, 44], "size": 28, "color": [204, 0, 204]},
+        {"text": "{length}cm", "position": [278, 77], "size": 14, "color": [204, 0, 204]},
+        {"text": "(평균 {average_length}cm)", "position": [353, 80], "size": 12, "color": [204, 0, 204]},
+        {"text": "{cost}$", "position": [278, 95], "size": 14, "color": [204, 0, 204]},
+        {"text": "(평균 {average_cost}$)", "position": [353, 98], "size": 12, "color": [204, 0, 204]},
+        {"text": "{username} / {roomname} / {time}", "position": [277, 119], "size": 8, "color": [20, 20, 20]}
+    ],
+    "rank-4": [
+        {"text": "{profit}$", "position": [102, 38], "size": 24, "color": [127, 96, 0]},
+        {"text": "+{cost}$", "position": [85, 66], "size": 14, "color": [127, 96, 0]},
+        {"text": "{fee}$", "position": [85, 82], "size": 14, "color": [127, 96, 0]},
+        {"text": "{maintenance}$", "position": [85, 98], "size": 14, "color": [127, 96, 0]},
+        {"text": "{bonus}$", "position": [85, 114], "size": 14, "color": [127, 96, 0]},
+        {"text": "낚시터 주인", "position": [47, 32], "size": 10, "color": [255, 255, 255]},
+
+        {"text": "No. {id}", "position": [301, 29], "size": 16, "color": [127, 96, 0]},
+        {"text": "{name}", "position": [292, 44], "size": 28, "color": [127, 96, 0]},
+        {"text": "{length}cm", "position": [278, 77], "size": 14, "color": [127, 96, 0]},
+        {"text": "(평균 {average_length}cm)", "position": [353, 80], "size": 12, "color": [127, 96, 0]},
+        {"text": "{cost}$", "position": [278, 95], "size": 14, "color": [127, 96, 0]},
+        {"text": "(평균 {average_cost}$)", "position": [353, 98], "size": 12, "color": [127, 96, 0]},
+        {"text": "{username} / {roomname} / {time}", "position": [277, 119], "size": 8, "color": [20, 20, 20]}
+    ],
+    "rank-5": [
+        {"text": "{profit}$", "position": [102, 38], "size": 24, "color": [78, 6, 6]},
+        {"text": "+{cost}$", "position": [85, 66], "size": 14, "color": [78, 6, 6]},
+        {"text": "{fee}$", "position": [85, 82], "size": 14, "color": [78, 6, 6]},
+        {"text": "{maintenance}$", "position": [85, 98], "size": 14, "color": [78, 6, 6]},
+        {"text": "{bonus}$", "position": [85, 114], "size": 14, "color": [78, 6, 6]},
+        {"text": "낚시터 주인", "position": [47, 32], "size": 10, "color": [255, 255, 255]},
+
+        {"text": "No. {id}", "position": [301, 29], "size": 16, "color": [78, 6, 6]},
+        {"text": "{name}", "position": [292, 44], "size": 28, "color": [78, 6, 6]},
+        {"text": "{length}cm", "position": [278, 77], "size": 14, "color": [78, 6, 6]},
+        {"text": "(평균 {average_length}cm)", "position": [353, 80], "size": 12, "color": [78, 6, 6]},
+        {"text": "{cost}$", "position": [278, 95], "size": 14, "color": [78, 6, 6]},
+        {"text": "(평균 {average_cost}$)", "position": [353, 98], "size": 12, "color": [78, 6, 6]},
+        {"text": "{username} / {roomname} / {time}", "position": [277, 119], "size": 8, "color": [20, 20, 20]}
+    ]
+}
