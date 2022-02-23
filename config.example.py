@@ -13,10 +13,10 @@ ADMINS = [
 
 
 ''' PostgreSQL Database Configuration '''
-HOST = 'localhost'  # HOST를 localhost로 세팅할 경우 HOST를 사용하지 않음(DB 서버와 이프 서버를 같이 돌릴 경우 권장)
-DBNAME = 'epbot'
+HOST = '127.0.0.1'  # HOST를 localhost로 세팅할 경우 HOST를 사용하지 않음(DB 서버와 이프 서버를 같이 돌릴 경우 권장)
+DBNAME = 'postgres'
 USER = 'postgres'
-PASSWORD = '12345'
+PASSWORD = 'test'
 PORT = '5432'
 
 
