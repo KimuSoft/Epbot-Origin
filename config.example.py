@@ -38,8 +38,8 @@ DEBUG_ACTIVITIES = ['버그 수정 중. . .']
 
 
 ''' Loggin & Announcement Channel Setting '''
-ERROR_LOGGING_CHANNEL = 
-ANNOUNCE_CHANNEL = 
+ERROR_LOGGING_CHANNEL = 1234567890
+ANNOUNCE_CHANNEL = 1234567890
 
 
 def token():
