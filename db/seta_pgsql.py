@@ -6,7 +6,7 @@ from utils import logger
 
 class S_PgSQL:
     def __init__(self):
-        if config.HOST == 'localhost':
+        if config.HOST == 'localhost' or config.HOST == '127.0.0.1':
             self.conn = psycopg2.connect(
                 dbname=config.DBNAME,
                 user=config.USER,
