@@ -4,13 +4,14 @@
 
 1. requirements.txt의 요구사항을 설치합니다. `pip install -r requirements.txt`
 2. postgreSQL을 설치합니다.
+    - postgreSQL 데이터베이스 관리에는 pgAdmin 프로그램을 추천합니다.
 3. 데이터베이스를 셋업합니다. sql 파일 대신 이미지를 드리겠습니다.
 4. `config.py.example`에서 `.example`을 떼어 `config.py` 파일을 만든 후, 안에 필요한 내용을 적습니다.
     - 봇 토큰, 데이터베이스 관련 항목을 입력하지 않을 경우 이프가 정상적으로 작동하지 않습니다.
     - `ERROR_LOGGING_CHANNEL`은 이프에 오류가 발생했을 시 메시지를 띄울 채널 ID를 적으시면 됩니다. 물론 이프에게 메시지 쓰기 권한이 있는 채널이어야 합니다.
     - `ANNOUNCE_CHANNEL`은 이프 뉴스(일일 랭킹)를 띄울 채널 ID를 적으시면 됩니다. 물론 이프에게 메시지 쓰기 권한이 있는 채널이어야 합니다.
     - 낚시카드 서버를 입력하지 않을 경우에는 내부에서 낚시카드를 직접 만드므로 적지 않으셔도 됩니다.
-5. 구동할 때는 main.py를 실행하시면 됩니다. `python main.py`
+5. 구동할 때는 main.py를 실행하시면 됩니다. `python main.py` (Windows일 경우 `run.bat` 파일을 실행하셔도 됩니다.)
 
 ## 주의 및 안내사항
 
