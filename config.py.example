@@ -9,9 +9,6 @@ query_logging = False
 '''Administrator Setting'''
 ADMINS = [
     281689852167061506,  # 키뮤
-    577095893451407361,  # 코로
-    287177141064302592,  # 로
-    628595345798201355  # 파링
 ]
 
 
@@ -41,8 +38,8 @@ DEBUG_ACTIVITIES = ['버그 수정 중. . .']
 
 
 ''' Loggin & Announcement Channel Setting '''
-ERROR_LOGGING_CHANNEL = 805413605607997461
-ANNOUNCE_CHANNEL = 805235878238224397
+ERROR_LOGGING_CHANNEL = 
+ANNOUNCE_CHANNEL = 
 
 
 def token():
