@@ -40,6 +40,7 @@ DEBUG_ACTIVITIES = ['버그 수정 중. . .']
 ''' Loggin & Announcement Channel Setting '''
 ERROR_LOGGING_CHANNEL = 1234567890
 ANNOUNCE_CHANNEL = 1234567890
+ADMIN_COMMAND_GUILD = [] # 관리자 명령어를 사용할 서버 ID
 
 
 def token():

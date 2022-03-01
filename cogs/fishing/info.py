@@ -4,6 +4,8 @@
 """
 
 # 필수 임포트
+from discord.commands import slash_command
+from discord.commands import Option
 from discord.ext import commands
 import discord
 import os
@@ -19,67 +21,43 @@ class ShortInfoCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @slash_command(name = "계절", description="이 낚시터(채널)의 계절을 알려줘요!")
     async def 계절(self, ctx):
         room = Room(ctx.channel)
-        await ctx.send(
-            content=f"`이 낚시터의 계절 : {Constants.SEASON_KR[room.season]}`",
-            reference=ctx.message,
-        )
+        await ctx.respond(content=f"`이 낚시터의 계절 : {Constants.SEASON_KR[room.season]}`")
 
-    @commands.command()
+    @slash_command(name = "지형", description="이 낚시터(채널)의 지형을 알려줘요!")
     async def 지형(self, ctx):
         room = Room(ctx.channel)
-        await ctx.send(
-            content=f"`이 낚시터의 지형 : {Constants.BIOME_KR[room.biome]}`",
-            reference=ctx.message,
-        )
+        await ctx.respond(content=f"`이 낚시터의 지형 : {Constants.BIOME_KR[room.biome]}`")
 
-    @commands.command()
+    @slash_command(name = "돈", description="지금 가지고 계신 돈을 알려줘요!")
     async def 돈(self, ctx):
         user = User(ctx.author)
-        await ctx.send(content=f"`소지금 : {user.money:,}💰`", reference=ctx.message)
+        await ctx.respond(content=f"`소지금 : {user.money:,}💰`")
 
-    @commands.command()
+    @slash_command(name = "명성", description="자신과 낚시터가 가지고 있는 명성을 알려줘요!")
     async def 명성(self, ctx):
         user = User(ctx.author)
         room = Room(ctx.channel)
-        await ctx.send(
-            content=f"`내 개인 명성 : ✨ {user.exp:,}\n이 낚시터의 명성 : ✨ {room.exp:,}`",
-            reference=ctx.message,
-        )
+        await ctx.respond(content=f"`내 개인 명성 : ✨ {user.exp:,}\n이 낚시터의 명성 : ✨ {room.exp:,}`")
 
-    @commands.command()
+    @slash_command(name = "청결도", description="이 낚시터(채널)의 청결도를 보여줘요!")
     async def 청결도(self, ctx):
         room = Room(ctx.channel)
-        await ctx.send(
-            content=f"`이 낚시터의 청결도 : 🧹 {room.cleans:,}`", reference=ctx.message
-        )
+        await ctx.respond(content=f"`이 낚시터의 청결도 : 🧹 {room.cleans:,}`")
 
-    @commands.command()
+    @slash_command(name = "땅값", description="이 낚시터(채널)의 땅값을 보여줘요!")
     async def 땅값(self, ctx):
         room = Room(ctx.channel)
-        await ctx.send(
-            content=f"`이 낚시터의 땅값 : {room.land_value:,} 💰\n이 낚시터의 최소 매입가 : {room.min_purchase} 💰`",
-            reference=ctx.message,
-        )
+        await ctx.respond(content=f"`이 낚시터의 땅값 : {room.land_value:,} 💰\n이 낚시터의 최소 매입가 : {room.min_purchase} 💰`")
 
-    @commands.command()
+    @slash_command(name = "티어", description="이 낚시터(채널)의 티어를 보여줘요!")
     async def 티어(self, ctx):
         room = Room(ctx.channel)
-        await ctx.send(content=f"`이 낚시터의 레벨(티어) : {room.tier}`", reference=ctx.message)
+        await ctx.respond(content=f"`이 낚시터의 레벨(티어) : {room.tier}`")
 
-    @commands.command()
-    async def 아이디(self, ctx):
-        await ctx.send(
-            content=(
-                f"`이 낚시터의 ID : 📑 {ctx.channel.id} ( {ctx.channel.name} )\n"
-                f"내 디스코드 ID : 📑 {ctx.author.id} ( {ctx.author.name} )`"
-            ),
-            reference=ctx.message,
-        )
-
-    @commands.command()
+    @slash_command(name = "내정보", description="자신의 정보를 확인할 수 있어요!")
     async def 내정보(self, ctx):
         user = User(ctx.author)
         embed = discord.Embed(title=ctx.author.display_name + "의 정보!", colour=0x4BC59F)
@@ -99,7 +77,7 @@ class ShortInfoCog(commands.Cog):
                 value=f"🐟 **{user.biggest_name}** ({user.biggest_size}cm)",
                 inline=False,
             )
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
 
 
 def setup(bot):

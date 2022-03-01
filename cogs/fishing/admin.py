@@ -1,7 +1,11 @@
 # 필수 임포트
+import discord
 from discord.ext import commands
+from discord.commands import slash_command
+from discord.commands import Option
 import os
 
+import config
 from constants import Constants
 from utils import logger
 
@@ -15,68 +19,36 @@ class FishAdminCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @slash_command(name = "디버그", guild_ids = config.ADMIN_COMMAND_GUILD, description="관리자 디버그용 도구입니다. (관리자 전용)")
     @administrator()
-    async def 테스트(self, ctx):
-        import discord
+    async def 테스트(self, ctx, command_type:
+        Option(str, "관리자 명령어 종류", choices = ["지형변경", "명성설정", "명성부여", "돈부여", "기타"]),
+        num: int = None, user: discord.Member = None):
 
-        embed = discord.Embed(title="테스트")
-        embed.set_image(
-            url="https://media.discordapp.net/attachments/804578554439270400/856481542749945867/fishcard.png"
-        )
-        # embed.set_image(url='https://www.nifs.go.kr/frcenter/common/species_image_download.jsp?mf_dogam_id=DG0102&mf_tax_id=MF0008776')
-        await ctx.send(embed=embed, reference=ctx.message)
+        if command_type == "지형변경":
+            Room(ctx.channel).biome = num
+            await ctx.respond(content=f"여기의 지형을 '{Constants.BIOME_KR[num]}'(으)로 바꿔써!")
 
-    @commands.command()
-    @administrator()
-    async def 지형변경(self, ctx, arg1=0):
-        Room(ctx.channel).biome = int(arg1)
-        await ctx.send(
-            content=f"여기의 지형을 '{Constants.BIOME_KR[arg1]}'(으)로 바꿔써!",
-            reference=ctx.message,
-        )
+        elif command_type == "명성설정":
+            room = Room(ctx.channel)
+            origin_exp = room.exp
+            room.exp = num
+            await ctx.respond(content=f"여기의 명성을 `{origin_exp}`에서 `{num}`(으)로 바꿔써!")
+        
+        elif command_type == "명성부여":
+            room = Room(ctx.channel)
+            origin_exp = room.exp
+            room.exp += num
+            await ctx.respond(content=f"여기의 명성을 `{origin_exp}`에서 `{room.exp:,}`(으)로 바꿔써!")
 
-    @commands.command()
-    @administrator()
-    async def 명성설정(self, ctx, arg1=-1):
-        if arg1 == -1:
-            await ctx.send("`이프야 명성설정 (값)`")
-            return None
-        room = Room(ctx.channel)
-        origin_exp = room.exp
-        room.exp = int(arg1)
-        await ctx.send(
-            content=f"여기의 명성을 `{origin_exp}`에서 `{arg1}`(으)로 바꿔써!", reference=ctx.message
-        )
+        elif command_type == "돈부여":
+            user = User(user)
+            user.give_money(num)
+            await ctx.respond(f"<@!{user.id}>가 `{user.money:,}💰` 가 됐어!")
 
-    @commands.command()
-    @administrator()
-    async def 명성부여(self, ctx, arg1=-1):
-        if arg1 == -1:
-            await ctx.send("`이프야 명성부여 (값)`")
-            return None
-        room = Room(ctx.channel)
-        origin_exp = room.exp
-        room.exp += int(arg1)
-        await ctx.send(
-            content=f"여기의 명성을 `{origin_exp}`에서 `{room.exp:,}`(으)로 바꿔써!",
-            reference=ctx.message,
-        )
+        else:    
+            await ctx.respond("Hello, This is KOI3125 test command!")
 
-    @commands.command()
-    @administrator()
-    async def 돈부여(self, ctx, *args):
-        if (
-            len(args) < 2
-            or not args[1].isdigit()
-            or not args[0].replace("<@!", "").replace(">", "").isdigit()
-        ):
-            await ctx.send("`이프야 돈부여 <언급> <액수>`")
-            return None
-
-        user = User(int(args[0].replace("<@!", "").replace(">", "")))
-        user.give_money(int(args[1]))
-        await ctx.send(f"<@!{user.id}>가 `{user.money:,}💰` 가 됐어!")
 
 
 def setup(bot):

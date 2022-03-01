@@ -1,4 +1,6 @@
 # 필수 임포트
+from discord.commands import slash_command
+from discord.commands import Option
 from discord.ext import commands
 import discord
 import os
@@ -14,8 +16,8 @@ class ThemeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def 테마(self, ctx, arg=""):
+    @slash_command(name = "테마", description="낚시카드의 테마를 선택하세요!")
+    async def 테마(self, ctx, arg: str = None):
         user = User(ctx.author.id)
         if not arg:
             themes = user.themes_name
@@ -25,20 +27,21 @@ class ThemeCog(commands.Cog):
                 ntheme.append(f"{idx + 1}. {val}")
 
             ths = "\n".join(ntheme)
-            return await ctx.send(f"> **현재 보유 중인 테마** \n```cs\n{ths}```")
+            return await ctx.respond(f"> **현재 보유 중인 테마** \n```cs\n{ths}```")
         if not str(arg).isdigit():
-            return await ctx.send("`이프야 테마 <바꿀 테마 번호>`")
+            return await ctx.respond("`이프야 테마 <바꿀 테마 번호>`")
         try:
             user.theme = user.themes[int(arg) - 1]
-            return await ctx.send(f"`❗ 낚시카드 테마를 '{user.themes_name[0]}'(으)로 변경했습니다.`")
+            return await ctx.respond(f"`❗ 낚시카드 테마를 '{user.themes_name[0]}'(으)로 변경했습니다.`")
         except NoTheme:
-            await ctx.send("`이프야 테마 <바꿀 테마 번호>`")
+            await ctx.respond("`이프야 테마 <바꿀 테마 번호>`")
         except IndexError:
-            await ctx.send("`❗ 보유하고 있는 테마의 번호를 잘 확인해 보세요.`")
+            await ctx.respond("`❗ 보유하고 있는 테마의 번호를 잘 확인해 보세요.`")
 
+""" 오류 발생 (비활성화)
     @commands.cooldown(1, 3, commands.BucketType.user)
-    @commands.command()
-    async def 미리보기(self, ctx, arg=""):
+    @slash_command(name = "미리보기", guild_ids = [742201063972667487], description="낚시카드의 테마를 미리 경헙해보세요")
+    async def 미리보기(self, ctx, arg:str = None):
         if not arg:
             theme = User(ctx.author.id).theme
         else:
@@ -65,7 +68,7 @@ class ThemeCog(commands.Cog):
                 await ctx.send(
                     file=discord.File(fp=image_binary, filename="fishcard.png")
                 )
-
+"""
 
 def setup(bot):
     logger.info(f"{os.path.abspath(__file__)} 로드 완료")

@@ -21,7 +21,7 @@ DEFAULT_USER_VALUES = {
     "exp": 0,
     "fishing_now": 0,
     "theme": [],
-    "dex": [],
+    "dex": {},
     "fish": [],
 }
 

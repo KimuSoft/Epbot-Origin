@@ -14,7 +14,7 @@
     fee = 5
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 import random
 import copy
 import ast
@@ -485,7 +485,7 @@ class Room:
             self.channel = channel
             self.id = channel.id
             self.name = channel.name.replace('"', "").replace("'", "")
-            self.history = (datetime.today() - channel.created_at).days
+            self.history = (datetime.now(timezone.utc) - channel.created_at).days
 
         data = self._load_data()
 
