@@ -25,7 +25,8 @@ class LandCog(commands.Cog):
 
     @slash_command(name = "매입", description="이 낚시터(채널)을 매입해요!")
     @on_working(fishing=True, landwork=True, prohibition=True, twoball=False)
-    async def 매입(self, ctx, arg1=""):
+    async def 매입(self, ctx,
+    arg1: Option(int, "매입 가격을 입력해요!")):
         user = User(ctx.author)
         room = Room(ctx.channel)
         land_value = room.land_value
@@ -117,7 +118,8 @@ class LandCog(commands.Cog):
     @on_working(
         fishing=True, prohibition=True, twoball=False
     )  # 번호로 다른 채널을 건드릴 수도 있으니 landwork는 제외
-    async def 매각(self, ctx, land_num : int = None):
+    async def 매각(self, ctx,
+    land_num : Option(int, "매각하고 싶으신 땅 번호를 입력하세요! (미입력시 이 낚시터로 자동 선택)") = None):
         user = User(ctx.author)
         if land_num != None:
             lands = user.myland_list()
@@ -224,7 +226,8 @@ class LandCog(commands.Cog):
 
     @slash_command(name = "내땅", description="무슨 땅을 가지고 있는지 확인해요!")
     @on_working(fishing=True, prohibition=True)
-    async def 내땅(self, ctx, args: str = None):
+    async def 내땅(self, ctx,
+    args: Option(str, "땅의 이름으로 검색해요! (미 입력시 소유하는 모든 땅의 목록을 보여드려요!)") = None):
         user = User(ctx.author)
 
         window = await ctx.respond(content="`내 땅 목록`")
@@ -294,7 +297,8 @@ class LandCog(commands.Cog):
     @on_working(
         fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
     )
-    async def 땅값변경(self, ctx, value: int):
+    async def 땅값변경(self, ctx,
+    value: Option(int, "변경하실 땅값을 입력하세요!")):
         user = User(ctx.author)
         room = Room(ctx.channel)
         land_value = room.land_value
@@ -363,7 +367,8 @@ class LandCog(commands.Cog):
     @on_working(
         fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
     )
-    async def 수수료(self, ctx, value: int):
+    async def 수수료(self, ctx,
+    value: Option(int, "변경하실 수수료를 입력해주세요!")):
         room = Room(ctx.channel)
 
         fee_range = room.fee_range

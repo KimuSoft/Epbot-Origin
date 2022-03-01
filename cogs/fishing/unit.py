@@ -379,7 +379,8 @@ class UnitCog(commands.Cog):
 
     @slash_command(name = "설명", description = "시설을 설명해드려요!")
     @on_working(prohibition=True)
-    async def 설명(self, ctx, args: str):
+    async def 설명(self, ctx,
+    args: Option(str, "궁금하신 시설의 이름을 입력하세요!")):
         arg1 = " ".join(args)
         try:
             facility = Facility(arg1.upper())
@@ -413,7 +414,8 @@ class UnitCog(commands.Cog):
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def 철거(self, ctx, args: str):
+    async def 철거(self, ctx,
+    args: Option(str, "철거하실 시설의 이름을 입력해주세요!")):
         arg1 = " ".join(args).replace("_", "")
 
         try:
@@ -493,7 +495,8 @@ class UnitCog(commands.Cog):
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def 건설(self, ctx, args: str):
+    async def 건설(self, ctx,
+    args: Option(str, "건설하실 시설의 이름을 입력해주세요!")):
         arg1 = " ".join(args).replace("_", "")
 
         try:

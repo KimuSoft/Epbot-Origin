@@ -106,12 +106,11 @@ class ManagementCog(commands.Cog):
         """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
         channel = ctx.channel
         User(ctx.author).fishing_now = False
-
-        if isinstance(error, discord.errors.NotFound):
-            return await ctx.respond(
-                """저기 혹시... 갑자기 메시지를 지우거나 한 건 아니지...? 그러지 말아 줘...
-                `❗ raise discord.errors.NotFound`"""
-            )
+        if not isinstance(error, commands.CommandError):
+            if isinstance(error.original, discord.errors.NotFound):
+                return await ctx.respond(
+                    "저기 혹시... 갑자기 메시지를 지우거나 한 건 아니지...? 그러지 말아 줘..."
+                )
 
         # 명령어 쿨타임이 다 차지 않은 경우
         elif isinstance(error, commands.CommandOnCooldown):

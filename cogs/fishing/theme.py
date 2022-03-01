@@ -17,7 +17,8 @@ class ThemeCog(commands.Cog):
         self.bot = bot
 
     @slash_command(name = "테마", description="낚시카드의 테마를 선택하세요!")
-    async def 테마(self, ctx, arg: str = None):
+    async def 테마(self, ctx,
+    arg: Option(str, "바꾸실 테마 번호를 입력해주세요!") = ""):
         user = User(ctx.author.id)
         if not arg:
             themes = user.themes_name

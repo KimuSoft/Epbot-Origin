@@ -54,9 +54,22 @@ class EtcCog(commands.Cog):
             value=f"이프의 검열 대상 서버 : {len(self.bot.guilds)}곳",
             inline=False,
         )
+
+        embed.add_field(
+            name = "이프1 코드 공개 저장소",
+            value = "https://github.com/KimuSoft/epbot-origin",
+            inline = False
+        )
+        embed.add_field(
+            name = "기여자 목록",
+            value = "KOI#4182(슬래시 커맨드)",
+            inline = False
+        )
+
         embed.add_field(
             name="공식 디스코드 서버", value="[키뮤소프트 디스코드](https://discord.gg/XQuexpQ)"
         )
+
         embed.add_field(
             name=f"현재 이프 버전 : {VERSION}",
             value="`※ 최근 업데이트된 내용이 궁금하다면 공식 디스코드 서버에 방문해 보세요!`",
