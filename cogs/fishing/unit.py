@@ -11,7 +11,7 @@ from discord.ext import commands
 import discord
 import os
 
-import config
+from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
 from constants import Constants
 from utils import logger
 
@@ -19,14 +19,15 @@ from utils import logger
 from classes.room import Room, Facility, NotExistFacility
 from utils.util_box import ox
 from utils.on_working import on_working
-#from utils.on_working import p_requirements
+
+# from utils.on_working import p_requirements
 
 
 class UnitCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name = "업그레이드", description = "이 낚시터(채널)의 티어를 올려요!")
+    @slash_command(name="업그레이드", description="이 낚시터(채널)의 티어를 올려요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
@@ -58,27 +59,32 @@ class UnitCog(commands.Cog):
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "업그레이드", style = discord.ButtonStyle.blurple, emoji = "⭕")
+            @discord.ui.button(
+                label="업그레이드", style=discord.ButtonStyle.blurple, emoji="⭕"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "업그레이드"
                 self.stop()
 
-            @discord.ui.button(label = "취소하기", style = discord.ButtonStyle.red, emoji = "❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
                     return True
-    
+
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view = view)
+        window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
@@ -86,15 +92,16 @@ class UnitCog(commands.Cog):
             embed = discord.Embed(
                 title="낚시터 업그레이드를 취소하였다.", colour=discord.Colour.light_grey()
             )
-            return await window.edit_original_message(embed=embed, view = None)
+            return await window.edit_original_message(embed=embed, view=None)
 
         # 낚시터 명성이 부족한 경우
         if facility.cost > room.exp:
             room.working_now = False  # 땅 작업 종료
             return await window.edit_original_message(
-                content = f"""으움... 기각당했어...
+                content=f"""으움... 기각당했어...
                 `❗ 낚시터 명성이 부족합니다. ( ✨ {facility.cost} 필요 )`""",
-                embed = None, view = None
+                embed=None,
+                view=None,
             )
 
         # 1티어의 경우 전용 시설이 없으므로 무시
@@ -104,12 +111,13 @@ class UnitCog(commands.Cog):
         room.add_exp(facility.cost * -1)
         room.working_now = False
         await window.edit_original_message(
-            content = f"""<@{ctx.author.id}> {room.name} 낚시터가 {room.tier} 티어로 업그레이드 했어! 축하해!
+            content=f"""<@{ctx.author.id}> {room.name} 낚시터가 {room.tier} 티어로 업그레이드 했어! 축하해!
             `🎉 이제 새로운 종류의 시설을 건설할 수 있게 되었습니다!`""",
-            embed = None, view = None
+            embed=None,
+            view=None,
         )
 
-    @slash_command(name = "공영화", description = "낚시터를 공영화해요!")
+    @slash_command(name="공영화", description="낚시터를 공영화해요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True, landwork=True, owner_only=True)
     async def 공영화(self, ctx):
         room = Room(ctx.channel)
@@ -143,27 +151,32 @@ class UnitCog(commands.Cog):
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "공영화하기", style = discord.ButtonStyle.blurple, emoji = "⭕")
+            @discord.ui.button(
+                label="공영화하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "공영화"
                 self.stop()
 
-            @discord.ui.button(label = "취소하기", style = discord.ButtonStyle.red, emoji = "❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
                     return True
-    
+
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view = view)
+        window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
@@ -171,7 +184,7 @@ class UnitCog(commands.Cog):
             embed = discord.Embed(
                 title="낚시터 공영화를 취소하였다.", colour=discord.Colour.light_grey()
             )
-            return await window.edit_original_message(embed=embed, view = None)
+            return await window.edit_original_message(embed=embed, view=None)
 
         breaked = []
         breaked_cost = 0
@@ -185,10 +198,14 @@ class UnitCog(commands.Cog):
             breaked_cost += fac.cost
             breaked.append(fac.name)
         room.build_facility("_TIER0")
-        await window.edit_original_message(content = f"<@{ctx.author.id}> {room.name} 낚시터는 이제 공공 낚시터야!", embed = None, view = None)
+        await window.edit_original_message(
+            content=f"<@{ctx.author.id}> {room.name} 낚시터는 이제 공공 낚시터야!",
+            embed=None,
+            view=None,
+        )
         room.working_now = False
 
-    @slash_command(name = "민영화", description = "이 낚시터(채널)을 민영화해요!")
+    @slash_command(name="민영화", description="이 낚시터(채널)을 민영화해요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True, landwork=True, owner_only=True)
     async def 민영화(self, ctx):
         room = Room(ctx.channel)
@@ -207,33 +224,39 @@ class UnitCog(commands.Cog):
         )
 
         room.working_now = True
+
         class OXButtonView(View):
             def __init__(self, ctx):
                 super().__init__(timeout=10)
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "민영화하기", style = discord.ButtonStyle.blurple, emoji = "⭕")
+            @discord.ui.button(
+                label="민영화하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "민영화"
                 self.stop()
 
-            @discord.ui.button(label = "취소하기", style = discord.ButtonStyle.red, emoji = "❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
                     return True
-    
+
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view = view)
+        window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
@@ -241,12 +264,16 @@ class UnitCog(commands.Cog):
             embed = discord.Embed(
                 title="낚시터 민영화를 취소하였다.", colour=discord.Colour.light_grey()
             )
-            return await window.edit_original_message(embed=embed, view = None)
+            return await window.edit_original_message(embed=embed, view=None)
         room.break_facility("_TIER0")
-        await window.edit_original_message(content = f"<@{ctx.author.id}> {room.name} 낚시터는 이제 공공 낚시터가 아니야!", embed = None, view = None)
+        await window.edit_original_message(
+            content=f"<@{ctx.author.id}> {room.name} 낚시터는 이제 공공 낚시터가 아니야!",
+            embed=None,
+            view=None,
+        )
         room.working_now = False
 
-    @slash_command(name = "다운그레이드", description = "이 낚시터(채널)의 티어를 내려요!")
+    @slash_command(name="다운그레이드", description="이 낚시터(채널)의 티어를 내려요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
@@ -282,33 +309,39 @@ class UnitCog(commands.Cog):
         now_facility = Facility(f"_TIER{room.tier}")
 
         room.working_now = True
+
         class OXButtonView(View):
             def __init__(self, ctx):
                 super().__init__(timeout=10)
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "다운그레이드", style = discord.ButtonStyle.blurple, emoji = "⭕")
+            @discord.ui.button(
+                label="다운그레이드", style=discord.ButtonStyle.blurple, emoji="⭕"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "다운그레이드"
                 self.stop()
 
-            @discord.ui.button(label = "취소하기", style = discord.ButtonStyle.red, emoji = "❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 매각에 간섭할 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 매각에 간섭할 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
                     return True
-    
+
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view = view)
+        window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
@@ -316,7 +349,7 @@ class UnitCog(commands.Cog):
             embed = discord.Embed(
                 title="낚시터 다운그레이드를 취소하였다.", colour=discord.Colour.light_grey()
             )
-            return await window.edit_original_message(embed=embed, view = None)
+            return await window.edit_original_message(embed=embed, view=None)
 
         breaked = []
         breaked_cost = 0
@@ -343,12 +376,13 @@ class UnitCog(commands.Cog):
             else f"\n`❗ {', '.join(breaked)}이(가) 철거되어 추가로 ✨{breaked_cost:,}을 돌려받았습니다.`"
         )
         await window.edit_original_message(
-            content = f"<@{ctx.author.id}> {room.name} 낚시터를 {room.tier} 티어로 다운그레이드 했어... 소박해졌네!"
+            content=f"<@{ctx.author.id}> {room.name} 낚시터를 {room.tier} 티어로 다운그레이드 했어... 소박해졌네!"
             + bonus,
-            embed = None, view = None
+            embed=None,
+            view=None,
         )
 
-    @slash_command(name = "시설", description = "특정 티어의 시설중 낚시터에 알려드려요!")
+    @slash_command(name="시설", description="특정 티어의 시설중 낚시터에 알려드려요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True, landwork=True, twoball=False)
     async def 시설(self, ctx, arg1: int = None):
         if arg1 == None:
@@ -377,10 +411,9 @@ class UnitCog(commands.Cog):
         )
         await ctx.respond(embed=embed)
 
-    @slash_command(name = "설명", description = "시설을 설명해드려요!")
+    @slash_command(name="설명", description="시설을 설명해드려요!", guild_ids=SCRS)
     @on_working(prohibition=True)
-    async def 설명(self, ctx,
-    args: Option(str, "궁금하신 시설의 이름을 입력하세요!")):
+    async def 설명(self, ctx, args: Option(str, "궁금하신 시설의 이름을 입력하세요!")):
         arg1 = " ".join(args)
         try:
             facility = Facility(arg1.upper())
@@ -410,12 +443,11 @@ class UnitCog(commands.Cog):
         embed.set_footer(text="`※ 같은 종류의 시설은 하나만 건설할 수 있습니다.`")
         await ctx.respond(embed=embed)
 
-    @slash_command(name = "철거", description = "이 낚시터(채널)에 설치된 시설을 철거해요!")
+    @slash_command(name="철거", description="이 낚시터(채널)에 설치된 시설을 철거해요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def 철거(self, ctx,
-    args: Option(str, "철거하실 시설의 이름을 입력해주세요!")):
+    async def 철거(self, ctx, args: Option(str, "철거하실 시설의 이름을 입력해주세요!")):
         arg1 = " ".join(args).replace("_", "")
 
         try:
@@ -452,34 +484,39 @@ class UnitCog(commands.Cog):
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "철거하기", style = discord.ButtonStyle.blurple, emoji = "⭕")
+            @discord.ui.button(
+                label="철거하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "철거"
                 self.stop()
 
-            @discord.ui.button(label = "취소하기", style = discord.ButtonStyle.red, emoji = "❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
                     return True
-    
+
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view = view)
+        window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
             embed = discord.Embed(
                 title="시설 철거를 취소하였다.", colour=discord.Colour.light_grey()
             )
-            await window.edit_original_message(embed=embed, view = None)
+            await window.edit_original_message(embed=embed, view=None)
             room.working_now = False
             return
 
@@ -487,16 +524,16 @@ class UnitCog(commands.Cog):
         room.add_exp(facility.cost)
         room.working_now = False
         await window.edit_original_message(
-            content = f"<@{ctx.author.id}> {room.name} 땅에서 **{facility.name}**을(를) 철거했어!",
-            embed = None, view = None
+            content=f"<@{ctx.author.id}> {room.name} 땅에서 **{facility.name}**을(를) 철거했어!",
+            embed=None,
+            view=None,
         )
 
-    @slash_command(name = "건설", description = "이 낚시터(채널)에 시설을 건설해요!")
+    @slash_command(name="건설", description="이 낚시터(채널)에 시설을 건설해요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def 건설(self, ctx,
-    args: Option(str, "건설하실 시설의 이름을 입력해주세요!")):
+    async def 건설(self, ctx, args: Option(str, "건설하실 시설의 이름을 입력해주세요!")):
         arg1 = " ".join(args).replace("_", "")
 
         try:
@@ -542,34 +579,39 @@ class UnitCog(commands.Cog):
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "건설하기", style = discord.ButtonStyle.blurple, emoji = "⭕")
+            @discord.ui.button(
+                label="건설하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "건설"
                 self.stop()
 
-            @discord.ui.button(label = "취소하기", style = discord.ButtonStyle.red, emoji = "❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
                     return True
-    
+
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view = view)
+        window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
             embed = discord.Embed(
                 title="시설 건설을 취소하였다.", colour=discord.Colour.light_grey()
             )
-            await window.edit_original_message(embed=embed, view = None)
+            await window.edit_original_message(embed=embed, view=None)
             room.working_now = False  # 땅 작업 종료
             return
 
@@ -577,8 +619,9 @@ class UnitCog(commands.Cog):
         room.add_exp(facility.cost * -1)
         room.working_now = False  # 땅 작업 종료
         await window.edit_original_message(
-            content = f"<@{ctx.author.id}> {room.name} 땅에 **{facility.name}**을(를) 건설했어!",
-            embed = None, view = None
+            content=f"<@{ctx.author.id}> {room.name} 땅에 **{facility.name}**을(를) 건설했어!",
+            embed=None,
+            view=None,
         )
 
 

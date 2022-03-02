@@ -25,6 +25,7 @@ from classes.user import User
 import asyncio
 import random
 from constants import Constants
+from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
 
 # 자체 낚시카드 생성 관련 임포트
 from utils.fish_card.fish_card import get_card
@@ -37,29 +38,34 @@ class FishingGameCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name = "낚시", description="이프와 함께 물고기를 낚아요!")
+    @slash_command(name="낚시", description="이프와 함께 물고기를 낚아요!", guild_ids=SCRS)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @on_working.on_working(fishing=True, prohibition=True)
     async def 낚시(self, ctx):
         class FishButtonView(View):
             def __init__(self, ctx):
-                super().__init__(timeout=random.randint(1,3))
+                super().__init__(timeout=random.randint(1, 3))
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "낚싯줄 당기기", style = discord.ButtonStyle.blurple, emoji = "🎣")
+            @discord.ui.button(
+                label="낚싯줄 당기기", style=discord.ButtonStyle.blurple, emoji="🎣"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "당김"
                 self.stop()
 
-            @discord.ui.button(label = "그만하기", style = discord.ButtonStyle.red, emoji = "🚫")
+            @discord.ui.button(label="그만하기", style=discord.ButtonStyle.red, emoji="🚫")
             async def button2_callback(self, button, interaction):
                 self.button_value = "그만둠"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 낚시대를 건들면 어떻게 해!!! 💢\n```❗ 타인의 낚시를 건들 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 낚시대를 건들면 어떻게 해!!! 💢\n```❗ 타인의 낚시를 건들 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
@@ -67,23 +73,28 @@ class FishingGameCog(commands.Cog):
 
         class TrashButtonView(View):
             def __init__(self, ctx):
-                super().__init__(timeout = 10)
+                super().__init__(timeout=10)
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "쓰레기 치우기", style = discord.ButtonStyle.blurple, emoji = "🧹")
+            @discord.ui.button(
+                label="쓰레기 치우기", style=discord.ButtonStyle.blurple, emoji="🧹"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "치우기"
                 self.stop()
 
-            @discord.ui.button(label = "버리기", style = discord.ButtonStyle.red, emoji = "💦")
+            @discord.ui.button(label="버리기", style=discord.ButtonStyle.red, emoji="💦")
             async def button2_callback(self, button, interaction):
                 self.button_value = "버리기"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 낚시대를 건들면 어떻게 해!!! 💢\n```❗ 타인의 낚시를 건들 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 낚시대를 건들면 어떻게 해!!! 💢\n```❗ 타인의 낚시를 건들 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
@@ -145,7 +156,7 @@ class FishingGameCog(commands.Cog):
         )
 
         view = FishButtonView(ctx)
-        window = await ctx.respond(embed=embed, view = view)
+        window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result == False:
@@ -153,7 +164,7 @@ class FishingGameCog(commands.Cog):
                 return await fishing_failed(window, user, "찌를 올렸지만 아무 것도 없었다...")
             else:
                 return await fishing_stoped(ctx, window, user)
-            
+
         timing = False
         for i in range(1, 6):  # 총 5턴까지 진행
             color = Constants.TIER_COLOR[room.tier]
@@ -173,14 +184,14 @@ class FishingGameCog(commands.Cog):
 
             try:
                 view = FishButtonView(ctx)
-                await window.edit_original_message(embed=embed, view = view)
-                result = await view.wait() # true : 시간 초과
-                
+                await window.edit_original_message(embed=embed, view=view)
+                result = await view.wait()  # true : 시간 초과
+
             except discord.errors.NotFound:
                 return await ctx.respond(
                     "자, 잠깐! 낚시하고 이짜나! 멋대로 메시지 삭제하지 마!!! 💢\n```❗ 낚시 중간에 메시지를 지우지 마세요.```"
                 )
-            
+
             if not timing and result:
                 continue
 
@@ -220,7 +231,7 @@ class FishingGameCog(commands.Cog):
         # 이 아래는 쓰레기인 경우의 추가 선택지
         view = TrashButtonView(ctx)
         await window.edit_original_message(view=view)
-        result = await view.wait() # true : 시간 초과
+        result = await view.wait()  # true : 시간 초과
 
         if result or view.button_value == "버리기":
             embed = discord.Embed(
@@ -240,7 +251,7 @@ class FishingGameCog(commands.Cog):
                 embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 깨끗해졌어!")
 
         user.finish_fishing()  # 낚시 종료 판정
-        await window.edit_original_message(embed=embed, view = None)
+        await window.edit_original_message(embed=embed, view=None)
 
     @slash_command(name="ㄴㅅ", description="이프와 함께 물고기를 낚아요!")
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -249,28 +260,28 @@ class FishingGameCog(commands.Cog):
         await self.낚시(self, ctx)
 
 
-
 async def fishing_stoped(ctx, window, user: User):
     """낚시를 그만 뒀을때"""
     embed = discord.Embed(
-            title="낚시 중지",
-            description="낚싯대를 감아 정리했다.",
-            colour=discord.Colour.light_grey(),
-        )
+        title="낚시 중지",
+        description="낚싯대를 감아 정리했다.",
+        colour=discord.Colour.light_grey(),
+    )
     try:
-        await window.edit_original_message(embed=embed, view = None)
+        await window.edit_original_message(embed=embed, view=None)
     except discord.errors.NotFound:
         await ctx.respond(
             "아무리 낚시가 안 된다고 해도 그렇지 낚싯줄을 끊으면 어떻게 해!!! 💢\n```❗ 낚시 중간에 메시지를 지우지 마세요.```"
         )
     user.finish_fishing()
 
+
 async def fishing_failed(window, user: User, text: str):
     """낚시가 실패했을 때"""
     embed = discord.Embed(
         title="낚시 실패", description=text, colour=discord.Colour.light_grey()
     )
-    await window.edit_original_message(embed=embed, view = None)
+    await window.edit_original_message(embed=embed, view=None)
     user.finish_fishing()
 
 
@@ -356,7 +367,7 @@ async def fishing_result(window, user: User, room: Room, fish, effect):
         # 실패 시 레거시 코드로 직접 낚시카드를 만들어 전송
         image = await make_fishcard_image_file(fish, room, user)
         embed.set_footer(text="※ 낚시카드 서버와의 연결에 실패하여 레거시 코드로 임시 낚시카드를 생성하였습니다.")
-    await window.edit_original_message(embed=embed, file=image, view = None)
+    await window.edit_original_message(embed=embed, file=image, view=None)
     return throw, window
 
 

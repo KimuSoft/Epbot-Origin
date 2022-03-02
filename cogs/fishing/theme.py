@@ -10,15 +10,15 @@ from utils import logger
 # 부가 임포트
 from classes.user import User, NoTheme
 from utils.fish_card.fish_card import get_card
+from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
 
 
 class ThemeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name = "테마", description="낚시카드의 테마를 선택하세요!")
-    async def 테마(self, ctx,
-    arg: Option(str, "바꾸실 테마 번호를 입력해주세요!") = ""):
+    @slash_command(name="테마", description="낚시카드의 테마를 선택하세요!", guild_ids=SCRS)
+    async def 테마(self, ctx, arg: Option(str, "바꾸실 테마 번호를 입력해주세요!") = ""):
         user = User(ctx.author.id)
         if not arg:
             themes = user.themes_name
@@ -33,11 +33,14 @@ class ThemeCog(commands.Cog):
             return await ctx.respond("`이프야 테마 <바꿀 테마 번호>`")
         try:
             user.theme = user.themes[int(arg) - 1]
-            return await ctx.respond(f"`❗ 낚시카드 테마를 '{user.themes_name[0]}'(으)로 변경했습니다.`")
+            return await ctx.respond(
+                f"`❗ 낚시카드 테마를 '{user.themes_name[0]}'(으)로 변경했습니다.`"
+            )
         except NoTheme:
             await ctx.respond("`이프야 테마 <바꿀 테마 번호>`")
         except IndexError:
             await ctx.respond("`❗ 보유하고 있는 테마의 번호를 잘 확인해 보세요.`")
+
 
 """ 오류 발생 (비활성화)
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -70,6 +73,7 @@ class ThemeCog(commands.Cog):
                     file=discord.File(fp=image_binary, filename="fishcard.png")
                 )
 """
+
 
 def setup(bot):
     logger.info(f"{os.path.abspath(__file__)} 로드 완료")

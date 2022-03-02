@@ -26,8 +26,7 @@ class EpBot(commands.AutoShardedBot):
         # Cogs 로드(Cogs 폴더 안에 있는 것이라면 자동으로 인식합니다)
         self.add_cog(ManagementCog(self))  # 기본 제공 명령어 Cog
         for _dir in LOADING_DIR:
-            cog_list = [i.split(".")[0]
-                        for i in os.listdir(_dir) if ".py" in i]
+            cog_list = [i.split(".")[0] for i in os.listdir(_dir) if ".py" in i]
             cog_list.remove("__init__")
             for i in cog_list:
                 logger.info(f"{_dir.replace('/', '.')}.{i} 로드")
@@ -40,11 +39,14 @@ class EpBot(commands.AutoShardedBot):
         logger.info("///////////////////// ! 이프 기상 ! /////////////////////")
         logger.info(f"봇 계정 정보 : {self.user.name} ({self.user.id})")
         logger.info(f"서버 수 : {len(self.guilds)}곳")
-        logger.info(f"디스코드 버전 : {discord.__version__}")   
+        logger.info(f"디스코드 버전 : {discord.__version__}")
         logger.info(f"계정 길드 인텐트 활성화 : {self.intents.guilds}")
         logger.info(f"계정 멤버 인텐트 활성화 : {self.intents.members}")
         logger.info(f"디버그 모드 활성화 : {config.debug}")
         logger.info(f"일어날 때까지 {boot_time.total_seconds()}초 만큼 걸렸어!")
+        logger.info(f"슬래시 커맨드 등록 서버 지정 : {bool(config.SLASH_COMMAND_REGISTER_SERVER)}")
+        if config.SLASH_COMMAND_REGISTER_SERVER:
+            logger.info(f"sid {config.SLASH_COMMAND_REGISTER_SERVER}")
         logger.info("////////////////////////////////////////////////////////")
 
         await self.change_presence(status=discord.Status.online)
@@ -59,7 +61,7 @@ class ManagementCog(commands.Cog):
         self.bot = bot
 
     # cogs 폴더 안의 코드를 수정했다면 굳이 껐다 키지 않아도 다시시작 명령어로 적용이 가능해!
-    @slash_command(name = "다시시작", guild_ids = config.ADMIN_COMMAND_GUILD)
+    @slash_command(name="다시시작", guild_ids=config.ADMIN_COMMAND_GUILD)
     async def 다시시작(self, ctx):
         if ctx.author.id not in config.ADMINS:
             return await ctx.respond("흐음... 권한이 부족한 것 같은데?" "\n`❗ 권한이 부족합니다.`")
@@ -67,8 +69,7 @@ class ManagementCog(commands.Cog):
         w = await ctx.respond("`❗ Cogs를 다시 불러오고 이써...`")
         logger.info("이프 다시시작 중...")
         for _dir in LOADING_DIR:
-            cog_list = [i.split(".")[0]
-                        for i in os.listdir(_dir) if ".py" in i]
+            cog_list = [i.split(".")[0] for i in os.listdir(_dir) if ".py" in i]
             cog_list.remove("__init__")
             if "cycle" in cog_list:
                 cog_list.remove("cycle")  # 스케듈러가 제거가 안 되어서 제외
@@ -79,7 +80,7 @@ class ManagementCog(commands.Cog):
         logger.info("다시시작 완료!")
         await w.edit_original_message(content="`✔️ 전부 다시 불러와써!`")
 
-    @slash_command(name = "info", description="Show Information about EpBot!")
+    @slash_command(name="info", description="Show Information about EpBot!")
     async def info(self, ctx):
         embed = discord.Embed(
             title="Information about EpBot(이프)",
@@ -134,7 +135,7 @@ class ManagementCog(commands.Cog):
             await error_send(ctx, self.bot, error)
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, error): # 슬래시 커맨드 제외 오류 처리
+    async def on_command_error(self, ctx, error):  # 슬래시 커맨드 제외 오류 처리
         """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
         channel = ctx.channel
         User(ctx.author).fishing_now = False

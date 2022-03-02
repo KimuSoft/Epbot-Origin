@@ -17,16 +17,16 @@ from utils import logger
 from classes.user import User
 from classes.room import Room
 from utils.on_working import on_working
+from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
 
 
 class LandCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name = "매입", description="이 낚시터(채널)을 매입해요!")
+    @slash_command(name="매입", description="이 낚시터(채널)을 매입해요!", guild_ids=SCRS)
     @on_working(fishing=True, landwork=True, prohibition=True, twoball=False)
-    async def 매입(self, ctx,
-    arg1: Option(int, "매입 가격을 입력해요!")):
+    async def 매입(self, ctx, arg1: Option(int, "매입 가격을 입력해요!")):
         user = User(ctx.author)
         room = Room(ctx.channel)
         land_value = room.land_value
@@ -50,7 +50,9 @@ class LandCog(commands.Cog):
             await ctx.respond(f"자기 소지금보다 높게 부르면 안되지!\n`❗ 현재 소지금은 {user.money:,} 💰입니다.`")
             return None
         elif value < min_purchase:
-            await ctx.respond(f"{value} 💰로는 이 땅을 매입할 수 없어...!\n`❗ {room.name}의 최소 매입가는 {min_purchase:,} 💰입니다.`")
+            await ctx.respond(
+                f"{value} 💰로는 이 땅을 매입할 수 없어...!\n`❗ {room.name}의 최소 매입가는 {min_purchase:,} 💰입니다.`"
+            )
             return None
 
         room.working_now = True
@@ -66,34 +68,39 @@ class LandCog(commands.Cog):
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "매입하기", style = discord.ButtonStyle.blurple, emoji = "⭕")
+            @discord.ui.button(
+                label="매입하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "매입"
                 self.stop()
 
-            @discord.ui.button(label = "취소하기", style = discord.ButtonStyle.red, emoji = "❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 매입에 간섭할 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 매입에 간섭할 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
                     return True
-    
+
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view = view)
+        window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
             embed = discord.Embed(
                 title="매입을 취소하였다.", colour=discord.Colour.light_grey()
             )
-            await window.edit_original_message(embed=embed, view = None)
+            await window.edit_original_message(embed=embed, view=None)
             room.working_now = False
             return None
 
@@ -104,22 +111,27 @@ class LandCog(commands.Cog):
             ctx.channel.topic is not None and "#매입보고" in ctx.channel.topic
         ):
             await window.edit_original_message(
-                content = f"**서버 주인**의 **{room.name}** 낚시터를 <@{user.id}>가 매입했어!"
+                content=f"**서버 주인**의 **{room.name}** 낚시터를 <@{user.id}>가 매입했어!"
                 "\n`ℹ️ 돈이 걸려 있지 않은 땅도 매입 멘션을 받으려면 '#매입보고' 태그를 넣어 주세요!`",
-                embed = None, view = None
+                embed=None,
+                view=None,
             )
         else:
             await window.edit_original_message(
-                content = f"<@{origin_owner_id}>의 **{room.name}** 낚시터를 <@{user.id}>가 매입했어!",
-                embed = None, view = None
+                content=f"<@{origin_owner_id}>의 **{room.name}** 낚시터를 <@{user.id}>가 매입했어!",
+                embed=None,
+                view=None,
             )
 
-    @slash_command(name = "매각", description="자신의 낚시터를 매각하세요!")
+    @slash_command(name="매각", description="자신의 낚시터를 매각하세요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, twoball=False
     )  # 번호로 다른 채널을 건드릴 수도 있으니 landwork는 제외
-    async def 매각(self, ctx,
-    land_num : Option(int, "매각하고 싶으신 땅 번호를 입력하세요! (미입력시 이 낚시터로 자동 선택)") = None):
+    async def 매각(
+        self,
+        ctx,
+        land_num: Option(int, "매각하고 싶으신 땅 번호를 입력하세요! (미입력시 이 낚시터로 자동 선택)") = None,
+    ):
         user = User(ctx.author)
         if land_num != None:
             lands = user.myland_list()
@@ -128,7 +140,9 @@ class LandCog(commands.Cog):
             room = Room(ctx.channel)
 
         if room.working_now:
-            await ctx.respond("흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`")
+            await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
             return None
         elif room.owner_id != ctx.author.id:
             await ctx.respond("다른 사람 땅을 내가 처리하면 안 돼지!")
@@ -143,24 +157,29 @@ class LandCog(commands.Cog):
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "매각하기", style = discord.ButtonStyle.blurple, emoji = "⭕")
+            @discord.ui.button(
+                label="매각하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "매각"
                 self.stop()
 
-            @discord.ui.button(label = "취소하기", style = discord.ButtonStyle.red, emoji = "❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 매각에 간섭할 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 매각에 간섭할 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
                     return True
-    
+
         view = OXButtonView(ctx)
 
         room.working_now = True
@@ -172,14 +191,14 @@ class LandCog(commands.Cog):
                 description=f"돌려 받는 금액 : {room.land_value:,} 💰",
                 colour=0x4BC59F,
             )
-            window = await ctx.respond(embed=embed, view = view)
+            window = await ctx.respond(embed=embed, view=view)
             result = await view.wait()
 
             if result is True or view.button_value == "취소함":
                 embed = discord.Embed(
                     title="돈 회수를 취소했다.", colour=discord.Colour.light_grey()
                 )
-                await window.edit_original_message(embed=embed, view = None)
+                await window.edit_original_message(embed=embed, view=None)
                 room.working_now = False
                 return None
 
@@ -190,7 +209,7 @@ class LandCog(commands.Cog):
             user.add_money(room.land_value)  # 돈 돌려 주고
             room.land_value = 0
 
-            await window.edit_original_message(embed=embed, view = None)
+            await window.edit_original_message(embed=embed, view=None)
             room.working_now = False
             return None
 
@@ -200,14 +219,14 @@ class LandCog(commands.Cog):
                 description=f"돌려 받는 금액 : {room.land_value:,} 💰",
                 colour=0x4BC59F,
             )
-            window = await ctx.respond(embed=embed, view = view)
+            window = await ctx.respond(embed=embed, view=view)
             result = await view.wait()
 
             if result is True or view.button_value == "취소함":
                 embed = discord.Embed(
                     title="땅 매각을 취소했다.", colour=discord.Colour.light_grey()
                 )
-                await window.edit_original_message(embed=embed, view = None)
+                await window.edit_original_message(embed=embed, view=None)
                 room.working_now = False
                 return None
 
@@ -222,12 +241,15 @@ class LandCog(commands.Cog):
             room.land_value = 0
             room.working_now = False
 
-            await window.edit_original_message(embed=embed, view = None)
+            await window.edit_original_message(embed=embed, view=None)
 
-    @slash_command(name = "내땅", description="무슨 땅을 가지고 있는지 확인해요!")
+    @slash_command(name="내땅", description="무슨 땅을 가지고 있는지 확인해요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True)
-    async def 내땅(self, ctx,
-    args: Option(str, "땅의 이름으로 검색해요! (미 입력시 소유하는 모든 땅의 목록을 보여드려요!)") = None):
+    async def 내땅(
+        self,
+        ctx,
+        args: Option(str, "땅의 이름으로 검색해요! (미 입력시 소유하는 모든 땅의 목록을 보여드려요!)") = None,
+    ):
         user = User(ctx.author)
 
         window = await ctx.respond(content="`내 땅 목록`")
@@ -250,36 +272,44 @@ class LandCog(commands.Cog):
                     colour=0x4BC59F,
                 )
                 await window.edit_original_message(embed=embed)
+
                 class NextPageView(View):
                     def __init__(self, ctx):
                         super().__init__(timeout=10)
                         self.ctx = ctx
                         self.button_value = None
 
-                    @discord.ui.button(label = "다음 페이지 보기", style = discord.ButtonStyle.blurple, emoji = "➡️")
+                    @discord.ui.button(
+                        label="다음 페이지 보기", style=discord.ButtonStyle.blurple, emoji="➡️"
+                    )
                     async def button1_callback(self, button, interaction):
                         self.button_value = "넘기기"
                         self.stop()
 
-                    @discord.ui.button(label = "그만보기", style = discord.ButtonStyle.red, emoji = "❌")
+                    @discord.ui.button(
+                        label="그만보기", style=discord.ButtonStyle.red, emoji="❌"
+                    )
                     async def button2_callback(self, button, interaction):
                         self.button_value = "취소함"
                         self.stop()
-                
+
                     async def interaction_check(self, interaction) -> bool:
                         if interaction.user != self.ctx.author:
-                            await interaction.response.send_message("다른 사람의 책을 건들면 어떻게 해!!! 💢\n```❗ 타인의 행동에 간섭할 수 없습니다.```", ephemeral=True)
+                            await interaction.response.send_message(
+                                "다른 사람의 책을 건들면 어떻게 해!!! 💢\n```❗ 타인의 행동에 간섭할 수 없습니다.```",
+                                ephemeral=True,
+                            )
                             self.button_value = None
                             return False
                         else:
                             return True
-            
+
                 view = NextPageView(ctx)
 
-                window = await ctx.respond(embed=embed, view = view)
+                window = await ctx.respond(embed=embed, view=view)
                 result = await view.wait()
                 if result is True or view.button_value == "취소함":
-                    await window.edit_original_message(view = None)
+                    await window.edit_original_message(view=None)
                     return None
                 else:
                     list_str = ""
@@ -291,14 +321,13 @@ class LandCog(commands.Cog):
             description=f"```cs\n{list_str}```",
             colour=0x4BC59F,
         )
-        await window.edit_original_message(embed=embed, view = None)
+        await window.edit_original_message(embed=embed, view=None)
 
-    @slash_command(name = "땅값변경", description="이 낚시터(채널)의 땅값을 바꿔요!")
+    @slash_command(name="땅값변경", description="이 낚시터(채널)의 땅값을 바꿔요!", guild_ids=SCRS)
     @on_working(
         fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
     )
-    async def 땅값변경(self, ctx,
-    value: Option(int, "변경하실 땅값을 입력하세요!")):
+    async def 땅값변경(self, ctx, value: Option(int, "변경하실 땅값을 입력하세요!")):
         user = User(ctx.author)
         room = Room(ctx.channel)
         land_value = room.land_value
@@ -324,51 +353,57 @@ class LandCog(commands.Cog):
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "땅값 변경하기", style = discord.ButtonStyle.blurple, emoji = "⭕")
+            @discord.ui.button(
+                label="땅값 변경하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "땅값변경"
                 self.stop()
 
-            @discord.ui.button(label = "취소하기", style = discord.ButtonStyle.red, emoji = "❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
                     return True
-    
+
         view = OXButtonView(ctx)
 
         embed = discord.Embed(
             title=f"{room.name} 땅을 {value:,}로 변경하시겠습니까?", colour=0x4BC59F
         )
-        window = await ctx.respond(embed=embed, view = view)
+        window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
             embed = discord.Embed(
                 title="변경을 취소하였다.", colour=discord.Colour.light_grey()
             )
-            await window.edit_original_message(embed=embed, view = None)
+            await window.edit_original_message(embed=embed, view=None)
             room.working_now = False
             return None
 
         user.give_money(land_value - value)
         room.land_value = value
         room.working_now = False
-        await window.edit_original_message(content = f"{room.name} 땅의 가격을 변경했어!",embed = None, view = None)
+        await window.edit_original_message(
+            content=f"{room.name} 땅의 가격을 변경했어!", embed=None, view=None
+        )
 
-    @slash_command(name = "수수료", description="이 낚시터(채널)의 수수료를 설정하세요!")
+    @slash_command(name="수수료", description="이 낚시터(채널)의 수수료를 설정하세요!", guild_ids=SCRS)
     @on_working(
         fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
     )
-    async def 수수료(self, ctx,
-    value: Option(int, "변경하실 수수료를 입력해주세요!")):
+    async def 수수료(self, ctx, value: Option(int, "변경하실 수수료를 입력해주세요!")):
         room = Room(ctx.channel)
 
         fee_range = room.fee_range
@@ -387,46 +422,51 @@ class LandCog(commands.Cog):
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "수수료 변경하기", style = discord.ButtonStyle.blurple, emoji = "⭕")
+            @discord.ui.button(
+                label="수수료 변경하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "수수료변경"
                 self.stop()
 
-            @discord.ui.button(label = "취소하기", style = discord.ButtonStyle.red, emoji = "❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
                     return True
-    
+
         view = OXButtonView(ctx)
 
         embed = discord.Embed(
             title=f"{room.name} 땅의 수수료를 {value}%로 변경하시겠습니까?", colour=0x4BC59F
         )
-        window = await ctx.respond(embed=embed, view = view)
+        window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
             embed = discord.Embed(
                 title="수수료 변경을 취소하였다.", colour=discord.Colour.light_grey()
             )
-            await window.edit_original_message(embed=embed, view = None)
+            await window.edit_original_message(embed=embed, view=None)
             return None
 
         room.fee = value
         embed = discord.Embed(
             title=f"{room.name} 땅의 수수료를 {value}%로 변경하였다!", colour=0x4BC59F
         )
-        await window.edit_original_message(embed=embed, view = None)
+        await window.edit_original_message(embed=embed, view=None)
 
-    @slash_command(name = "청소업체", description="돈을 지불하고 청결도를 0으로 만들어요!")
+    @slash_command(name="청소업체", description="돈을 지불하고 청결도를 0으로 만들어요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, twoball=False, owner_only=True, landwork=True
     )
@@ -446,46 +486,52 @@ class LandCog(commands.Cog):
             description=f"예상 필요 금액 {-1 * price:,} 💰",
             colour=0x4BC59F,
         )
+
         class OXButtonView(View):
             def __init__(self, ctx):
                 super().__init__(timeout=10)
                 self.ctx = ctx
                 self.button_value = None
 
-            @discord.ui.button(label = "청소하기", style = discord.ButtonStyle.blurple, emoji = "⭕")
+            @discord.ui.button(
+                label="청소하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+            )
             async def button1_callback(self, button, interaction):
                 self.button_value = "청소"
                 self.stop()
 
-            @discord.ui.button(label = "취소하기", style = discord.ButtonStyle.red, emoji = "❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
-        
+
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
-                    await interaction.response.send_message("다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```", ephemeral=True)
+                    await interaction.response.send_message(
+                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                        ephemeral=True,
+                    )
                     self.button_value = None
                     return False
                 else:
                     return True
-    
+
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view = view)
+        window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
-        
+
         if result is True or view.button_value == "취소함":
             embed = discord.Embed(
                 title="청소 업체 부르기를 취소했다.", colour=discord.Colour.light_grey()
             )
             room.working_now = False
-            return await window.edit_original_message(embed=embed, view = None)
+            return await window.edit_original_message(embed=embed, view=None)
 
         if user.money < -1 * price:
             embed = discord.Embed(title="돈이 부족해...", colour=discord.Colour.light_grey())
             room.working_now = False
-            return await window.edit_original_message(embed=embed, view = None)
+            return await window.edit_original_message(embed=embed, view=None)
 
         embed = discord.Embed(
             title=f"{-1 * price:,} 💰로 청소 업체를 불러서 {room.name} 낚시터가 깔끔해졌어!",
@@ -494,7 +540,7 @@ class LandCog(commands.Cog):
         user.add_money(price)  # 돈 돌려 주고
         room.cleans = 0
 
-        await window.edit_original_message(embed=embed, view = None)
+        await window.edit_original_message(embed=embed, view=None)
         room.working_now = False
 
 
