@@ -19,7 +19,6 @@ LOADING_DIR = ["cogs", "cogs/fishing"]
 class EpBot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(
-            intents = discord.Intents.all(), # Test
             command_prefix=config.PREFIXES,  # 접두사는 config.py에서 설정
             help_command=None,
         )
@@ -107,10 +106,13 @@ class ManagementCog(commands.Cog):
         channel = ctx.channel
         User(ctx.author).fishing_now = False
         if not isinstance(error, commands.CommandError):
-            if isinstance(error.original, discord.errors.NotFound):
-                return await ctx.respond(
-                    "저기 혹시... 갑자기 메시지를 지우거나 한 건 아니지...? 그러지 말아 줘..."
-                )
+            try:
+                if isinstance(error.original, discord.errors.NotFound):
+                    return await ctx.respond(
+                        "저기 혹시... 갑자기 메시지를 지우거나 한 건 아니지...? 그러지 말아 줘..."
+                    )
+            except:
+                pass
 
         # 명령어 쿨타임이 다 차지 않은 경우
         elif isinstance(error, commands.CommandOnCooldown):
@@ -140,7 +142,7 @@ class ManagementCog(commands.Cog):
         if "DM" in str(type(channel)):
             if isinstance(error, commands.errors.CheckFailure):
                 return
-            return await ctx.respond(
+            return await ctx.send(
                 """으에, 이프는 DM은 안 받고 이써!
                 `❗ 이프와는 개인 메시지로 놀 수 없습니다.`"""
             )

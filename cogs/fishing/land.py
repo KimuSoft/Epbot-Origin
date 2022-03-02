@@ -26,7 +26,7 @@ class LandCog(commands.Cog):
     @slash_command(name = "매입", description="이 낚시터(채널)을 매입해요!")
     @on_working(fishing=True, landwork=True, prohibition=True, twoball=False)
     async def 매입(self, ctx,
-    arg1: Option(int, "매입 가격을 입력해요!")):
+    arg1: Option(int, "매입 가격을 입력해요!") = None):
         user = User(ctx.author)
         room = Room(ctx.channel)
         land_value = room.land_value

@@ -143,12 +143,17 @@ class FishingGameCog(commands.Cog):
             description=description,
             colour=Constants.TIER_COLOR[room.tier],
         )
-        window = await ctx.respond(embed=embed)
 
         view = FishButtonView(ctx)
-        await window.edit_original_message(view = view)
-        await asyncio.sleep(3)
+        window = await ctx.respond(embed=embed, view = view)
+        result = await view.wait()
 
+        if result == False:
+            if view.button_value == "당김":
+                return await fishing_failed(window, user, "찌를 올렸지만 아무 것도 없었다...")
+            else:
+                return await fishing_stoped(ctx, window, user)
+            
         timing = False
         for i in range(1, 6):  # 총 5턴까지 진행
             color = Constants.TIER_COLOR[room.tier]
@@ -168,8 +173,7 @@ class FishingGameCog(commands.Cog):
 
             try:
                 view = FishButtonView(ctx)
-                await window.edit_original_message(embed=embed)
-                await window.edit_original_message(view=view)
+                await window.edit_original_message(embed=embed, view = view)
                 result = await view.wait() # true : 시간 초과
                 
             except discord.errors.NotFound:
@@ -181,18 +185,7 @@ class FishingGameCog(commands.Cog):
                 continue
 
             elif result is False and view.button_value == "그만둠":  # 그만하기로 한 경우
-                embed = discord.Embed(
-                    title="낚시 중지",
-                    description="낚싯대를 감아 정리했다.",
-                    colour=discord.Colour.light_grey(),
-                )
-                try:
-                    await window.edit_original_message(embed=embed, view = None)
-                except discord.errors.NotFound:
-                    await ctx.respond(
-                        "아무리 낚시가 안 된다고 해도 그렇지 낚싯줄을 끊으면 어떻게 해!!! 💢\n```❗ 낚시 중간에 메시지를 지우지 마세요.```"
-                    )
-                return user.finish_fishing()
+                return await fishing_stoped(ctx, window, user)
 
             elif timing and result:  # 물고기는 나왔지만 누르지 않은 경우
                 return await fishing_failed(window, user, "물고기가 떠나가 버렸다...")
@@ -255,6 +248,22 @@ class FishingGameCog(commands.Cog):
     async def _short(self, ctx):
         await self.낚시(self, ctx)
 
+
+
+async def fishing_stoped(ctx, window, user: User):
+    """낚시를 그만 뒀을때"""
+    embed = discord.Embed(
+            title="낚시 중지",
+            description="낚싯대를 감아 정리했다.",
+            colour=discord.Colour.light_grey(),
+        )
+    try:
+        await window.edit_original_message(embed=embed, view = None)
+    except discord.errors.NotFound:
+        await ctx.respond(
+            "아무리 낚시가 안 된다고 해도 그렇지 낚싯줄을 끊으면 어떻게 해!!! 💢\n```❗ 낚시 중간에 메시지를 지우지 마세요.```"
+        )
+    user.finish_fishing()
 
 async def fishing_failed(window, user: User, text: str):
     """낚시가 실패했을 때"""
