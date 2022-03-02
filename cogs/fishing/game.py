@@ -184,6 +184,7 @@ class FishingGameCog(commands.Cog):
             if not int(fish.length / 10) == 0:
                 embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 더러워졌어!")
             room.add_cleans(fish.length / -10)
+            room.add_exp(fish.exp() * effect["_exp"])  # 쓰래기 버릴 때 명성 깎기
 
         else:
             embed = discord.Embed(
@@ -250,6 +251,7 @@ async def fishing_result(ctx, user: User, room: Room, fish, effect):
         elif fish.cost() + user.money < 0:
             information += "\n`💦 미안하지만 널 처리하기에는 지갑이... (처리할 돈이 없어 물에 도로 던졌다)`"
             room.add_cleans(fish.length / -10)  # 버린 경우 크기/10 만큼의 청결도가 깎임
+            room.add_exp(fish.exp() * effect["_exp"]) # 쓰래기 버릴 때 명성 깎기
 
         # 팔 수 있는 특수 쓰레기인 경우 오히려 돈을 얻음
         elif fish.cost() > 0:
