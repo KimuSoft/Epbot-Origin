@@ -54,7 +54,7 @@ def tag_to_korean(tags: list):
 def get_tags(channel):
     # 태그의 형태로 존재하는 것을 리스트에 담음
     if isinstance(channel, Thread):
-        return []
+        channel = channel.parent
     topic = channel.topic
     if topic is None or "#" not in topic:
         return []
