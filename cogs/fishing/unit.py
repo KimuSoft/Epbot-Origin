@@ -384,12 +384,11 @@ class UnitCog(commands.Cog):
 
     @slash_command(name="시설", description="특정 티어의 시설중 낚시터에 알려드려요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True, landwork=True, twoball=False)
-    async def 시설(self, ctx, arg1: int = None):
-        if arg1 == None:
-            arg1 = 1
+    async def 시설(self, ctx,
+    tier: Option(int, "시설 목록을 알고 싶은 특정 티어를 입력해주세요!") = 1):
         room = Room(ctx.channel)
 
-        if room.tier < int(arg1):
+        if room.tier < int(tier):
             return await ctx.respond(
                 f"""어... 우리 낚시터는 {room.tier}티어인데...?
                 `❗ 이 낚시터 티어보다 높은 값을 입력했습니다.`"""
@@ -397,12 +396,12 @@ class UnitCog(commands.Cog):
 
         fs = ""
         for i in room.can_build_facilities:
-            if i.tier != arg1:
+            if i.tier != tier:
                 continue
             fs += f"\n[{i.tier}티어 / ✨ {i.cost:,}] {i.name}"
         embed = discord.Embed(colour=0x4BC59F)
         embed.add_field(
-            name=f"🏗️ **건설 가능 {arg1}티어 시설 보고서**",
+            name=f"🏗️ **건설 가능 {tier}티어 시설 보고서**",
             value=f"```cs\n{fs if fs != '' else '[없음]'}```",
             inline=False,
         )
@@ -447,8 +446,8 @@ class UnitCog(commands.Cog):
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def 철거(self, ctx, args: Option(str, "철거하실 시설의 이름을 입력해주세요!")):
-        arg1 = " ".join(args).replace("_", "")
+    async def 철거(self, ctx, name: Option(str, "철거하실 시설의 이름을 입력해주세요!")):
+        arg1 = " ".join(name).replace("_", "")
 
         try:
             facility = Facility(arg1)
@@ -533,8 +532,8 @@ class UnitCog(commands.Cog):
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def 건설(self, ctx, args: Option(str, "건설하실 시설의 이름을 입력해주세요!")):
-        arg1 = " ".join(args).replace("_", "")
+    async def 건설(self, ctx, name: Option(str, "건설하실 시설의 이름을 입력해주세요!")):
+        arg1 = " ".join(name).replace("_", "")
 
         try:
             facility = Facility(arg1)

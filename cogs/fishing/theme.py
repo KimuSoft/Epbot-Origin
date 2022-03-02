@@ -18,9 +18,9 @@ class ThemeCog(commands.Cog):
         self.bot = bot
 
     @slash_command(name="테마", description="낚시카드의 테마를 선택하세요!", guild_ids=SCRS)
-    async def 테마(self, ctx, arg: Option(str, "바꾸실 테마 번호를 입력해주세요!") = ""):
+    async def 테마(self, ctx, theme_num: Option(str, "바꾸실 테마 번호를 입력해주세요!") = ""):
         user = User(ctx.author.id)
-        if not arg:
+        if not theme_num:
             themes = user.themes_name
             themes[0] = themes[0] + " #사용 중"
             ntheme = []
@@ -29,10 +29,10 @@ class ThemeCog(commands.Cog):
 
             ths = "\n".join(ntheme)
             return await ctx.respond(f"> **현재 보유 중인 테마** \n```cs\n{ths}```")
-        if not str(arg).isdigit():
+        if not str(theme_num).isdigit():
             return await ctx.respond("`이프야 테마 <바꿀 테마 번호>`")
         try:
-            user.theme = user.themes[int(arg) - 1]
+            user.theme = user.themes[int(theme_num) - 1]
             return await ctx.respond(
                 f"`❗ 낚시카드 테마를 '{user.themes_name[0]}'(으)로 변경했습니다.`"
             )

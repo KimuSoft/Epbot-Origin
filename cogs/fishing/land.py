@@ -26,19 +26,19 @@ class LandCog(commands.Cog):
 
     @slash_command(name="매입", description="이 낚시터(채널)을 매입해요!", guild_ids=SCRS)
     @on_working(fishing=True, landwork=True, prohibition=True, twoball=False)
-    async def 매입(self, ctx, arg1: Option(int, "매입 가격을 입력해요!") = None):
+    async def 매입(self, ctx, price: Option(int, "매입 가격을 입력해요!") = None):
         user = User(ctx.author)
         room = Room(ctx.channel)
         land_value = room.land_value
         min_purchase = room.min_purchase
 
-        if not arg1.isdigit():
+        if price == None:
             if land_value == 0:
                 value = 30000
             else:
                 value = min_purchase
         else:
-            value = int(arg1)
+            value = int(price)
 
         if room.owner_id == ctx.author.id:
             await ctx.respond("이미 여기 주인이자나!\n`❓ 낚시터에 걸린 돈을 조정하려면 '/땅값변경' 명령어를 써 보세요.`")
@@ -248,7 +248,7 @@ class LandCog(commands.Cog):
     async def 내땅(
         self,
         ctx,
-        args: Option(str, "땅의 이름으로 검색해요! (미 입력시 소유하는 모든 땅의 목록을 보여드려요!)") = None,
+        land_name: Option(str, "땅의 이름으로 검색해요! (미 입력시 소유하는 모든 땅의 목록을 보여드려요!)") = None,
     ):
         user = User(ctx.author)
 
@@ -257,11 +257,11 @@ class LandCog(commands.Cog):
         list_str = ""
         ridx = 0
 
-        if args == None:
-            args = ""
+        if land_name == None:
+            land_name = ""
         for idx, val in enumerate(mylands):
-            if (len(args) == 0 and val[2] != 0) or (
-                len(args) != 0 and " ".join(args) in val[1]
+            if (len(land_name) == 0 and val[2] != 0) or (
+                len(land_name) != 0 and " ".join(land_name) in val[1]
             ):
                 list_str += "\n[{}] {} ({}💰)".format(idx + 1, val[1], val[2])
                 ridx += 1
