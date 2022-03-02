@@ -9,17 +9,14 @@ query_logging = False
 '''Administrator Setting'''
 ADMINS = [
     281689852167061506,  # 키뮤
-    577095893451407361,  # 코로
-    287177141064302592,  # 로
-    628595345798201355  # 파링
 ]
 
 
 ''' PostgreSQL Database Configuration '''
-HOST = 'localhost'  # HOST를 localhost로 세팅할 경우 HOST를 사용하지 않음(DB 서버와 이프 서버를 같이 돌릴 경우 권장)
-DBNAME = 'epbot'
+HOST = '127.0.0.1'  # HOST를 localhost로 세팅할 경우 HOST를 사용하지 않음(DB 서버와 이프 서버를 같이 돌릴 경우 권장)
+DBNAME = 'postgres'
 USER = 'postgres'
-PASSWORD = '12345'
+PASSWORD = 'test'
 PORT = '5432'
 
 
@@ -41,8 +38,8 @@ DEBUG_ACTIVITIES = ['버그 수정 중. . .']
 
 
 ''' Loggin & Announcement Channel Setting '''
-ERROR_LOGGING_CHANNEL = 805413605607997461
-ANNOUNCE_CHANNEL = 805235878238224397
+ERROR_LOGGING_CHANNEL = 1234567890
+ANNOUNCE_CHANNEL = 1234567890
 
 
 def token():

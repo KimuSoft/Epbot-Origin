@@ -19,4 +19,5 @@ psycopg2
 pillow
 bs4
 cloudscraper
-py-cord
+discord==1.7.3
+py-cord==1.7.3
