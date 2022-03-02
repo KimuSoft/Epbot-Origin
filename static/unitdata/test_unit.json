@@ -3,7 +3,7 @@
 		"name": "실험실",
 		"description": "여기에 설명을 입력해 주세요",
 		"cost": 99999999999,
-		"branch": 1,
+		"branch": 12,
 		"tier": 5,
 		"effects": {
 			"fee": 1,
@@ -26,7 +26,7 @@
 		"name": "평행 세계 접속기",
 		"description": "로꾸거 로꾸거",
 		"cost": 100000,
-		"branch": 999,
+		"branch": 12,
 		"tier": 5,
 		"effects": {
 			"_price": -1
