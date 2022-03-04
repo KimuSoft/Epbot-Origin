@@ -9,6 +9,7 @@
 from urllib.parse import urlencode
 from datetime import datetime
 import random
+import jwt
 
 from constants import Constants
 from db.seta_sqlite import S_SQLite
@@ -123,8 +124,8 @@ class Fish:
         theme = self.owner.theme
         time = datetime.today()
         data = {
-            "rarity": self.rarity,
-            "id": self.id,
+            "rarity": str(self.rarity),
+            "id": str(self.id),
             "name": self.name,
             "eng_name": self.eng_name,
             "cost": f"{self.cost():,}",  # 물고기 원가
@@ -133,8 +134,8 @@ class Fish:
             "average_length": f"{self.average_length}",  # 물고기 평균가
             # 수수료 + 유지비 (%)
             "fees_p": f"{-1 * (self.place.fee + self.place.maintenance):+}",
-            "fee_p": f"{self.place.fee:+}",  # 수수료 (%)
-            "maintenance_p": f"{self.place.maintenance:+}",  # 유지비 (%)
+            "fee_p": f"{-1 * self.place.fee:+}",  # 수수료 (%)
+            "maintenance_p": f"{-1 * self.place.maintenance:+}",  # 유지비 (%)
             "bonus_p": f"{self.place.bonus:+}",  # 보너스 (%)
             # 수수료 + 유지비
             "fees": f"{self.fee(self.owner, self.place) + self.maintenance(self.place):+,}",
@@ -146,8 +147,10 @@ class Fish:
             "self.ownername": de_emojify(self.owner.name),  # 낚은 유저의 이름
             "profit": f"{self.cost() + self.fee(self.owner, self.place) + self.maintenance(self.place) + self.bonus(self.place):,}",
         }
-        params = urlencode(data)
-        return f"{config.CARD_SERVER}/{theme}?{params}"
+        # params = urlencode(data)
+        print(data)
+        token = jwt.encode(data, config.CARD_TOKEN)
+        return f"{config.CARD_SERVER}/fish/{theme}/{token}"
 
 
 def search_fish(keyword):

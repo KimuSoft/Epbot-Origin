@@ -373,6 +373,8 @@ async def fishing_result(window, user: User, room: Room, fish, effect):
 
 async def get_fishcard_image_file_from_url(fish: Fish):
     url = fish.card_url
+    if url.startswith("localhost"):
+        url = "http://" + url
     logger.debug(f"낚시카드 URL: {url}")
     """낚시카드 서버로부터 받아 온 낚시카드 DiscordFile을 반환"""
     async with aiohttp.ClientSession() as session:
