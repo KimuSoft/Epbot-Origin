@@ -92,8 +92,9 @@ class ThemeSelect(discord.ui.Select):
         options = []
         for i in Constants.THEMES:
             icon = "✅" if i["id"] in epUser.themes else "❌"
+            label = i["name"]
             if i["id"] == epUser.theme:
-                label = i["name"] + " (사용 중)"
+                label += " (사용 중)"
 
             label = i["name"] + " (미보유)" if i["id"] not in epUser.themes else label
             options.append(
