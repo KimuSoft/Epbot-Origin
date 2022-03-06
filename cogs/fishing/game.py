@@ -240,7 +240,8 @@ class FishingGameCog(commands.Cog):
             if not int(fish.length / 10) == 0:
                 embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 더러워졌어!")
             room.add_cleans(fish.length / -10)
-            room.add_exp(fish.exp() * effect["_exp"])  # 쓰래기 버릴 때 명성 깎기
+            fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
+            room.add_exp(fame)  # 쓰레기 버릴 때 명성 깎기
 
         else:
             embed = discord.Embed(
@@ -292,7 +293,8 @@ async def fishing_result(window, user: User, room: Room, fish, effect):
     net_profit = (
         fish.cost() + fish.fee(user, room) + fish.maintenance(room) + fish.bonus(room)
     )
-    information = f"{fish.rarity_str()} | 📏 {fish.length:,}cm | ✨ {fish.exp()} | 💵 {fish.cost():,} `→ {user.money:,} 💰`"
+    fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
+    information = f"{fish.rarity_str()} | 📏 {fish.length:,}cm | ✨ {fame} | 💵 {fish.cost():,} `→ {user.money:,} 💰`"
 
     if user.update_biggest(fish):
         information += "\n`📏 오늘 낚은 것 중 가장 커! (일일 최고 크기)`"
@@ -322,7 +324,7 @@ async def fishing_result(window, user: User, room: Room, fish, effect):
         elif fish.cost() + user.money < 0:
             information += "\n`💦 미안하지만 널 처리하기에는 지갑이... (처리할 돈이 없어 물에 도로 던졌다)`"
             room.add_cleans(fish.length / -10)  # 버린 경우 크기/10 만큼의 청결도가 깎임
-            room.add_exp(fish.exp() * effect["_exp"]) # 쓰래기 버릴 때 명성 깎기
+            room.add_exp(fame)  # 쓰레기 버릴 때 명성 깎기
 
         # 팔 수 있는 특수 쓰레기인 경우 오히려 돈을 얻음
         elif fish.cost() > 0:
@@ -341,8 +343,8 @@ async def fishing_result(window, user: User, room: Room, fish, effect):
     # 물고기 금액이 양수일 경우
     if fish.cost() > 0:
         # 개인 명성 & 낚시터 명성 부여
-        user.add_exp(fish.exp() * effect["_exp"])
-        room.add_exp(fish.exp() * effect["_exp"])
+        user.add_exp(fame)
+        room.add_exp(fame)
 
         user.give_money(net_profit)
 
