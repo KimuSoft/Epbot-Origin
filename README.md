@@ -52,6 +52,15 @@
 
 ### 5. 낚시카드 서버 세팅하기
 ```낚시카드 서버가 없을 경우 이프 내부의 레거시 코드를 통해 낚시카드를 생성합니다.```
+* 낚시카드 서버
+    * [pikokr/ep-image-generator](https://github.com/pikokr/ep-image-generator) : 낚시카드 서버(Read-Only)
+    * [Kimu-Nowchira/ep-image-generator](https://github.com/Kimu-Nowchira/ep-image-generator) : 키뮤가 포크한 낚시카드 서버 (권장, 최신 낚시카드 테마 포함)
+
+* 낚시카드 제작기
+    * 낚시카드 제작기로 등급 별로 낚시카드를 만든 후 json으로 다운받은 후 낚시카드 서버에 `skins/테마명/등급번호.json`로 저장하시면 적용됩니다.
+    * 그리고 이프의 `Constants.py`의 `THEMES` 딕셔너리에 테마 데이터를 추가하면 `/테마` 명령어를 통해 해당 테마로 설정할 수 있게 됩니다.
+    * `Constants.py`에 테마를 등록하지 않아도 `/미리보기 <테마명> <등급번호: 0~5>` 명령어를 통해 해당 테마를 테스트해볼 수 있습니다.
+    * [pikokr/fishcard-editor](https://github.com/pikokr/fishcard-editor) : 낚시카드 제작기(Read-Only)
 
 ### 6. 이프 실행하기
 1. 구동할 때는 main.py를 실행하시면 됩니다. 프로젝트 폴더에서 `python main.py` (Windows일 경우 `run.bat` 파일을 실행하셔도 됩니다.)
