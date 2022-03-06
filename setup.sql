@@ -22,7 +22,7 @@ create table users
     theme json not null default '[]'::json,
     dex json not null default '{}'::json,
     biggest_size integer,
-    fish json not null default '{}'::json,
+    fish json not null default '[]'::json,
     id varchar(20) not null primary key,
     biggest_name text
 );

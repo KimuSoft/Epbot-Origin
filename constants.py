@@ -10,6 +10,12 @@ class Constants:
     # 이프 버전
     VERSION = "1.9.3"
 
+    # 테마 종류
+    THEMES = [
+        {"id": "default", "name": "기본 테마", "description": "이프의 상징 기본 테마"},
+        {"id": "github", "name": "터미널 테마", "description": "이프 오픈소스에 기여해 주신 분들을 위한 테마"},
+    ]
+
     # 인게임 티어 별 컬러
     TIER_COLOR = {
         0: 0xFFBB00,

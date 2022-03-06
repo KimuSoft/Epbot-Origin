@@ -1,9 +1,6 @@
-"""
-    <sample.py>
-    여러분들의 기능을 여기에 마음껏 추가해 봐요!
-"""
-
 # 필수 임포트
+from discord.commands import slash_command
+from discord.commands import Option
 from discord.ext import commands
 import discord
 import os
@@ -95,7 +92,7 @@ class CensorshipCog(commands.Cog):
                 return None
             await after.delete()
 
-    @commands.command()
+    @slash_command(name = "태그", description="이 채널의 검열 태그를 확인하세요!")
     async def 태그(self, ctx):
         tags = eptag.tag_to_korean(eptag.get_tags(ctx.channel))
 
@@ -103,11 +100,11 @@ class CensorshipCog(commands.Cog):
         embed.add_field(
             name="총 {}개".format(len(tags)), value="#" + " #".join(tags), inline=True
         )
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
 
-    @commands.command()
+    @slash_command(name = "화이트리스트", description="지원 종료")
     async def 화이트리스트(self, ctx):
-        await ctx.send(f"이 명령어는 이제 쓸 수 업써!\n`❗ 이 명령어는 디스코드의 봇 정책 관련으로 지원이 중지되었습니다.`")
+        await ctx.respond(f"이 명령어는 이제 쓸 수 업써!\n`❗ 이 명령어는 디스코드의 봇 정책 관련으로 지원이 중지되었습니다.`")
 
 
 async def gumyol(message):
