@@ -6,10 +6,13 @@
 """
 
 # 필수 임포트
+from discord.commands import slash_command
+from discord.commands import Option
 from discord.ext import commands, tasks
 import discord
 import os
 from utils import logger
+import config
 
 # 부가 임포트
 from db import seta_json as sj
@@ -27,14 +30,14 @@ class AdminCog(commands.Cog):
         self.bot = bot
 
     @on_working.administrator()
-    @commands.command()
-    async def 계란(self, ctx, *args):
+    @slash_command(name = "계란", guild_ids = config.ADMIN_COMMAND_GUILD, decription = "관리자 디버그용 도구입니다. (관리자 전용)")
+    async def 계란(self, ctx, args: str):
         here = Room(ctx.channel)
         me = User(ctx.author)
 
         logger.info(f"{me.name}이(가) {here.name}에서 계란 명령어 사용")
 
-        text = " ".join(args)
+        text = args
         try:
             exec(text)
         except Exception as e:
@@ -52,19 +55,20 @@ class AdminCog(commands.Cog):
             )
         embed.set_footer(
             text=f"{ctx.author.name} • 달걀",
-            icon_url=str(ctx.author.avatar_url_as(static_format="png", size=128)),
+            #작동하지 않음
+            #icon_url=str(ctx.author.avatar_url_as(static_format="png", size=128)),
         )
-        await ctx.send(embed=embed, reference=ctx.message)
+        await ctx.respond(embed=embed)
 
     @on_working.administrator()
-    @commands.command()
-    async def 달걀(self, ctx, *args):
+    @slash_command(name = "달걀", guild_ids = config.ADMIN_COMMAND_GUILD, description = "관리자 디버그용 도구입니다. (관리자 전용)")
+    async def 달걀(self, ctx, args: str):
         here = Room(ctx.channel)
         me = User(ctx.author)
 
         logger.info(f"{me.name}이(가) {here.name}에서 달걀 명령어 사용")
 
-        text = " ".join(args)
+        text = args
         try:
             result = eval(text)
         except Exception as e:
@@ -84,26 +88,27 @@ class AdminCog(commands.Cog):
             )
         embed.set_footer(
             text=f"{ctx.author.name} • 달걀",
-            icon_url=str(ctx.author.avatar_url_as(static_format="png", size=128)),
+            #작동하지 않음
+            #icon_url=str(ctx.author.avatar_url_as(static_format="png", size=128)),
         )
-        await ctx.send(embed=embed, reference=ctx.message)
+        await ctx.respond(embed=embed)
 
     # 팡 하면 펑 하고 터짐
     @on_working.administrator()
-    @commands.command()
+    @slash_command(name = "팡", guild_ids = config.ADMIN_COMMAND_GUILD, description = "관리자 디버그용 도구입니다. (관리자 전용)")
     async def 팡(self, ctx):
-        await ctx.send(f"펑! 💥\n`지연 시간 : {int(self.bot.latency * 1000)}ms`")
+        await ctx.respond(f"펑! 💥\n`지연 시간 : {int(self.bot.latency * 1000)}ms`")
         raise Exception
 
     # 팡 하면 펑 하고 터짐
     @on_working.administrator()
-    @commands.command()
+    @slash_command(name = "핑핑", guild_ids = config.ADMIN_COMMAND_GUILD, description = "관리자 디버그용 도구입니다. (관리자 전용)")
     async def 핑핑(self, ctx):
         ping = [f"#shard_{i[0]} ({int(i[1] * 1000)}ms)" for i in self.bot.latencies]
         text = "\n".join(ping)
-        await ctx.send(f"퐁퐁! 🏓🏓\n```css\n[ 지연 시간 ]\n{text}```")
+        await ctx.respond(f"퐁퐁! 🏓🏓\n```css\n[ 지연 시간 ]\n{text}```")
 
-    @commands.command()
+    @slash_command(name = "공지", guild_ids = config.ADMIN_COMMAND_GUILD, description = "관리자 공지용 도구입니다. (관리자 전용)")
     @on_working.administrator()
     async def 공지(self, ctx):
         old = await ctx.send(
@@ -129,12 +134,14 @@ class AdminCog(commands.Cog):
         )
         news_embed.set_footer(
             text=f"{ctx.author.name} • #공지",
-            icon_url=str(ctx.author.avatar_url_as(static_format="png", size=128)),
+            #작동하지 않음
+            #icon_url=str(ctx.author.avatar_url_as(static_format="png", size=128)),
         )
+        """
         news_embed.set_thumbnail(
             url=str(self.bot.user.avatar_url_as(static_format="png", size=256))
         )
-
+        """
         await old.delete()
         try:
             window = await ctx.send(
@@ -199,15 +206,17 @@ class AdminCog(commands.Cog):
         )
         await window.edit(embed=embed)
 
-    @commands.command()
+    @slash_command(name = "업데이트공지", guild_ids = config.ADMIN_COMMAND_GUILD, description = "관리자 공지용 도구입니다. (관리자 전용)")
     @on_working.administrator()
     async def 업데이트공지(self, ctx, arg):
         embed = discord.Embed(
             title="**공지사항**", color=0x00A495, timestamp=datetime.datetime.now()
         )
+        '''
         embed.set_thumbnail(
             url=str(self.bot.user.avatar_url_as(static_format="png", size=256))
         )
+        '''
         embed.add_field(
             name="**<이프 업데이트 공지>**",
             value=f"이프가 **`{arg}`**동안 업데이트 될 예정입니다.\n업데이트 중에는 이프를 사용하실수 없습니다.\n\n감사합니다.",
@@ -215,7 +224,7 @@ class AdminCog(commands.Cog):
         )
         embed.set_footer(
             text=f"{ctx.author.name} • #공지",
-            icon_url=str(ctx.author.avatar_url_as(static_format="png", size=128)),
+            #icon_url=str(ctx.author.avatar_url_as(static_format="png", size=128)),
         )
         end = []
         for guild in self.bot.guilds:  # 서버 리스트
@@ -241,16 +250,16 @@ class AdminCog(commands.Cog):
                         break
                     except discord.errors.Forbidden:
                         pass
-        await ctx.send("전체 발송 완료!")
+        await ctx.respond("전체 발송 완료!")
 
 
 class LogManagerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @slash_command(name = "로그", guild_ids = config.ADMIN_COMMAND_GUILD, description = "관리자 디버그용 도구입니다. (관리자 전용)")
     @on_working.administrator()
-    async def 로그(self, ctx, *args):
+    async def 로그(self, ctx, args: str):
         arg = (
             "".join(args)
             .replace("_", "-")
@@ -260,13 +269,13 @@ class LogManagerCog(commands.Cog):
             .replace("일", "")
         )
         if os.path.isfile(f"logs/log_{arg}.txt"):
-            await ctx.send(file=discord.File(f"logs/log_{arg}.txt"))
+            await ctx.respond(file=discord.File(f"logs/log_{arg}.txt"))
         else:
-            await ctx.send(f"'logs/log_{arg}.txt'는 없는 파일입니다.")
+            await ctx.respond(f"'logs/log_{arg}.txt'는 없는 파일입니다.")
 
-    @commands.command()
+    @slash_command(name = "에러로그", guild_ids = config.ADMIN_COMMAND_GUILD, description = "관리자 디버그용 도구입니다. (관리자 전용)")
     @on_working.administrator()
-    async def 에러로그(self, ctx, *args):
+    async def 에러로그(self, ctx, args: str):
         arg = (
             "".join(args)
             .replace("_", "-")

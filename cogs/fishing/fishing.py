@@ -1,9 +1,6 @@
-"""
-    <sample.py>
-    여러분들의 기능을 여기에 마음껏 추가해 봐요!
-"""
-
 # 필수 임포트
+from discord.commands import slash_command
+from discord.commands import Option
 from discord.ext import commands
 import discord
 import os
@@ -16,10 +13,11 @@ from classes.user import User
 from classes.fish import Fish, NotFishException, search_fish
 from db.seta_pgsql import S_PgSQL
 from utils.on_working import on_working
-from datetime import datetime
+from datetime import datetime, timezone
 
 # 상수 임포트
 from constants import Constants
+from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
 
 userdata = S_PgSQL()
 
@@ -28,8 +26,8 @@ class InfoCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @slash_command(name="여기", description="이 낚시터(채널)의 정보를 보여줘요!", guild_ids=SCRS)
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @commands.command()
     @on_working(prohibition=True)
     async def 여기(self, ctx):
         room = Room(ctx.channel)
@@ -47,7 +45,7 @@ class InfoCog(commands.Cog):
             "clean": f"🧹 {cleans:,}",
             "members": f"👪 {len(ctx.channel.members):,}명",
             "history": (
-                f"📜 {(datetime.today() - created_at).days}일 ("
+                f"📜 {(datetime.now(timezone.utc) - created_at).days}일 ("
                 + created_at.strftime("%y-%m-%d")
                 + ")"
             ),
@@ -93,19 +91,22 @@ class InfoCog(commands.Cog):
                     ),
                     inline=False,
                 )
-                embed.set_footer(text="※ 각 시설에 대한 설명이 필요하다면 '이프야 설명 <시설명>'")
+                embed.set_footer(text="※ 각 시설에 대한 설명이 필요하다면 '/설명 <시설명>'")
 
-        await ctx.send(embed=embed)
+        await ctx.respond(embed=embed)
 
-    @commands.command()
+    @slash_command(name="랭킹", description="이프의 랭킹을 보여줘요!", guild_ids=SCRS)
     @on_working(prohibition=True)
-    async def 랭킹(self, ctx, *args):
+    async def 랭킹(
+        self, ctx, type: Option(str, "보고 싶으신 랭킹의 종류를 고르세요!", choices=["개인", "낚시터"])
+    ):
+
         embed = discord.Embed(title="🏆 랭킹 정보", colour=0x4BC59F)
 
         rows = userdata.select_sql(
             "users", "name, money", "ORDER BY money DESC LIMIT 5"
         )
-        if "".join(args) == "개인":
+        if type == "개인":
             ranking = ""
             for idx, val in enumerate(rows):
                 ranking += f"\n[{idx+1}등] {val[0]} ({int(val[1]):,}💰)"
@@ -150,9 +151,9 @@ class InfoCog(commands.Cog):
                 name="📖 **도감 순위**", value=f"```cs\n{ranking}```", inline=False
             )
 
-            await ctx.send(embed=embed)
+            await ctx.respond(embed=embed)
 
-        elif "".join(args) == "낚시터":
+        elif type == "낚시터":
             rows = userdata.select_sql(
                 "rooms", "name, land_value", "ORDER BY land_value DESC LIMIT 5"
             )
@@ -175,26 +176,25 @@ class InfoCog(commands.Cog):
                 name="✨ **낚시터 명성 순위**", value=f"```cs\n{ranking}```", inline=False
             )
 
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send("어떤 랭킹을 보고 싶은 거야?\n`이프야 랭킹 (개인/낚시터)`")
+            await ctx.respond(embed=embed)
 
+    @slash_command(name="낚시중지", description="낚시 오류 발생시 낚시를 멈춰요!")
     @commands.cooldown(1, 600, commands.BucketType.user)
-    @commands.command()
     @on_working(prohibition=True)
     async def 낚시중지(self, ctx):
         User(ctx.author).finish_fishing()
-        await ctx.send(
+        await ctx.respond(
             """낚시를 중지해써!
             `❗ 이 명령어는 꼭 시스템적으로 예기치 못한 버그가 발생했을 때만 사용해 주세요!`"""
         )
 
-    @commands.command()
+    @slash_command(name="도감", description="물고기의 정보 or 도감을 보여드려요!", guild_ids=SCRS)
     @on_working(prohibition=True)
-    async def 도감(self, ctx, arg1=None):
+    async def 도감(self, ctx, fish_name: Option(str, "검색하고 싶은 물고기 이름") = None):
+
         # 물고기가 낚인 이후
         user = User(ctx.author)
-        if arg1 is None:
+        if fish_name is None:
             dexfish = 0
             for i in range(1, 6):
                 dexfish += len(user.dex[str(i)]) if str(i) in user.dex.keys() else 0
@@ -204,20 +204,20 @@ class InfoCog(commands.Cog):
                 colour=0x4BC59F,
             )
             embed.set_footer(
-                text="※ 물고기 정보가 궁금하다면 '이프야 도감 (물고기)' // 현재 도감 완성률 기능은 베타 버전입니다! 물고기 밸런스 패치, 도감 정식 추가 이후에 초기화될 수 있어요!"
+                text="※ 물고기 정보가 궁금하다면 '/도감 <물고기>' // 현재 도감 완성률 기능은 베타 버전입니다! 물고기 밸런스 패치, 도감 정식 추가 이후에 초기화될 수 있어요!"
             )
-            await ctx.send(embed=embed, reference=ctx.message)
+            await ctx.respond(embed=embed)
             return None
 
         try:
-            fish = Fish(search_fish(arg1))
+            fish = Fish(search_fish(fish_name))
         except NotFishException:
             return await ctx.send(
                 """우움... 내 도감에서는 안 보이는데...?
                 `❗ 아직 잡은 적이 없거나 존재하지 않는 물고기입니다.`"""
             )
         except Exception:
-            return await ctx.send("`이프야 도감 (물고기)`")
+            return await ctx.respond("`/도감 <물고기>`")
 
         if fish.rarity != 1 and (
             fish.rarity not in user.dex.keys() or fish.id not in user.dex[fish.rarity]
@@ -238,11 +238,11 @@ class InfoCog(commands.Cog):
         embed.add_field(name="✨ **희귀도**", value=f"**{fish.rarity_str()}**")
         embed.add_field(name="💵 **평균가**", value=f"**{fish.average_cost}**")
         embed.add_field(name="🏞️ **서식지**", value=f"**>> {biome}**")
-        await ctx.send(embed=embed, reference=ctx.message)
+        await ctx.respond(embed=embed)
 
+    @slash_command(name="분석", description="물고기가 낚이는 확률을 보여드려요!", guild_ids=SCRS)
     @commands.cooldown(3, 30)
-    @commands.command()
-    async def 분석(self, ctx, *args):
+    async def 분석(self, ctx, type: Option(str, "분석 결과의 종류", choices=["일반", "단순 표현"])):
         accuracy = 20
 
         room = Room(ctx.channel)
@@ -251,7 +251,7 @@ class InfoCog(commands.Cog):
         for i in range(0, 6):
             bar_str += rank_emoji[i] * int(accuracy * room.probability_per(i))
         bar_str += "⬛" * (accuracy - len(bar_str))
-        if not (len(args) == 1 and args[0] == "e"):
+        if not (type == "단순 표현"):
             bar_str = f"`{bar_str}`"
         embed = discord.Embed(title="📊 통계청 조사 결과", description=bar_str, colour=0x4BC59F)
 
@@ -280,8 +280,8 @@ class InfoCog(commands.Cog):
         embed.add_field(
             name="🐟 **여기에서 낚을 수 있는 물고기**", value=f"```css\n{list_str}```", inline=False
         )
-        embed.set_footer(text="※ 만약 통계청 보고서가 깨져 보인다면 '이프야 분석 e'")
-        await ctx.send(embed=embed)
+        embed.set_footer(text="※ 만약 통계청 보고서가 깨져 보인다면 '/분석 <단순 표현>'")
+        await ctx.respond(embed=embed)
 
 
 def setup(bot):

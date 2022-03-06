@@ -14,11 +14,12 @@
     fee = 5
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 import random
 import copy
 import ast
 
+from discord import Thread
 from classes.facility import Facility, NotExistFacility, UNITDATA
 from constants import Constants
 from db.seta_sqlite import S_SQLite
@@ -481,11 +482,22 @@ class Room:
         ):  # ID만으로 생성하는 경우(매우 비권장)
             # logger.warn('권장되지 않은 사용 : ID로 Room 객체 생성')
             self.id = channel
-        else:  # 채널 객체로 생성하는 경우
+
+        elif isinstance(channel, Thread):
+            # 스레드로 생성하는 경우 엄마 채널을 기준으로 간주함.
+            channel = channel.parent
+            if not channel:
+                raise Exception
+            self.id = channel.id
+            self.name = channel.name.replace('"', "").replace("'", "")
+            self.history = (datetime.now(timezone.utc) - channel.created_at).days
+
+        else:
+            # 채널 객체로 생성하는 경우
             self.channel = channel
             self.id = channel.id
             self.name = channel.name.replace('"', "").replace("'", "")
-            self.history = (datetime.today() - channel.created_at).days
+            self.history = (datetime.now(timezone.utc) - channel.created_at).days
 
         data = self._load_data()
 
