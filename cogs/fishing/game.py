@@ -294,7 +294,7 @@ async def fishing_result(window, user: User, room: Room, fish, effect):
         fish.cost() + fish.fee(user, room) + fish.maintenance(room) + fish.bonus(room)
     )
     fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
-    information = f"{fish.rarity_str()} | 📏 {fish.length:,}cm | ✨ {fame} | 💵 {fish.cost():,} `→ {user.money:,} 💰`"
+    information = f"{fish.rarity_str()} | 📏 {fish.length:,}cm | ✨ {int(fame)} | 💵 {fish.cost():,} `→ {user.money:,} 💰`"
 
     if user.update_biggest(fish):
         information += "\n`📏 오늘 낚은 것 중 가장 커! (일일 최고 크기)`"
