@@ -262,7 +262,7 @@ class FishingGameCog(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @on_working.on_working(fishing=True, prohibition=True)
     async def _short(self, ctx):
-        await self.낚시(self, ctx)
+        await self.낚시(ctx)
 
 
 async def fishing_stoped(ctx, window, user: User):
