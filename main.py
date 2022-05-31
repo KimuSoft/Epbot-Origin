@@ -112,7 +112,8 @@ class ManagementCog(commands.Cog):
                     return await ctx.respond(
                         "저기 혹시... 갑자기 메시지를 지우거나 한 건 아니지...? 그러지 말아 줘..."
                     )
-            except:
+            except Exception as e:
+                logger.err(e)
                 pass
 
         # 명령어 쿨타임이 다 차지 않은 경우
@@ -131,9 +132,7 @@ class ManagementCog(commands.Cog):
             await error_send(ctx, self.bot, error, 0xFFBB00)
 
         else:
-            if config.debug:
-                for i in traceback.format_exception(error):
-                    print(i)
+            logger.err(e)
             await ctx.send(f"으앙 오류가 발생했어...\n`❗ {str(error)}`")
             await error_send(ctx, self.bot, error)
 
