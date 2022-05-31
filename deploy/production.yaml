@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: epbot
+  name: epbot
+  labels:
+    app: epbot
+
+spec:
+  containers:
+    - name: postgresql
+      image: pikokr/epbot-origin-db
+      volumeMounts:
+        - mountPath: /var/lib/postgres/data
+          name: db
+    - name: bot
+      image: pikokr/epbot-origin
+      envFrom:
+        - configMapRef:
+            name: epbot-config
+  volumes:
+    - name: db
+      hostPath:
+        path: /opt/epbot/data/db
+        type: DirectoryOrCreate
