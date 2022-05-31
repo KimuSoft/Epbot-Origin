@@ -5,12 +5,13 @@ import os
 debug = False
 query_logging = False
 
-
 """Administrator Setting"""
 ADMINS = [
     281689852167061506,  # 키뮤
+    577095893451407361,  # 코로
+    287177141064302592,  # 로
+    628595345798201355  # 파링
 ]
-
 
 """ PostgreSQL Database Configuration """
 HOST = os.getenv('EP_DB_HOST')  # HOST를 localhost로 세팅할 경우 HOST를 사용하지 않음(DB 서버와 이프 서버를 같이 돌릴 경우 권장)
@@ -19,11 +20,9 @@ USER = os.getenv('EP_DB_USER')
 PASSWORD = os.getenv('EP_DB_PASSWORD')
 PORT = int(os.getenv('EP_DB_PORT', '5432'))
 
-
 """ FishCard Server Setting"""
 CARD_SERVER = os.getenv('EP_CARD_SERVER', '').replace('$HOST', HOST)  # 슬래시로 끝내지 말아주세요
 CARD_TOKEN = os.getenv('EP_CARD_TOKEN', '')
-
 
 """ Discord Bot Configuration """
 TOKEN = os.getenv('EP_TOKEN')
@@ -39,7 +38,6 @@ ACTIVITIES = [
     "EpBot | ep help",
 ]
 DEBUG_ACTIVITIES = ["버그 수정 중. . ."]
-
 
 """ Loggin & Announcement Channel Setting """
 ERROR_LOGGING_CHANNEL = int(os.getenv('EP_ERROR_LOGGING_CHANNEL'))

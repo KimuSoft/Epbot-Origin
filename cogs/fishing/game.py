@@ -42,6 +42,8 @@ class FishingGameCog(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @on_working.on_working(fishing=True, prohibition=True)
     async def 낚시(self, ctx):
+        await ctx.defer()
+
         class FishButtonView(View):
             def __init__(self, ctx):
                 super().__init__(timeout=random.randint(1, 3))
