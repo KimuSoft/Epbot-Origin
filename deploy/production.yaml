@@ -15,6 +15,7 @@ spec:
           name: db
     - name: bot
       image: pikokr/epbot-origin
+      imagePullPolicy: Always
       envFrom:
         - configMapRef:
             name: epbot-config
