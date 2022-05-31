@@ -41,7 +41,8 @@ class FishingGameCog(commands.Cog):
     @slash_command(name="낚시", description="이프와 함께 물고기를 낚아요!", guild_ids=SCRS)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @on_working.on_working(fishing=True, prohibition=True)
-    async def 낚시(self, ctx):
+    async def 낚시(self, ctx: discord.commands.ApplicationContext):
+
         await ctx.defer()
 
         class FishButtonView(View):
@@ -186,7 +187,7 @@ class FishingGameCog(commands.Cog):
 
             try:
                 view = FishButtonView(ctx)
-                await window.edit_original_message(embed=embed, view=view)
+                await window.edit(embed=embed, view=view)
                 result = await view.wait()  # true : 시간 초과
 
             except discord.errors.NotFound:
@@ -232,7 +233,7 @@ class FishingGameCog(commands.Cog):
 
         # 이 아래는 쓰레기인 경우의 추가 선택지
         view = TrashButtonView(ctx)
-        await window.edit_original_message(view=view)
+        await window.edit(view=view)
         result = await view.wait()  # true : 시간 초과
 
         if result or view.button_value == "버리기":
@@ -255,7 +256,7 @@ class FishingGameCog(commands.Cog):
                 embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 깨끗해졌어!")
 
         user.finish_fishing()  # 낚시 종료 판정
-        await window.edit_original_message(embed=embed, view=None)
+        await window.edit(embed=embed, view=None)
 
     @slash_command(name="ㄴㅅ", description="이프와 함께 물고기를 낚아요!")
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -272,7 +273,7 @@ async def fishing_stoped(ctx, window, user: User):
         colour=discord.Colour.light_grey(),
     )
     try:
-        await window.edit_original_message(embed=embed, view=None)
+        await window.edit(embed=embed, view=None)
     except discord.errors.NotFound:
         await ctx.respond(
             "아무리 낚시가 안 된다고 해도 그렇지 낚싯줄을 끊으면 어떻게 해!!! 💢\n```❗ 낚시 중간에 메시지를 지우지 마세요.```"
@@ -285,7 +286,7 @@ async def fishing_failed(window, user: User, text: str):
     embed = discord.Embed(
         title="낚시 실패", description=text, colour=discord.Colour.light_grey()
     )
-    await window.edit_original_message(embed=embed, view=None)
+    await window.edit(embed=embed, view=None)
     user.finish_fishing()
 
 
@@ -373,7 +374,7 @@ async def fishing_result(window, user: User, room: Room, fish, effect):
         # 실패 시 레거시 코드로 직접 낚시카드를 만들어 전송
         image = await make_fishcard_image_file(fish, room, user)
         embed.set_footer(text="※ 낚시카드 서버와의 연결에 실패하여 레거시 코드로 임시 낚시카드를 생성하였습니다.")
-    await window.edit_original_message(embed=embed, file=image, view=None)
+    await window.edit(embed=embed, file=image, view=None)
     return throw, window
 
 

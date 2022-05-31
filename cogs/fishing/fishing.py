@@ -29,7 +29,9 @@ class InfoCog(commands.Cog):
     @slash_command(name="여기", description="이 낚시터(채널)의 정보를 보여줘요!", guild_ids=SCRS)
     @commands.cooldown(1, 10, commands.BucketType.user)
     @on_working(prohibition=True)
-    async def 여기(self, ctx):
+    async def 여기(self, ctx: discord.commands.context.ApplicationContext):
+        await ctx.defer()
+
         room = Room(ctx.channel)
         fee_range = room.fee_range
         cleans = room._cleans
@@ -98,8 +100,9 @@ class InfoCog(commands.Cog):
     @slash_command(name="랭킹", description="이프의 랭킹을 보여줘요!", guild_ids=SCRS)
     @on_working(prohibition=True)
     async def 랭킹(
-        self, ctx, type: Option(str, "보고 싶으신 랭킹의 종류를 고르세요!", choices=["개인", "낚시터"])
+        self, ctx: discord.commands.context.ApplicationContext, type: Option(str, "보고 싶으신 랭킹의 종류를 고르세요!", choices=["개인", "낚시터"])
     ):
+        await ctx.defer()
 
         embed = discord.Embed(title="🏆 랭킹 정보", colour=0x4BC59F)
 
@@ -181,7 +184,9 @@ class InfoCog(commands.Cog):
     @slash_command(name="낚시중지", description="낚시 오류 발생시 낚시를 멈춰요!")
     @commands.cooldown(1, 600, commands.BucketType.user)
     @on_working(prohibition=True)
-    async def 낚시중지(self, ctx):
+    async def 낚시중지(self, ctx: discord.commands.context.ApplicationContext):
+        await ctx.defer()
+
         User(ctx.author).finish_fishing()
         await ctx.respond(
             """낚시를 중지해써!
@@ -190,7 +195,8 @@ class InfoCog(commands.Cog):
 
     @slash_command(name="도감", description="물고기의 정보 or 도감을 보여드려요!", guild_ids=SCRS)
     @on_working(prohibition=True)
-    async def 도감(self, ctx, fish_name: Option(str, "검색하고 싶은 물고기 이름") = None):
+    async def 도감(self, ctx: discord.commands.context.ApplicationContext, fish_name: Option(str, "검색하고 싶은 물고기 이름") = None):
+        await ctx.defer()
 
         # 물고기가 낚인 이후
         user = User(ctx.author)
@@ -242,7 +248,9 @@ class InfoCog(commands.Cog):
 
     @slash_command(name="분석", description="물고기가 낚이는 확률을 보여드려요!", guild_ids=SCRS)
     @commands.cooldown(3, 30)
-    async def 분석(self, ctx, type: Option(str, "분석 결과의 종류", choices=["일반", "단순 표현"])):
+    async def 분석(self, ctx: discord.commands.context.ApplicationContext, type: Option(str, "분석 결과의 종류", choices=["일반", "단순 표현"])):
+        await ctx.defer()
+
         accuracy = 20
 
         room = Room(ctx.channel)

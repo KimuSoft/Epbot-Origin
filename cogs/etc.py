@@ -4,6 +4,8 @@
 """
 
 # 필수 임포트
+import datetime
+
 from discord.commands import slash_command, Option
 from discord.ext import commands
 import discord
@@ -32,12 +34,16 @@ class EtcCog(commands.Cog):
 
     @commands.cooldown(3, 10)
     @slash_command(name="핑", description="이프의 현재 속도를 알려줘요!", guild_ids=SCRS)
-    async def 핑(self, ctx):
-        latency = int(self.bot.latency * 1000)
-        wd = await ctx.respond(f"퐁! 🏓\n`지연 시간 : {latency}ms (실제 지연시간 계산 중...)`")
+    async def 핑(self, ctx: discord.commands.context.ApplicationContext):
+        now = datetime.datetime.now()
 
-        real_latency = int((wd.created_at - ctx.message.created_at).microseconds / 1000)
-        await wd.edit_original_message(
+        latency = int(self.bot.latency * 1000)
+        i = await ctx.respond(f"퐁! 🏓\n`지연 시간 : {latency}ms (실제 지연시간 계산 중...)`", )
+
+        wd = await i.original_message()
+
+        real_latency = int((wd.created_at.replace(tzinfo=None) - now).microseconds / 1000)
+        await ctx.edit(
             content=f"퐁! 🏓\n`지연 시간 : {latency}ms (실제 지연시간 {real_latency}ms)`"
         )
 

@@ -1,4 +1,4 @@
-
+import discord.commands.context
 from discord.ext.commands import check
 from classes.user import User, on_fishing
 from classes.room import Room, working_now
@@ -12,7 +12,7 @@ def on_working(fishing=False, landwork=False, prohibition=False, owner_only=Fals
         prohibition : #낚시금지 태그가 있으면 불가능
         owner_only : 낚시터 주인만 작업 가능
     '''
-    async def predicate(ctx):
+    async def predicate(ctx: discord.commands.context.ApplicationContext):
         channel = ctx.channel
 
         if 'DM' in str(type(channel)):
@@ -22,7 +22,7 @@ def on_working(fishing=False, landwork=False, prohibition=False, owner_only=Fals
         if fishing:  # 낚시 중에는 금지
             if on_fishing(ctx.author.id):
                 try:
-                    await ctx.send('낚시 중에는 낚시에 집중하자...!\n`❗ 이미 낚시가 진행 중이다.`')
+                    await ctx.respond('낚시 중에는 낚시에 집중하자...!\n`❗ 이미 낚시가 진행 중이다.`')
                 except Exception:
                     pass
                 return False
@@ -30,7 +30,7 @@ def on_working(fishing=False, landwork=False, prohibition=False, owner_only=Fals
         if landwork:  # 땅 작업 중에는 금지
             if working_now(ctx.channel.id):
                 try:
-                    await ctx.send('흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`')
+                    await ctx.respond('흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`')
                 except Exception:
                     pass
                 return False
@@ -38,14 +38,14 @@ def on_working(fishing=False, landwork=False, prohibition=False, owner_only=Fals
         if prohibition:  # 낚시금지를 했다면 금지
             if channel.topic is not None and '#낚시금지' in channel.topic:
                 try:
-                    await ctx.send("여긴 낚시터가 아니야...\n`❗ 낚시 금지 태그가 설정된 채널입니다.`")
+                    await ctx.respond("여긴 낚시터가 아니야...\n`❗ 낚시 금지 태그가 설정된 채널입니다.`")
                 except Exception:
                     pass
                 return False
 
             if channel.topic is not None and '#no_fishing' in channel.topic:
                 try:
-                    await ctx.send("You can't fish here! >ㅅ<\n`❗ This channel is tagged with no fishing.`")
+                    await ctx.respond("You can't fish here! >ㅅ<\n`❗ This channel is tagged with no fishing.`")
                 except Exception:
                     pass
                 return False
@@ -54,7 +54,7 @@ def on_working(fishing=False, landwork=False, prohibition=False, owner_only=Fals
             room = Room(channel)
             if room.owner_id != ctx.author.id:
                 try:
-                    await ctx.send('다른 사람 땅은 건들 수 없어...!\n`❗ 자신의 땅에서만 할 수 있는 작업이다.`')
+                    await ctx.respond('다른 사람 땅은 건들 수 없어...!\n`❗ 자신의 땅에서만 할 수 있는 작업이다.`')
                 except Exception:
                     pass
                 return False
@@ -65,10 +65,10 @@ def on_working(fishing=False, landwork=False, prohibition=False, owner_only=Fals
 
 def administrator():
     '''이프 관리자만 사용 가능하게 설정할 경우'''
-    async def predicate(ctx):
+    async def predicate(ctx: discord.commands.context.ApplicationContext):
         if not User(ctx.author).admin:
             try:
-                await ctx.send("관계자 외 출입금지야!\n`❗ 이프 관리자 전용 명령어입니다.`")
+                await ctx.respond("관계자 외 출입금지야!\n`❗ 이프 관리자 전용 명령어입니다.`")
             except Exception:
                 pass
             return False
@@ -78,7 +78,7 @@ def administrator():
 
 def p_requirements(manage_messages=False):
     '''이프의 권한이 있어야 사용 가능한 명령어'''
-    async def predicate(ctx):
+    async def predicate(ctx: discord.commands.context.ApplicationContext):
         if 'DM' in str(type(ctx.channel)):
             return False
 
@@ -95,7 +95,7 @@ def p_requirements(manage_messages=False):
             text = '✔️ 메시지 읽기\n✔️ 메시지 보내기'
             for i in perdict.keys():
                 text += f"\n{'✔️' if perdict[i] else '❌'} {i}"
-            await ctx.send(f"으우... 마력이 부족해!\n`❗ 아래에 '❌'로 뜨는 권한을 이프에게 주세요!`\n```css\n{text}```")
+            await ctx.respond(f"으우... 마력이 부족해!\n`❗ 아래에 '❌'로 뜨는 권한을 이프에게 주세요!`\n```css\n{text}```")
             return False
         return True
     return check(predicate)

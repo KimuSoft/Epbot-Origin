@@ -102,7 +102,7 @@ class ManagementCog(commands.Cog):
         logger.msg(ctx.message)
 
     @commands.Cog.listener()
-    async def on_application_command_error(self, ctx, error):
+    async def on_application_command_error(self, ctx: discord.commands.context.ApplicationContext, error: Exception):
         """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
         channel = ctx.channel
         User(ctx.author).fishing_now = False
@@ -131,7 +131,10 @@ class ManagementCog(commands.Cog):
             await error_send(ctx, self.bot, error, 0xFFBB00)
 
         else:
-            await ctx.respond(f"으앙 오류가 발생했어...\n`❗ {str(error)}`")
+            if config.debug:
+                for i in traceback.format_exception(error):
+                    print(i)
+            await ctx.send(f"으앙 오류가 발생했어...\n`❗ {str(error)}`")
             await error_send(ctx, self.bot, error)
 
     @commands.Cog.listener()

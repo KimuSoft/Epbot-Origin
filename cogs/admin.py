@@ -110,8 +110,8 @@ class AdminCog(commands.Cog):
 
     @slash_command(name = "공지", guild_ids = config.ADMIN_COMMAND_GUILD, description = "관리자 공지용 도구입니다. (관리자 전용)")
     @on_working.administrator()
-    async def 공지(self, ctx):
-        old = await ctx.send(
+    async def 공지(self, ctx: discord.commands.context.ApplicationContext):
+        old = await ctx.respond(
             """공지를 어떻게 쓸 거야?
             `✏️ 미리 복사해 둔 공지 내용을 붙여넣어 줘! (준비가 안 됐다면 '취소'라고 적어줘!)`"""
         )
