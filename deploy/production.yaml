@@ -36,6 +36,17 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+        - name: image-generator
+          image: pikokr/epbot-origin-image-generator
+          imagePullPolicy: Always
+          env:
+            - name: JWT_TOKEN
+              valueFrom:
+                configMapKeyRef:
+                  key: EP_CARD_TOKEN
+                  name: epbot-config
+            - name: PORT
+              value: '3001'
       volumes:
         - name: db
           persistentVolumeClaim:

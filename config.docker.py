@@ -21,7 +21,7 @@ PORT = int(os.getenv('EP_DB_PORT', '5432'))
 
 
 """ FishCard Server Setting"""
-CARD_SERVER = os.getenv('EP_CARD_SERVER', '')  # 슬래시로 끝내지 말아주세요
+CARD_SERVER = os.getenv('EP_CARD_SERVER', '').replace('$HOST', HOST)  # 슬래시로 끝내지 말아주세요
 CARD_TOKEN = os.getenv('EP_CARD_TOKEN', '')
 
 
