@@ -32,6 +32,11 @@ spec:
           envFrom:
             - configMapRef:
                 name: epbot-config
+          env:
+            - name: EP_DB_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
       volumes:
         - name: db
           hostPath:

@@ -6,7 +6,6 @@ metadata:
   name: epbot-config
 
 data:
-  EP_DB_HOST: ''
   EP_DB_NAME: ''
   EP_DB_USER: ''
   EP_DB_PASSWORD: ''
