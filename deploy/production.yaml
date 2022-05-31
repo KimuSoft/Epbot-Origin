@@ -1,26 +1,39 @@
-apiVersion: v1
-kind: Pod
+
+apiVersion: apps/v1
+kind: Deployment
+
 metadata:
-  namespace: epbot
   name: epbot
+  namespace: epbot
   labels:
     app: epbot
-
 spec:
-  containers:
-    - name: postgresql
-      image: pikokr/epbot-origin-db
-      volumeMounts:
-        - mountPath: /var/lib/postgres/data
-          name: db
-    - name: bot
-      image: pikokr/epbot-origin
-      imagePullPolicy: Always
-      envFrom:
-        - configMapRef:
-            name: epbot-config
-  volumes:
-    - name: db
-      hostPath:
-        path: /opt/epbot/data/db
-        type: DirectoryOrCreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: epbot
+  template:
+    metadata:
+      namespace: epbot
+      name: epbot
+      labels:
+        app: epbot
+
+    spec:
+      containers:
+        - name: postgresql
+          image: pikokr/epbot-origin-db
+          volumeMounts:
+            - mountPath: /var/lib/postgres/data
+              name: db
+        - name: bot
+          image: pikokr/epbot-origin
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: epbot-config
+      volumes:
+        - name: db
+          hostPath:
+            path: /opt/epbot/data/db
+            type: DirectoryOrCreate
