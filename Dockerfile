@@ -13,4 +13,5 @@ COPY . .
 
 COPY config.docker.py config.py
 
-CMD ["python3", "/app/main.py"]
+CMD until pg_isready --host=$EP_DB_HOST; do sleep 1; done \
+    python3 /app/main.py
