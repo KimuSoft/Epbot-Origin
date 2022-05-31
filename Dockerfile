@@ -13,4 +13,6 @@ COPY . .
 
 COPY config.docker.py config.py
 
+ENV PYTHONUNBUFFERED=0
+
 CMD ["/bin/bash", "/app/deploy/run.sh"]
