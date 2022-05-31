@@ -50,7 +50,7 @@ ANNOUNCE_CHANNEL = int(os.getenv('EP_ANNOUNCE_CHANNEL'))
 SLASH_COMMAND_REGISTER_SERVER = None
 
 # 관리자 명령어를 사용할 서버 ID
-ADMIN_COMMAND_GUILD = int(os.getenv('EP_ADMIN_COMMAND_GUILD'))
+ADMIN_COMMAND_GUILD = [int(x) for x in os.getenv('EP_ADMIN_COMMAND_GUILD', '').split(',')]
 
 
 def token():
