@@ -11,8 +11,8 @@ RUN apk add postgresql-libs postgresql-client bash --no-cache && \
 
 COPY . .
 
-COPY config.docker.py config.py
+COPY docker/config.py config.py
 
 ENV PYTHONUNBUFFERED=0
 
-CMD ["/bin/bash", "/app/deploy/run.sh"]
+CMD ["/bin/bash", "/app/docker/deploy/run.sh"]

@@ -25,30 +25,6 @@ class ThemeCog(commands.Cog):
         view = ThemeSelectView(epUser)
         await ctx.respond(content="골라바", view=view)
 
-    # @slash_command(name="테마", description="낚시카드의 테마를 선택하세요!", guild_ids=SCRS)
-    # async def 테마(self, ctx, theme_num: Option(str, "바꾸실 테마 번호를 입력해주세요!") = ""):
-    #     user = User(ctx.author.id)
-    #     if not theme_num:
-    #         themes = user.themes_name
-    #         themes[0] = themes[0] + " #사용 중"
-    #         ntheme = []
-    #         for idx, val in enumerate(themes):
-    #             ntheme.append(f"{idx + 1}. {val}")
-
-    #         ths = "\n".join(ntheme)
-    #         return await ctx.respond(f"> **현재 보유 중인 테마** \n```cs\n{ths}```")
-    #     if not str(theme_num).isdigit():
-    #         return await ctx.respond("`이프야 테마 <바꿀 테마 번호>`")
-    #     try:
-    #         user.theme = user.themes[int(theme_num) - 1]
-    #         return await ctx.respond(
-    #             f"`❗ 낚시카드 테마를 '{user.themes_name[0]}'(으)로 변경했습니다.`"
-    #         )
-    #     except NoTheme:
-    #         await ctx.respond("`이프야 테마 <바꿀 테마 번호>`")
-    #     except IndexError:
-    #         await ctx.respond("`❗ 보유하고 있는 테마의 번호를 잘 확인해 보세요.`")
-
     @slash_command(name="미리보기", guild_ids=SCRS, description="낚시카드의 테마를 미리 경헙해보세요")
     async def 미리보기(
         self,
@@ -111,10 +87,6 @@ class ThemeSelect(discord.ui.Select):
         )
 
     async def callback(self, interaction: discord.Interaction):
-        # Use the interaction object to send a response message containing
-        # The user's favourite colour or choice. The self object refers to the
-        # Select object, and the values attribute gets a list of the user's
-        # selected options. We only want the first one.
         if "(미보유)" in self.values[0]:
             return await interaction.response.edit_message(
                 content="미보유 테마야!", view=None
