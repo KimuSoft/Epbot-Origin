@@ -7,6 +7,7 @@ load_dotenv()
 """ Debug Option """
 debug = True
 query_logging = False
+profiling = False
 
 """Administrator Setting"""
 ADMINS = [

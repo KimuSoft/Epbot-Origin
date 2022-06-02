@@ -6,7 +6,6 @@
 # 필수 임포트
 import aiohttp
 from discord.commands import slash_command
-from discord.commands import Option
 from discord.ui import View
 from discord.ext import commands
 import discord
@@ -18,11 +17,9 @@ from utils import logger
 
 # 부가 임포트
 from utils.util_box import rdpc, wait_for_reaction
-from db import seta_json
 from utils import on_working
 from classes.room import Room
 from classes.user import User
-import asyncio
 import random
 from constants import Constants
 from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
@@ -54,12 +51,13 @@ class FishingGameCog(commands.Cog):
             @discord.ui.button(
                 label="낚싯줄 당기기", style=discord.ButtonStyle.blurple, emoji="🎣"
             )
-            async def button1_callback(self, button, interaction):
+            async def button1_callback(self, button: discord.ui.Button, interaction: discord.Interaction):
                 self.button_value = "당김"
                 self.stop()
+                await interaction.response.defer()
 
             @discord.ui.button(label="그만하기", style=discord.ButtonStyle.red, emoji="🚫")
-            async def button2_callback(self, button, interaction):
+            async def button2_callback(self, button: discord.ui.Button, interaction: discord.Interaction):
                 self.button_value = "그만둠"
                 self.stop()
 
@@ -86,11 +84,13 @@ class FishingGameCog(commands.Cog):
             async def button1_callback(self, button, interaction):
                 self.button_value = "치우기"
                 self.stop()
+                await interaction.response.defer()
 
             @discord.ui.button(label="버리기", style=discord.ButtonStyle.red, emoji="💦")
             async def button2_callback(self, button, interaction):
                 self.button_value = "버리기"
                 self.stop()
+                await interaction.response.defer()
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
@@ -162,7 +162,7 @@ class FishingGameCog(commands.Cog):
         window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
-        if result == False:
+        if not result:
             if view.button_value == "당김":
                 return await fishing_failed(window, user, "찌를 올렸지만 아무 것도 없었다...")
             else:
