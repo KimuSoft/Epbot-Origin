@@ -19,7 +19,6 @@ LOADING_DIR = ["cogs", "cogs/fishing"]
 class EpBot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(
-            command_prefix=config.PREFIXES,  # 접두사는 config.py에서 설정
             help_command=None,
         )
 
