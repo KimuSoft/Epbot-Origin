@@ -11,3 +11,9 @@ services:
     volumes:
       - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
       - ./data/db:/var/lib/postgresql/data
+  image:
+    image: pikokr/epbot-origin-image-generator
+    ports:
+      - '3000:3000'
+    environment:
+      JWT_TOKEN: ${IMAGE_GENERATOR_TOKEN}

@@ -38,7 +38,6 @@
 2. 새 데이터베이스를 만든 후, `setup.sql`파일이나 DB 예시 이미지를 참고로 하여 똑같이 만들어 봅니다.
 3. 파이팅
 
-
 ### 4. 이프 설정 세팅
 1. `config.py.example`를 복사한 후 복사한 파일의 이름을 `config.py`로 바꿉니다. 이는 이프의 설정 파일입니다.
 2. 아래 주의사항을 참고하여 config.py를 작성합니다.
@@ -61,6 +60,14 @@
     * 그리고 이프의 `Constants.py`의 `THEMES` 딕셔너리에 테마 데이터를 추가하면 `/테마` 명령어를 통해 해당 테마로 설정할 수 있게 됩니다.
     * `Constants.py`에 테마를 등록하지 않아도 `/미리보기 <테마명> <등급번호: 0~5>` 명령어를 통해 해당 테마를 테스트해볼 수 있습니다.
     * [pikokr/fishcard-editor](https://github.com/pikokr/fishcard-editor) : 낚시카드 제작기(Read-Only)
+
+#### 도커를 사용해 낚시카드 서버 세팅하기
+
+```shell
+python scripts/gensecret.py
+
+docker compose up -d image
+```
 
 ### 6. 이프 실행하기
 1. 구동할 때는 main.py를 실행하시면 됩니다. 프로젝트 폴더에서 `python main.py` (Windows일 경우 `run.bat` 파일을 실행하셔도 됩니다.)

@@ -8,3 +8,5 @@ venv
 /data
 
 config.py
+
+/.env
