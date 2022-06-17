@@ -1,4 +1,5 @@
 import discord.commands.context
+from discord import DMChannel
 from discord.ext.commands import check
 from classes.user import User, on_fishing
 from classes.room import Room, working_now
@@ -15,7 +16,7 @@ def on_working(fishing=False, landwork=False, prohibition=False, owner_only=Fals
     async def predicate(ctx: discord.commands.context.ApplicationContext):
         channel = ctx.channel
 
-        if 'DM' in str(type(channel)):
+        if isinstance(channel, DMChannel):
             await ctx.send(f'으에, 이프는 DM은 안 받고 이써!\n`❗ 이프와는 개인 메시지로 놀 수 없습니다.`')
             return False
 
@@ -79,7 +80,7 @@ def administrator():
 def p_requirements(manage_messages=False):
     '''이프의 권한이 있어야 사용 가능한 명령어'''
     async def predicate(ctx: discord.commands.context.ApplicationContext):
-        if 'DM' in str(type(ctx.channel)):
+        if isinstance(ctx.channel, DMChannel):
             return False
 
         per = ctx.channel.guild.me.permissions_in(ctx.channel)
