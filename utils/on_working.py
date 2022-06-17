@@ -1,8 +1,7 @@
 import functools
 
 from discord.ext.commands import check
-from discord import Thread
-from discord import DMChannel
+from discord import Thread, DMChannel
 
 import config
 from classes.user import User, on_fishing
