@@ -1,7 +1,7 @@
 import functools
 
 from discord.ext.commands import check
-from discord import Thread
+from discord import Thread, DMChannel
 
 import config
 from classes.user import User, on_fishing
@@ -26,7 +26,7 @@ def on_working(
     async def predicate(ctx):
         channel = ctx.channel
 
-        if "DM" in str(type(channel)):
+        if isinstance(channel, DMChannel):
             await ctx.respond(
                 content=f"으에, 이프는 DM은 안 받고 이써!\n`❗ 이프와는 개인 메시지로 놀 수 없습니다.`"
             )

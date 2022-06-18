@@ -141,7 +141,7 @@ class ManagementCog(commands.Cog):
         channel = ctx.channel
         User(ctx.author).fishing_now = False
 
-        if "DM" in str(type(channel)):
+        if isinstance(channel, discord.channel.DMChannel):
             if isinstance(error, commands.errors.CheckFailure):
                 return
             return await ctx.send(

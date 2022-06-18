@@ -4,6 +4,7 @@
 """
 
 from datetime import datetime
+from discord import DMChannel
 import os
 import traceback
 
@@ -54,7 +55,7 @@ def msg(message):
     author = message.author
 
     """message를 넣으면 로그를 씀"""
-    if "DM" in str(type(message.channel)):
+    if isinstance(message.channel, DMChannel):
         log_msg = f"DM <{author.name}> {message.content}"
     else:
         guild = message.guild
