@@ -101,7 +101,9 @@ class ManagementCog(commands.Cog):
         logger.msg(ctx.message)
 
     @commands.Cog.listener()
-    async def on_application_command_error(self, ctx: discord.commands.context.ApplicationContext, error: Exception):
+    async def on_application_command_error(
+        self, ctx: discord.commands.context.ApplicationContext, error: Exception
+    ):
         """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
         channel = ctx.channel
         User(ctx.author).fishing_now = False

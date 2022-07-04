@@ -23,7 +23,7 @@ PORT = "5432"
 
 """ FishCard Server Setting"""
 CARD_SERVER = "http://localhost:3000"  # 슬래시로 끝내지 말아주세요
-CARD_TOKEN = os.getenv('IMAGE_GENERATOR_TOKEN', '')  # python scripts/genscript.py
+CARD_TOKEN = os.getenv("IMAGE_GENERATOR_TOKEN", "")  # python scripts/genscript.py
 
 """ Discord Bot Configuration """
 TOKEN = ""

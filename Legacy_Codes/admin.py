@@ -1,6 +1,6 @@
 # 디스코드 메세지 인텐트로 인한 검열 기능 사용 제한.
 # From cogs/admin.py
-'''
+"""
 class DBManagerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -157,4 +157,4 @@ class DBManagerCog(commands.Cog):
         else:
             await ctx.send("`이프야 목록 <야한말/정치언급/욕설/변태/나쁜말/관리자>`")
             return None
-'''
+"""
