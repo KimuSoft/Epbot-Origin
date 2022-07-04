@@ -73,16 +73,16 @@ class Room:
 
     # ------------------------------------- add(상대적 값 수정/+=이나 -=대신 이쪽을 권장) ------------------------------------- #
 
-    def add_cleans(self, value: int):
+    async def add_cleans(self, value: int):
         """청결도에 value 만큼 더합니다.
         float 같은 값을 넣어도 int로 자동변환합니다."""
-        db.update_sql("rooms", f"cleans = cleans + {int(value)}", f"id='{self.id}'")
+        await db.update_sql("rooms", f"cleans = cleans + {int(value)}", f"id='{self.id}'")
         self._cleans += int(value)
 
-    def add_exp(self, value: int):
+    async def add_exp(self, value: int):
         """낚시터 명성에 value 만큼 더합니다.
         float 같은 값을 넣어도 int로 자동변환합니다."""
-        db.update_sql("rooms", f"exp = exp + {int(value)}", f"id='{self.id}'")
+        await db.update_sql("rooms", f"exp = exp + {int(value)}", f"id='{self.id}'")
         self._exp += int(value)
 
     # ------------------------------------- getter/setter(읽기/쓰기 전용) ------------------------------------- #

@@ -246,20 +246,20 @@ class FishingGameCog(commands.Cog):
             )
             if not int(fish.length / 10) == 0:
                 embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 더러워졌어!")
-            room.add_cleans(fish.length / -10)
+            await room.add_cleans(fish.length / -10)
             fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
-            room.add_exp(fame)  # 쓰레기 버릴 때 명성 깎기
+            await room.add_exp(fame)  # 쓰레기 버릴 때 명성 깎기
 
         else:
             embed = discord.Embed(
                 title=f"💦 '{fish.name}'을(를) 치웠다! 물이 더 깨끗해진 것 같아!", colour=0x4BC59F
             )
-            room.add_cleans(fish.length / 10)  # 처리한 경우 크기/10 만큼의 청결도가 추가됨
-            user.add_money(fish.cost())
+            await room.add_cleans(fish.length / 10)  # 처리한 경우 크기/10 만큼의 청결도가 추가됨
+            await user.add_money(fish.cost())
             if not int(fish.length / 10) == 0:
                 embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 깨끗해졌어!")
 
-        user.finish_fishing()  # 낚시 종료 판정
+        await user.finish_fishing()  # 낚시 종료 판정
         await window.edit(embed=embed, view=None)
 
     @slash_command(name="ㄴㅅ", description="이프와 함께 물고기를 낚아요!")
