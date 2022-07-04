@@ -384,8 +384,7 @@ class UnitCog(commands.Cog):
 
     @slash_command(name="시설", description="특정 티어의 시설중 낚시터에 알려드려요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True, landwork=True, twoball=False)
-    async def 시설(self, ctx,
-    tier: Option(int, "시설 목록을 알고 싶은 특정 티어를 입력해주세요!") = 1):
+    async def 시설(self, ctx, tier: Option(int, "시설 목록을 알고 싶은 특정 티어를 입력해주세요!") = 1):
         room = Room(ctx.channel)
 
         if room.tier < int(tier):

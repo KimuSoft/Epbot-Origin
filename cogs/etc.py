@@ -38,11 +38,15 @@ class EtcCog(commands.Cog):
         now = datetime.datetime.now()
 
         latency = int(self.bot.latency * 1000)
-        i = await ctx.respond(f"퐁! 🏓\n`지연 시간 : {latency}ms (실제 지연시간 계산 중...)`", )
+        i = await ctx.respond(
+            f"퐁! 🏓\n`지연 시간 : {latency}ms (실제 지연시간 계산 중...)`",
+        )
 
         wd = await i.original_message()
 
-        real_latency = int((wd.created_at.replace(tzinfo=None) - now).microseconds / 1000)
+        real_latency = int(
+            (wd.created_at.replace(tzinfo=None) - now).microseconds / 1000
+        )
         await ctx.edit(
             content=f"퐁! 🏓\n`지연 시간 : {latency}ms (실제 지연시간 {real_latency}ms)`"
         )

@@ -38,7 +38,7 @@ class CycleCog(commands.Cog):
         logger.info("AsyncIOScheduler 스케쥴 시작")
         self.sched = AsyncIOScheduler()
 
-        #self.sched.add_job(self.day_end_schedule, "cron", hour="23", minute="55")
+        # self.sched.add_job(self.day_end_schedule, "cron", hour="23", minute="55")
         # self.sched.add_job(self.day_end_schedule, 'cron', minute='*/5')
         self.sched.start()
 
@@ -55,6 +55,7 @@ class CycleCog(commands.Cog):
         logger.info("낚시 상태 정기 초기화 완료")
         if len(self.bot.guilds) != 0:
             logger.info(f"통계 : 현재 서버 수 {len(self.bot.guilds)}곳")
+
 
 """ 사용하지 않음
     @commands.command()
@@ -165,6 +166,7 @@ class CycleCog(commands.Cog):
 
         db.update_sql("users", "biggest_size=0, biggest_name=''")  # 최고 기록 초기화
 """
+
 
 def setup(bot):
     logger.info(f"{os.path.abspath(__file__)} 로드 완료")

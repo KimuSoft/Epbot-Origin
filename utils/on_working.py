@@ -13,7 +13,7 @@ import discord
 
 
 def on_working(
-        fishing=False, landwork=False, prohibition=False, owner_only=False, twoball=True
+    fishing=False, landwork=False, prohibition=False, owner_only=False, twoball=True
 ):
     """
     fishing : 낚시와 동시에 불가능
@@ -52,9 +52,9 @@ def on_working(
 
         if prohibition:  # 낚시금지를 했다면 금지
             if (
-                    not isinstance(channel, Thread)
-                    and channel.topic is not None
-                    and "#낚시금지" in channel.topic
+                not isinstance(channel, Thread)
+                and channel.topic is not None
+                and "#낚시금지" in channel.topic
             ):
                 try:
                     await ctx.respond(

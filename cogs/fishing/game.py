@@ -51,13 +51,17 @@ class FishingGameCog(commands.Cog):
             @discord.ui.button(
                 label="낚싯줄 당기기", style=discord.ButtonStyle.blurple, emoji="🎣"
             )
-            async def button1_callback(self, button: discord.ui.Button, interaction: discord.Interaction):
+            async def button1_callback(
+                self, button: discord.ui.Button, interaction: discord.Interaction
+            ):
                 self.button_value = "당김"
                 self.stop()
                 await interaction.response.defer()
 
             @discord.ui.button(label="그만하기", style=discord.ButtonStyle.red, emoji="🚫")
-            async def button2_callback(self, button: discord.ui.Button, interaction: discord.Interaction):
+            async def button2_callback(
+                self, button: discord.ui.Button, interaction: discord.Interaction
+            ):
                 self.button_value = "그만둠"
                 self.stop()
 
