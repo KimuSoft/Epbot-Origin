@@ -1,3 +1,6 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor, thread
+from functools import partial
 import PIL
 from PIL import Image, ImageDraw, ImageFont
 import os
@@ -15,6 +18,12 @@ font8 = ImageFont.truetype(font_exist, 8)
 
 fonts = {8: font8, 12: font12, 16: font16, 20: font20, 24: font24}
 
+thread_pool = ThreadPoolExecutor()
+
+loop = asyncio.get_event_loop()
+
+async def get_card_async(fish=None, room=None, user=None, theme="default"):
+    return await loop.run_in_executor(thread_pool, partial(get_card, fish, room, user, theme))
 
 def get_card(fish=None, room=None, user=None, theme="default"):
     here = os.path.dirname(os.path.realpath(__file__))
