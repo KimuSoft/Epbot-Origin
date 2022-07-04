@@ -15,11 +15,7 @@ ADMINS = [
 ]
 
 """ PostgreSQL Database Configuration """
-HOST = "127.0.0.1"  # HOST를 localhost로 세팅할 경우 HOST를 사용하지 않음(DB 서버와 이프 서버를 같이 돌릴 경우 권장)
-DBNAME = "postgres"
-USER = "postgres"
-PASSWORD = "test"
-PORT = "5432"
+PG_DSN='postgresql://postgres:postgres@127.0.0.1:5432/test'
 
 """ FishCard Server Setting"""
 CARD_SERVER = "http://localhost:3000"  # 슬래시로 끝내지 말아주세요
