@@ -13,6 +13,8 @@ import seta_json as sj
 import json
 import os
 from utils import logger
+import aiofiles
+import aiofiles.ospath
 
 
 def set_json(exist: str, content: dict):
@@ -22,6 +24,16 @@ def set_json(exist: str, content: dict):
 
     with open(exist, "w", encoding="utf-8") as make_file:
         json.dump(content, make_file, ensure_ascii=False, indent="\t")
+
+
+async def set_json_async(exist: str, content: dict):
+    """content를 json 형식으로 exist 경로에 저장합니다.
+    예) sj.set_json('키뮤귀여워.json', {'키뮤':1004})"""
+    logger.query(f"{exist} 작성")
+
+    async with aiofiles.open(exist, "w", encoding="utf-8") as make_file:
+        s = json.dumps(content, ensure_ascii=False, indent="\t")
+        await make_file.write(s)
 
 
 def get_json(exist: str, default_content=False):
@@ -45,3 +57,28 @@ def get_json(exist: str, default_content=False):
     else:
         with open(exist, encoding="utf-8") as json_file:
             return json.load(json_file)
+
+
+async def get_json_async(filename: str, default_content=False):
+    """exist 경로의 json 파일을 불러옵니다.
+    예) my_dict = sj.get_json('키뮤귀여워.json')
+
+    파일이 없는 경우 None을 반환합니다.
+    단, 이 경우에 default_content에 dict 값을 넣었을 경우 해당 dict 내용으로 그 경로에 json 파일을 생성합니다
+
+    예) my_dict = sj.get_json('키뮤귀여워.json', default_content={'키뮤':1004})
+    → 키뮤귀여워.json을 불러오지만 파일이 없을 경우 {'키뮤':1004} 내용으로 키뮤귀여워.json을 만듦.
+    ※ 이 경우 반환값은 default_content ({'키뮤':1004})임."""
+    aiofiles.os
+    logger.query(f"{filename} 로드")
+    if not await aiofiles.ospath.isfile(filename):
+        if not default_content:
+            print("[SETA_Module/ERROR] " + filename + " 파일은 존재하지 않습니다.")
+            return None
+        else:
+            await set_json_async(filename, default_content)
+            return default_content
+    else:
+        async with aiofiles.open(filename, encoding="utf-8") as json_file:
+            data = await json_file.read()
+            return json.loads(data)
