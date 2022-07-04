@@ -2,7 +2,7 @@ import PIL
 from PIL import Image, ImageDraw, ImageFont
 import os
 from utils.seta_josa import Josa
-from utils import seta_json
+from db import seta_json
 from datetime import datetime
 import re
 
