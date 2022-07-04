@@ -1,7 +1,7 @@
 """이프의 태그 관련 기능이 모인 모듈"""
 
 from utils import logger
-from utils import seta_json as sj
+from db import seta_json as sj
 
 # 문자열 -> 태그, 혹은 복합태그
 tagdict = {
