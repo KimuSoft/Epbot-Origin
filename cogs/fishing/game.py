@@ -5,6 +5,7 @@
 
 # 필수 임포트
 import aiohttp
+import asyncio
 from discord.commands import slash_command
 from discord.ui import View
 from discord.ext import commands
@@ -386,10 +387,11 @@ async def get_fishcard_image_file_from_url(fish: Fish):
     """낚시카드 서버로부터 받아 온 낚시카드 DiscordFile을 반환"""
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
+            loop = asyncio.get_running_loop()
             if resp.status != 200:
                 logger.warn("서버로부터 낚시카드를 불러올 수 없음.")
                 return
-            data = io.BytesIO(await resp.read())
+            data = await loop.run_in_executor(None, io.BytesIO, await resp.read())
             return discord.File(data, "fishCard.png")
 
 
@@ -397,7 +399,7 @@ async def make_fishcard_image_file(fish: Fish, room: Room, user: User):
     """직접 제작한 낚시카드 이미지 DiscordFile로 반환"""
     image = await get_card(fish, room, user)
     with io.BytesIO() as image_binary:
-        image.save(image_binary, "PNG")
+        await image.save(image_binary, "PNG")
         image_binary.seek(0)
         return discord.File(fp=image_binary, filename="fishcard.png")
         # embed.set_image(url="attachment://fishcard.png")

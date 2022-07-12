@@ -330,7 +330,6 @@ class LandCog(commands.Cog):
     async def 땅값변경(self, ctx, value: Option(int, "변경하실 땅값을 입력하세요!")):
         user = User(ctx.author)
         room = Room(ctx.channel)
-        land_value = room.land_value
         room.working_now = True
 
         if value < 30000:
@@ -346,7 +345,6 @@ class LandCog(commands.Cog):
             return await ctx.respond(
                 f"흐음... 돈이 부족해!\n`❗ 현재 땅값과 소지금의 합이 {(room.land_value + user.money):,} 💰입니다.`"
             )
-
         class OXButtonView(View):
             def __init__(self, ctx):
                 super().__init__(timeout=10)
@@ -392,12 +390,50 @@ class LandCog(commands.Cog):
             room.working_now = False
             return None
 
-        user.give_money(land_value - value)
+        user.give_money(room.land_value - value)
         room.land_value = value
         room.working_now = False
         await window.edit_original_message(
             content=f"{room.name} 땅의 가격을 변경했어!", embed=None, view=None
         )
+    @slash_command(name = "지형변경", description = "이 낚시터(채널)의 지형을 바꿔요!", guild_ids = SCRS)
+    @on_working(
+        fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
+    )
+    async def 지형변경(self, ctx, value: Option(str, "변경하실 지형을 입력해주세요!", choices = ["🏜️ 메마른 땅", "🏖️ 바닷가", "🏞️ 강가", "🚤 호수", "⛰️ 계곡", "🥬 습지", "🦀 갯벌"])):
+        room = Room(ctx.channel)
+
+        if room.cleans < 0:
+            await ctx.respond("지형을 변경하려면 청소를 하셔야 해요! (청결도가 0보다 작아요)")
+            return None
+        if room.tier != 1:
+            await ctx.respond("지형을 변경하려면 티어가 1티어야만 해요!")
+            return None
+        if len(room.facilities) != 0:
+            await ctx.respond("지형을 변경하려면 어떤 시설도 있으면 안되요!")
+            return None
+        if room.land_value != 0:
+            await ctx.respond("지형을 변경하려면 이 땅이 매각된 땅이여야 해요! (`/매각` 을 통해 매각된 땅으로 만들 수 있어요!)")
+            return None
+        if room.exp > 50:
+            await ctx.respond("지형을 변경하려면 명성이 50이하여야 해요!")
+            return None
+        
+        BIOME_KR = [
+        "🏜️ 메마른 땅",
+        "🏖️ 바닷가",
+        "🏞️ 강가",
+        "🚤 호수",
+        "⛰️ 계곡",
+        "🥬 습지",
+        "🦀 갯벌",
+        "🌅 곶",
+        "⛲ 샘",
+        "🗻 칼데라",
+        ]
+        msg = await ctx.respond("이 낚시터는 지형을 변경 할 수 있는 낚시터에요!\n낚시터의 지형을 입력하신 지형으로 변경합니다.")
+        room.biome = BIOME_KR.index(value)
+
 
     @slash_command(name="수수료", description="이 낚시터(채널)의 수수료를 설정하세요!", guild_ids=SCRS)
     @on_working(

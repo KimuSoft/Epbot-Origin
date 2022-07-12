@@ -111,9 +111,16 @@ class ManagementCog(commands.Cog):
                     return await ctx.respond(
                         "저기 혹시... 갑자기 메시지를 지우거나 한 건 아니지...? 그러지 말아 줘..."
                     )
-            except Exception as e:
-                logger.err(e)
+            
+            except AttributeError:
                 pass
+            
+            except Exception as e:
+                logger.error(e)
+                return await ctx.respond(
+                    "아쉽다... 오류가 발생했어... 그러지 말아 줘..."
+                )
+
 
         # 명령어 쿨타임이 다 차지 않은 경우
         elif isinstance(error, commands.CommandOnCooldown):
