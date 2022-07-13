@@ -30,7 +30,7 @@ def on_working(fishing=False, landwork=False, prohibition=False, owner_only=Fals
                 return False
 
         if landwork:  # 땅 작업 중에는 금지
-            if working_now(ctx.channel.id):
+            if await working_now(ctx.channel.id):
                 try:
                     await ctx.respond(
                         "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
@@ -57,7 +57,7 @@ def on_working(fishing=False, landwork=False, prohibition=False, owner_only=Fals
                 return False
 
         if owner_only:  # 낚시터 주인만 가능
-            room = Room(channel)
+            room = await Room.fetch(channel)
             if room.owner_id != ctx.author.id:
                 try:
                     await ctx.respond("다른 사람 땅은 건들 수 없어...!\n`❗ 자신의 땅에서만 할 수 있는 작업이다.`")
@@ -74,7 +74,7 @@ def administrator():
     """이프 관리자만 사용 가능하게 설정할 경우"""
 
     async def predicate(ctx: discord.commands.context.ApplicationContext):
-        if not User(ctx.author).admin:
+        if not (await User.fetch(ctx.author)).admin:
             try:
                 await ctx.respond("관계자 외 출입금지야!\n`❗ 이프 관리자 전용 명령어입니다.`")
             except Exception:

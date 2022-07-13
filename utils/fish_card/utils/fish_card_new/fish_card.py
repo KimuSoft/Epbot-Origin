@@ -1,13 +1,13 @@
 import asyncio
-from concurrent.futures import ThreadPoolExecutor, thread
-from functools import partial
-import PIL
-from PIL import Image, ImageDraw, ImageFont
 import os
-from utils.seta_josa import Josa
-from db import seta_json
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-import re
+from functools import partial
+
+from PIL import Image, ImageDraw, ImageFont
+
+from db import seta_json
+from utils.seta_josa import Josa
 
 font_exist = "utils/fish_card/NotoSansCJKkr-Bold.otf"
 font24 = ImageFont.truetype(font_exist, 24)
@@ -22,8 +22,12 @@ thread_pool = ThreadPoolExecutor()
 
 loop = asyncio.get_event_loop()
 
+
 async def get_card_async(fish=None, room=None, user=None, theme="default"):
-    return await loop.run_in_executor(thread_pool, partial(get_card, fish, room, user, theme))
+    return await loop.run_in_executor(
+        thread_pool, partial(get_card, fish, room, user, theme)
+    )
+
 
 def get_card(fish=None, room=None, user=None, theme="default"):
     here = os.path.dirname(os.path.realpath(__file__))

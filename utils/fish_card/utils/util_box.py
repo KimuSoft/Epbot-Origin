@@ -9,7 +9,6 @@
 import asyncio
 import random
 
-from utils.seta_sqlite_class import Seta_sqlite
 from utils import logger
 
 

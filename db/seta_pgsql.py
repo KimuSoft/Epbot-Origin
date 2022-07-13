@@ -1,14 +1,16 @@
-import psycopg2
-import config
+import asyncio
 import json
-from utils import logger
+
 import aiopg
+
+import config
+from utils import logger
+from utils.asynchelper import synchronize_async_helper
+
+pool = synchronize_async_helper(aiopg.create_pool(dsn=config.PG_DSN).__aenter__())
 
 
 class S_PgSQL:
-    def __init__(self):
-        self.pool: aiopg.Pool = aiopg.create_pool(config.PG_DSN)
-
     async def update_sql(self, table: str, rec: str, where: str = "", commit=True):
         """
         설명 : 조건에 맞는 행의 내용을 수정함
@@ -46,7 +48,7 @@ class S_PgSQL:
         values = ", ".join(values)
         statement = "INSERT INTO " + table + f" ({columns}) VALUES ({values})"
         logger.query(statement)
-        await self.sql(statement, commit=True,reading=False)
+        await self.sql(statement, commit=True, reading=False)
 
     async def select_sql(self, table: str, rec: str, rule: str = ""):
         """
@@ -95,20 +97,15 @@ class S_PgSQL:
         reading True이면 fetchall로 결과를 반환
         reading False이면 결과를 반환하지 않고 commit함.
         """
-        async with self.pool.acquire() as conn:
+        async with pool.acquire() as conn:
             logger.query(qur)
             async with conn.cursor() as cur:
-                async with cur.begin() as trans:
-                    try:
-                        await cur.execute(qur)
-                    except Exception as e:
-                        print(f"[오류] {e}")
-                        await trans.rollback()
-                        return
-                    if reading:
-                        return await cur.fetchall()
-                    elif commit:
-                        await trans.commit()
+                if reading:
+                    await cur.execute(qur)
+
+                    return await cur.fetchall()
+                elif commit:
+                    await cur.execute(qur)
 
     def autoquotes(self, value):
         if isinstance(value, int):

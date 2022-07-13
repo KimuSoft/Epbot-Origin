@@ -3,17 +3,17 @@
 Python용 한글 맞춤법 검사 모듈
 """
 
-import requests
 import json
-import time
 import sys
-from collections import OrderedDict
+import time
 import xml.etree.ElementTree as ET
+from collections import OrderedDict
 
-from . import __version__
-from .response import Checked
-from .constants import base_url
+import requests
+
 from .constants import CheckResult
+from .constants import base_url
+from .response import Checked
 
 _agent = requests.Session()
 PY3 = sys.version_info[0] == 3

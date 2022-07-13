@@ -9,8 +9,10 @@ _checked = namedtuple(
 
 class Checked(_checked):
     def __new__(
-        cls, result=False, original="", checked="", errors=0, words=[], time=0.0
+        cls, result=False, original="", checked="", errors=0, words=None, time=0.0
     ):
+        if words is None:
+            words = []
         return super(Checked, cls).__new__(
             cls, result, original, checked, errors, words, time
         )

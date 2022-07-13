@@ -1,15 +1,15 @@
 # 필수 임포트
-from discord.commands import slash_command
-from discord.commands import Option
-from discord.ext import commands
-import discord
 import os
+
+import discord
+from discord.commands import slash_command
+from discord.ext import commands
+
+from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
 from utils import logger
 
 # 부가 임포트
 from utils import tag as eptag
-from classes.sentence import Sentence
-from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
 
 
 class CensorshipCog(commands.Cog):

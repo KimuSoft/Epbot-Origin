@@ -5,18 +5,17 @@
 
 # 필수 임포트
 import datetime
-
-from discord.commands import slash_command, Option
-from discord.ext import commands
-import discord
 import os
+
+import discord
+from discord.commands import slash_command
+from discord.ext import commands
 
 # 부가 임포트
 from classes.user import User
+from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
 from constants import Constants
 from utils import logger
-from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
-
 
 VERSION = Constants.VERSION
 INFORMATION = (
@@ -88,7 +87,7 @@ class EtcCog(commands.Cog):
 
     @slash_command(name="지워", description="메세지를 지워요!", guild_ids=SCRS)
     async def 지워(self, ctx, limit: int):
-        if User(ctx.author).admin:
+        if (await User.fetch(ctx.author)).admin:
             pass
         elif not ctx.author.permissions_in(ctx.channel).manage_roles:
             await ctx.respond("마력을 더욱 쌓고 오거라!!")

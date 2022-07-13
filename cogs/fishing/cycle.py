@@ -3,22 +3,20 @@
     스케쥴이 모인 모듈
 """
 
-# 필수 임포트
-from discord.ext import commands, tasks
-import discord
 import os
+from itertools import cycle
 
-from db.seta_pgsql import S_PgSQL
-from utils import logger
+import discord
 
 # 부가 임포트
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from db.seta_sqlite import S_SQLite
-from utils.on_working import administrator
-from classes.user import User
+
+# 필수 임포트
+from discord.ext import commands, tasks
+
 import config
-from itertools import cycle
-from datetime import datetime
+from db.seta_pgsql import S_PgSQL
+from utils import logger
 
 db = S_PgSQL()
 
@@ -50,8 +48,8 @@ class CycleCog(commands.Cog):
 
     @tasks.loop(minutes=600)
     async def cleaner(self):
-        db.update_sql("users", "fishing_now=0")
-        db.update_sql("rooms", "selling_now=0")
+        await db.update_sql("users", "fishing_now=0")
+        await db.update_sql("rooms", "selling_now=0")
         logger.info("낚시 상태 정기 초기화 완료")
         if len(self.bot.guilds) != 0:
             logger.info(f"통계 : 현재 서버 수 {len(self.bot.guilds)}곳")
@@ -113,7 +111,7 @@ class CycleCog(commands.Cog):
         mentions = ""
         for idx, val in enumerate(rows):
             mentions += f"<@!{val[3]}> "
-            user = User(val[3])
+            user =await User.fetch(val[3])
             if idx == 0:
                 ranking += "\n[🥇 1등 🥇] {name} ({fish}/{size}cm)".format(
                     name=str(val[0]), fish=val[1], size=val[2]

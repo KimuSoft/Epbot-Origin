@@ -1,9 +1,8 @@
-import PIL
-from PIL import Image, ImageDraw, ImageFont
-import os
-from utils.seta_josa import Josa
 from datetime import datetime
-import re
+
+from PIL import Image, ImageDraw, ImageFont
+
+from utils.seta_josa import Josa
 
 font_exist = "utils/fish_card/NotoSansCJKkr-Bold.otf"
 font24 = ImageFont.truetype(font_exist, 24)
