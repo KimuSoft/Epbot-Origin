@@ -3,6 +3,7 @@ from discord.commands import slash_command
 import discord
 
 import config
+from db.seta_pgsql import S_PgSQL
 from utils import logger
 import traceback
 import os
@@ -14,6 +15,8 @@ logger.info("이프가 잠에서 깨어나는 중...")
 boot_start = datetime.today()
 
 LOADING_DIR = ["cogs", "cogs/fishing"]
+
+db = S_PgSQL()
 
 
 class EpBot(commands.AutoShardedBot):
@@ -47,6 +50,9 @@ class EpBot(commands.AutoShardedBot):
         if config.SLASH_COMMAND_REGISTER_SERVER:
             logger.info(f"sid {config.SLASH_COMMAND_REGISTER_SERVER}")
         logger.info("////////////////////////////////////////////////////////")
+
+        await db.update_sql("users", "fishing_now=0")  # 플레이 상태 초기화
+        await db.update_sql("rooms", "selling_now=0")  # 플레이 상태 초기화
 
         await self.change_presence(status=discord.Status.online)
 
@@ -105,14 +111,16 @@ class ManagementCog(commands.Cog):
         self, ctx: discord.commands.context.ApplicationContext, error: Exception
     ):
         """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
-        channel = ctx.channel
-        User(ctx.author).fishing_now = False
-        if not isinstance(error, commands.CommandError):
+        user = ctx.author
+        await (await User.fetch(user)).set_fishing_now(False)
+        if isinstance(error, discord.ApplicationCommandInvokeError):
             try:
                 if isinstance(error.original, discord.errors.NotFound):
                     return await ctx.respond(
                         "저기 혹시... 갑자기 메시지를 지우거나 한 건 아니지...? 그러지 말아 줘..."
                     )
+
+                logger.err(error.original)
             except Exception as e:
                 logger.err(e)
                 pass
@@ -133,7 +141,7 @@ class ManagementCog(commands.Cog):
             await error_send(ctx, self.bot, error, 0xFFBB00)
 
         else:
-            logger.err(e)
+            logger.err(error)
             await ctx.send(f"으앙 오류가 발생했어...\n`❗ {str(error)}`")
             await error_send(ctx, self.bot, error)
 
@@ -141,7 +149,7 @@ class ManagementCog(commands.Cog):
     async def on_command_error(self, ctx, error):  # 슬래시 커맨드 제외 오류 처리
         """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
         channel = ctx.channel
-        User(ctx.author).fishing_now = False
+        (await User.fetch(ctx.author)).fishing_now = False
 
         if isinstance(channel, discord.channel.DMChannel):
             if isinstance(error, commands.errors.CheckFailure):

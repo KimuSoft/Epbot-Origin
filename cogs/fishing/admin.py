@@ -34,28 +34,26 @@ class FishAdminCog(commands.Cog):
         num: int = None,
         user: discord.Member = None,
     ):
-
+        room = await Room.fetch(ctx.channel)
         if command_type == "지형변경":
-            Room(ctx.channel).biome = num
+            await room.set_biome(num)
             await ctx.respond(content=f"여기의 지형을 '{Constants.BIOME_KR[num]}'(으)로 바꿔써!")
 
         elif command_type == "명성설정":
-            room = Room(ctx.channel)
-            origin_exp = room.exp
-            room.exp = num
+            origin_exp = await room.get_exp()
+            await room.set_exp(num)
             await ctx.respond(content=f"여기의 명성을 `{origin_exp}`에서 `{num}`(으)로 바꿔써!")
 
         elif command_type == "명성부여":
-            room = Room(ctx.channel)
-            origin_exp = room.exp
-            room.exp += num
+            origin_exp = await room.get_exp()
+            room.set_exp(origin_exp + num)
             await ctx.respond(
-                content=f"여기의 명성을 `{origin_exp}`에서 `{room.exp:,}`(으)로 바꿔써!"
+                content=f"여기의 명성을 `{origin_exp}`에서 `{await room.get_exp():,}`(으)로 바꿔써!"
             )
 
         elif command_type == "돈부여":
-            user = User(user)
-            user.give_money(num)
+            user = await User.fetch(user)
+            await user.give_money(num)
             await ctx.respond(f"<@!{user.id}>가 `{user.money:,}💰` 가 됐어!")
 
         else:

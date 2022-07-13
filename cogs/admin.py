@@ -5,24 +5,24 @@
     eval 명령어도 추가
 """
 
+import datetime
+import os
+import random
+
+import discord
+
 # 필수 임포트
 from discord.commands import slash_command
-from discord.commands import Option
 from discord.ext import commands, tasks
-import discord
-import os
-from utils import logger
+
 import config
+from classes.room import Room
+from classes.user import User
+from utils import logger
 
 # 부가 임포트
-from db import seta_json as sj
 from utils import on_working
 from utils.util_box import wait_for_saying, ox
-from classes.sentence import reload_bw
-from classes.user import User
-from classes.room import Room
-import datetime
-import random
 
 
 class AdminCog(commands.Cog):
@@ -36,8 +36,8 @@ class AdminCog(commands.Cog):
         decription="관리자 디버그용 도구입니다. (관리자 전용)",
     )
     async def 계란(self, ctx, args: str):
-        here = Room(ctx.channel)
-        me = User(ctx.author)
+        here = await Room.fetch(ctx.channel)
+        me = await User.fetch(ctx.author)
 
         logger.info(f"{me.name}이(가) {here.name}에서 계란 명령어 사용")
 
@@ -71,8 +71,8 @@ class AdminCog(commands.Cog):
         description="관리자 디버그용 도구입니다. (관리자 전용)",
     )
     async def 달걀(self, ctx, args: str):
-        here = Room(ctx.channel)
-        me = User(ctx.author)
+        here = await Room.fetch(ctx.channel)
+        me = await User.fetch(ctx.author)
 
         logger.info(f"{me.name}이(가) {here.name}에서 달걀 명령어 사용")
 

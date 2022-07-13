@@ -6,15 +6,14 @@
 - Fish는 Fish의 복수형입니다.
 """
 
-from urllib.parse import urlencode
-from datetime import datetime
 import random
+from datetime import datetime
+
 import jwt
 
+import config
 from constants import Constants
 from db.seta_sqlite import S_SQLite
-import config
-
 
 db = S_SQLite("static/fishing.db")
 rarity_dict = {0: "쓰레기", 1: "흔함", 2: "희귀함", 3: "매우 귀함", 4: "전설", 5: "초전설", 6: "환상"}

@@ -50,12 +50,14 @@ class Facility:
             if isinstance(self.biome, int):
                 self.biome = [self.biome]
 
-    def set_effect(self, effect_dict={}):
+    def set_effect(self, effect_dict=None):
         """
         effect_dict에 이 시설의 성능을 적용합니다.
         '_'로 시작하는 효과는 기본값 1이며 곱계산됩니다. (가격보정)
         그 외 효과는 기본값 0이며 합계산됩니다. (수수료)
         """
+        if effect_dict is None:
+            effect_dict = {}
         for i in self.effect.keys():
             if i.startswith("_"):
                 if i not in effect_dict.keys():

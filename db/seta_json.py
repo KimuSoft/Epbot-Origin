@@ -69,7 +69,7 @@ async def get_json_async(filename: str, default_content=False):
     예) my_dict = sj.get_json('키뮤귀여워.json', default_content={'키뮤':1004})
     → 키뮤귀여워.json을 불러오지만 파일이 없을 경우 {'키뮤':1004} 내용으로 키뮤귀여워.json을 만듦.
     ※ 이 경우 반환값은 default_content ({'키뮤':1004})임."""
-    aiofiles.os
+    var = aiofiles.os
     logger.query(f"{filename} 로드")
     if not await aiofiles.ospath.isfile(filename):
         if not default_content:

@@ -12,7 +12,7 @@ import seta_sqlite
 """
 
 import sqlite3
-import os
+
 from utils import logger
 
 
