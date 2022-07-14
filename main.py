@@ -180,7 +180,7 @@ class ManagementCog(commands.Cog):
             )
 
         elif isinstance(error, commands.errors.CheckFailure):
-            pass
+            return
 
         # ServerDisconnectedError의 경우 섭렉으로 판정
         elif "ServerDisconnectedError" in str(error):
