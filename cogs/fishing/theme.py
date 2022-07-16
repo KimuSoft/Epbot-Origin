@@ -1,18 +1,18 @@
 # 필수 임포트
-from discord.commands import slash_command
-from discord.commands import Option
-from discord.ext import commands
-import discord
 import os
-import io
-from utils import logger
+
+import discord
+from discord.commands import Option
+from discord.commands import slash_command
+from discord.ext import commands
+
+from classes.room import Room
 
 # 부가 임포트
-from classes.user import User, NoTheme
-from classes.room import Room
-from utils.fish_card.fish_card import get_card
+from classes.user import User
 from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
 from constants import Constants
+from utils import logger
 
 
 class ThemeCog(commands.Cog):
@@ -21,7 +21,7 @@ class ThemeCog(commands.Cog):
 
     @slash_command(name="테마", description="낚시카드의 테마를 선택하세요!", guild_ids=SCRS)
     async def 테마(self, ctx):
-        epUser = User(ctx.author)
+        epUser = await User.fetch(ctx.author)
         view = ThemeSelectView(epUser)
         await ctx.respond(content="골라바", view=view)
 
@@ -33,7 +33,7 @@ class ThemeCog(commands.Cog):
         rarity: Option(int, "미리보기할 테마 희귀도(0~4)를 입력해 주세요.") = 1,
     ):
         if not theme_id:
-            theme = User(ctx.author.id).theme
+            theme = await User.fetch(ctx.author.id).theme
         else:
             theme = theme_id
 
@@ -42,7 +42,7 @@ class ThemeCog(commands.Cog):
 
         dummy_user = ExampleUser(theme)
         dummy_user.theme = theme
-        fish = Room(ctx.channel).randfish()
+        fish = await Room.fetch(ctx.channel).randfish()
         fish.owner = dummy_user
         fish.rarity = rarity
 
@@ -100,7 +100,7 @@ class ThemeSelect(discord.ui.Select):
         themeId = list(filter(lambda e: e["name"] == self.values[0], Constants.THEMES))[
             0
         ]["id"]
-        epUser = User(interaction.user)
+        epUser = await User.fetch(interaction.user)
         print(epUser.theme)
         print(epUser.themes)
         epUser.theme = themeId

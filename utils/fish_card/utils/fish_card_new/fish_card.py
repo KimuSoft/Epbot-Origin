@@ -1,10 +1,13 @@
-import PIL
-from PIL import Image, ImageDraw, ImageFont
+import asyncio
 import os
-from utils.seta_josa import Josa
-from utils import seta_json
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-import re
+from functools import partial
+
+from PIL import Image, ImageDraw, ImageFont
+
+from db import seta_json
+from utils.seta_josa import Josa
 
 font_exist = "utils/fish_card/NotoSansCJKkr-Bold.otf"
 font24 = ImageFont.truetype(font_exist, 24)
@@ -15,18 +18,28 @@ font8 = ImageFont.truetype(font_exist, 8)
 
 fonts = {8: font8, 12: font12, 16: font16, 20: font20, 24: font24}
 
+thread_pool = ThreadPoolExecutor()
 
-def get_card(fish=None, room=None, user=None, theme='default'):
+loop = asyncio.get_event_loop()
+
+
+async def get_card_async(fish=None, room=None, user=None, theme="default"):
+    return await loop.run_in_executor(
+        thread_pool, partial(get_card, fish, room, user, theme)
+    )
+
+
+def get_card(fish=None, room=None, user=None, theme="default"):
     here = os.path.dirname(os.path.realpath(__file__))
     theme_exist = f"{here}/theme/{theme}"
-    theme = seta_json.get_json(f'{theme_exist}/theme.json')
+    theme = seta_json.get_json(f"{theme_exist}/theme.json")
 
-    if f'rank-{fish.rarity}' not in theme.keys():
-        img = Image.open(f'{theme_exist}/default.png')
-        layout = theme['default']
+    if f"rank-{fish.rarity}" not in theme.keys():
+        img = Image.open(f"{theme_exist}/default.png")
+        layout = theme["default"]
     else:
-        img = Image.open(f'{theme_exist}/rank-{fish.rarity}.png')
-        layout = theme[f'rank-{fish.rarity}']
+        img = Image.open(f"{theme_exist}/rank-{fish.rarity}.png")
+        layout = theme[f"rank-{fish.rarity}"]
     draw = ImageDraw.Draw(img)
 
     time = datetime.today()
@@ -37,38 +50,37 @@ def get_card(fish=None, room=None, user=None, theme='default'):
         "length": f"{fish.length:,}",  # 물고기 크기
         "average_cost": f"{fish.average_cost:,}",  # 평균 물고기 크기
         "average_length": f"{fish.average_length}",  # 물고기 평균가
-
         "fees_p": room.fee + room.maintenance,  # 수수료 + 유지비 (%)
         "fee_p": room.fee,  # 수수료 (%)
-        "maintenance_p": room.maintenance,  #유지비 (%)
+        "maintenance_p": room.maintenance,  # 유지비 (%)
         "bonus_p": room.bonus,  # 보너스 (%)
-
         "fees": fish.fee(user, room) + fish.maintenance(room),  # 수수료 + 유지비
-        "fee": fish.fee(user, room),  # 수수료 
-        "maintenance": fish.maintenance(room),  #유지비
+        "fee": fish.fee(user, room),  # 수수료
+        "maintenance": fish.maintenance(room),  # 유지비
         "bonus": fish.bonus(room),  # 보너스
-
-        "time": time.strftime('%Y-%m-%d %H'),  # 현재 시간
+        "time": time.strftime("%Y-%m-%d %H"),  # 현재 시간
         "roomname": room.name,  # 낚은 낚시터 이름
         "username": deEmojify(user.name),  # 낚은 유저의 이름
-
-        "profit": fish.cost() + fish.fee(user, room) + fish.maintenance(room) + fish.bonus(room)
+        "profit": fish.cost()
+        + fish.fee(user, room)
+        + fish.maintenance(room)
+        + fish.bonus(room),
     }
 
     for object in layout:
         draw.text(
-            tuple(object['position']),
-            Josa().convert(object['text']).format(format_dict),
-            font=fonts[object['size']],
-            fill=(0, 0, 0)
-            )
+            tuple(object["position"]),
+            Josa().convert(object["text"]).format(format_dict),
+            font=fonts[object["size"]],
+            fill=(0, 0, 0),
+        )
 
     return img
 
 
 def deEmojify(inputString):
-    result = inputString.encode('euc-kr', 'ignore').decode('euc-kr')
-    if result == '':
-        return '알 수 없는 이름'
+    result = inputString.encode("euc-kr", "ignore").decode("euc-kr")
+    if result == "":
+        return "알 수 없는 이름"
     else:
         return result

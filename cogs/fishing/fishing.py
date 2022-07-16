@@ -32,9 +32,9 @@ class InfoCog(commands.Cog):
     async def 여기(self, ctx: discord.commands.context.ApplicationContext):
         await ctx.defer()
 
-        room = Room(ctx.channel)
+        room = await Room.fetch(ctx.channel)
         fee_range = room.fee_range
-        cleans = room._cleans
+        cleans = await room.get_cleans()
         created_at = ctx.channel.created_at
 
         # 기본 정보
@@ -100,46 +100,48 @@ class InfoCog(commands.Cog):
     @slash_command(name="랭킹", description="이프의 랭킹을 보여줘요!", guild_ids=SCRS)
     @on_working(prohibition=True)
     async def 랭킹(
-        self, ctx: discord.commands.context.ApplicationContext, type: Option(str, "보고 싶으신 랭킹의 종류를 고르세요!", choices=["개인", "낚시터"])
+        self,
+        ctx: discord.commands.context.ApplicationContext,
+        type: Option(str, "보고 싶으신 랭킹의 종류를 고르세요!", choices=["개인", "낚시터"]),
     ):
         await ctx.defer()
 
         embed = discord.Embed(title="🏆 랭킹 정보", colour=0x4BC59F)
 
-        rows = userdata.select_sql(
+        rows = await userdata.select_sql(
             "users", "name, money", "ORDER BY money DESC LIMIT 5"
         )
         if type == "개인":
             ranking = ""
             for idx, val in enumerate(rows):
-                ranking += f"\n[{idx+1}등] {val[0]} ({int(val[1]):,}💰)"
+                ranking += f"\n[{idx + 1}등] {val[0]} ({int(val[1]):,}💰)"
             embed.add_field(
                 name="💰 **돈 순위**", value=f"```cs\n{ranking}```", inline=False
             )
 
-            rows = userdata.select_sql(
+            rows = await userdata.select_sql(
                 "users",
                 "name, biggest_name, biggest_size",
                 "WHERE biggest_size > 0 ORDER BY biggest_size DESC LIMIT 5",
             )
             ranking = ""
             for idx, val in enumerate(rows):
-                ranking += f"\n[{idx+1}등] {val[0]} ({val[1]}/{val[2]:,}cm)"
+                ranking += f"\n[{idx + 1}등] {val[0]} ({val[1]}/{val[2]:,}cm)"
             embed.add_field(
                 name="📏 **가장 긴 물고기**", value=f"```cs\n{ranking}```", inline=False
             )
 
-            rows = userdata.select_sql(
+            rows = await userdata.select_sql(
                 "users", "name, exp", "ORDER BY exp DESC LIMIT 5"
             )
             ranking = ""
             for idx, val in enumerate(rows):
-                ranking += f"\n[{idx+1}등] {val[0]} (✒️Lv. {int((val[1]/15)**0.5 + 1 if val[1] > 0 else 1)})"
+                ranking += f"\n[{idx + 1}등] {val[0]} (✒️Lv. {int((val[1] / 15) ** 0.5 + 1 if val[1] > 0 else 1)})"
             embed.add_field(
                 name="✒️ **레벨 순위**", value=f"```cs\n{ranking}```", inline=False
             )
 
-            rows = userdata.select_sql(
+            rows = await userdata.select_sql(
                 "users", "name, dex", "ORDER BY length(CAST(dex AS TEXT)) DESC LIMIT 5"
             )
             ranking = ""
@@ -149,7 +151,7 @@ class InfoCog(commands.Cog):
                 for i in dex.keys():
                     if i != 0:
                         v += len(dex[i])
-                ranking += f"\n[{idx+1}등] {val[0]} (📖 {int(v * 100 / 788)}%)"
+                ranking += f"\n[{idx + 1}등] {val[0]} (📖 {int(v * 100 / 788)}%)"
             embed.add_field(
                 name="📖 **도감 순위**", value=f"```cs\n{ranking}```", inline=False
             )
@@ -157,17 +159,17 @@ class InfoCog(commands.Cog):
             await ctx.respond(embed=embed)
 
         elif type == "낚시터":
-            rows = userdata.select_sql(
+            rows = await userdata.select_sql(
                 "rooms", "name, land_value", "ORDER BY land_value DESC LIMIT 5"
             )
             ranking = ""
             for idx, val in enumerate(rows):
-                ranking += f"\n[{idx+1}등] {val[0]} ({val[1]:,}💰)"
+                ranking += f"\n[{idx + 1}등] {val[0]} ({val[1]:,}💰)"
             embed.add_field(
                 name="🧾 **가장 높은 땅값 순위**", value=f"```cs\n{ranking}```", inline=False
             )
 
-            rows = userdata.select_sql(
+            rows = await userdata.select_sql(
                 "rooms", "name, exp", "ORDER BY exp DESC LIMIT 5"
             )
             ranking = ""
@@ -187,7 +189,9 @@ class InfoCog(commands.Cog):
     async def 낚시중지(self, ctx: discord.commands.context.ApplicationContext):
         await ctx.defer()
 
-        User(ctx.author).finish_fishing()
+        user = await User.fetch(ctx.author)
+
+        await user.finish_fishing()
         await ctx.respond(
             """낚시를 중지해써!
             `❗ 이 명령어는 꼭 시스템적으로 예기치 못한 버그가 발생했을 때만 사용해 주세요!`"""
@@ -195,18 +199,22 @@ class InfoCog(commands.Cog):
 
     @slash_command(name="도감", description="물고기의 정보 or 도감을 보여드려요!", guild_ids=SCRS)
     @on_working(prohibition=True)
-    async def 도감(self, ctx: discord.commands.context.ApplicationContext, fish_name: Option(str, "검색하고 싶은 물고기 이름") = None):
+    async def 도감(
+        self,
+        ctx: discord.commands.context.ApplicationContext,
+        fish_name: Option(str, "검색하고 싶은 물고기 이름") = None,
+    ):
         await ctx.defer()
 
         # 물고기가 낚인 이후
-        user = User(ctx.author)
+        user = await User.fetch(ctx.author)
         if fish_name is None:
             dexfish = 0
             for i in range(1, 6):
                 dexfish += len(user.dex[str(i)]) if str(i) in user.dex.keys() else 0
             embed = discord.Embed(
                 title="📖 이프 도감",
-                description=f"완성률 **{int(100 * dexfish/788)}% (788마리 중 {dexfish}마리)**",
+                description=f"완성률 **{int(100 * dexfish / 788)}% (788마리 중 {dexfish}마리)**",
                 colour=0x4BC59F,
             )
             embed.set_footer(
@@ -218,7 +226,7 @@ class InfoCog(commands.Cog):
         try:
             fish = Fish(search_fish(fish_name))
         except NotFishException:
-            return await ctx.send(
+            return await ctx.respond(
                 """우움... 내 도감에서는 안 보이는데...?
                 `❗ 아직 잡은 적이 없거나 존재하지 않는 물고기입니다.`"""
             )
@@ -228,7 +236,7 @@ class InfoCog(commands.Cog):
         if fish.rarity != 1 and (
             fish.rarity not in user.dex.keys() or fish.id not in user.dex[fish.rarity]
         ):
-            return await ctx.send(
+            return await ctx.respond(
                 """우움... 내 도감에서는 안 보이는데...?
                 `❗ 아직 잡은 적이 없거나 존재하지 않는 물고기입니다.`"""
             )
@@ -248,12 +256,16 @@ class InfoCog(commands.Cog):
 
     @slash_command(name="분석", description="물고기가 낚이는 확률을 보여드려요!", guild_ids=SCRS)
     @commands.cooldown(3, 30)
-    async def 분석(self, ctx: discord.commands.context.ApplicationContext, type: Option(str, "분석 결과의 종류", choices=["일반", "단순 표현"])):
+    async def 분석(
+        self,
+        ctx: discord.commands.context.ApplicationContext,
+        type: Option(str, "분석 결과의 종류", choices=["일반", "단순 표현"]),
+    ):
         await ctx.defer()
 
         accuracy = 20
 
-        room = Room(ctx.channel)
+        room = await Room.fetch(ctx.channel)
         rank_emoji = {0: "🟫", 1: "🟦", 2: "🟩", 3: "🟪", 4: "🟨", 5: "🟥"}
         bar_str = ""
         for i in range(0, 6):
@@ -294,7 +306,5 @@ class InfoCog(commands.Cog):
 
 def setup(bot):
     logger.info(f"{os.path.abspath(__file__)} 로드 완료")
-    userdata.update_sql("users", "fishing_now=0")  # 플레이 상태 초기화
-    userdata.update_sql("rooms", "selling_now=0")  # 플레이 상태 초기화
     logger.info("낚시 중 및 땅 작업 상태 초기화")
     bot.add_cog(InfoCog(bot))  # 꼭 이렇게 위의 클래스를 이렇게 add_cog해 줘야 작동해요!

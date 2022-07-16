@@ -3,6 +3,7 @@ from discord.commands import slash_command
 import discord
 
 import config
+from db.seta_pgsql import S_PgSQL
 from utils import logger
 import traceback
 import os
@@ -14,6 +15,8 @@ logger.info("이프가 잠에서 깨어나는 중...")
 boot_start = datetime.today()
 
 LOADING_DIR = ["cogs", "cogs/fishing"]
+
+db = S_PgSQL()
 
 
 class EpBot(commands.AutoShardedBot):
@@ -47,6 +50,9 @@ class EpBot(commands.AutoShardedBot):
         if config.SLASH_COMMAND_REGISTER_SERVER:
             logger.info(f"sid {config.SLASH_COMMAND_REGISTER_SERVER}")
         logger.info("////////////////////////////////////////////////////////")
+
+        await db.update_sql("users", "fishing_now=0")  # 플레이 상태 초기화
+        await db.update_sql("rooms", "selling_now=0")  # 플레이 상태 초기화
 
         await self.change_presence(status=discord.Status.online)
 
@@ -101,11 +107,17 @@ class ManagementCog(commands.Cog):
         logger.msg(ctx.message)
 
     @commands.Cog.listener()
-    async def on_application_command_error(self, ctx: discord.commands.context.ApplicationContext, error: Exception):
+    async def on_application_command_error(
+            self, ctx: discord.commands.context.ApplicationContext, error: Exception
+    ):
         """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
-        channel = ctx.channel
-        User(ctx.author).fishing_now = False
-        if not isinstance(error, commands.CommandError):
+        user = ctx.author
+        await (await User.fetch(user)).set_fishing_now(False)
+
+        if isinstance(error, discord.CheckFailure):
+            return
+
+        if isinstance(error, discord.ApplicationCommandInvokeError):
             try:
                 if isinstance(error.original, discord.errors.NotFound):
                     return await ctx.respond(
@@ -120,7 +132,6 @@ class ManagementCog(commands.Cog):
                 return await ctx.respond(
                     "아쉽다... 오류가 발생했어... 그러지 말아 줘..."
                 )
-
 
         # 명령어 쿨타임이 다 차지 않은 경우
         elif isinstance(error, commands.CommandOnCooldown):
@@ -138,15 +149,19 @@ class ManagementCog(commands.Cog):
             await error_send(ctx, self.bot, error, 0xFFBB00)
 
         else:
-            logger.err(e)
+            logger.err(error)
             await ctx.send(f"으앙 오류가 발생했어...\n`❗ {str(error)}`")
             await error_send(ctx, self.bot, error)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):  # 슬래시 커맨드 제외 오류 처리
         """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
+
+        if isinstance(error, commands.errors.CheckFailure):
+            return
+
         channel = ctx.channel
-        User(ctx.author).fishing_now = False
+        (await User.fetch(ctx.author)).fishing_now = False
 
         if isinstance(channel, discord.channel.DMChannel):
             if isinstance(error, commands.errors.CheckFailure):
@@ -175,9 +190,6 @@ class ManagementCog(commands.Cog):
                 f"이 명령어는 {error.cooldown.rate}번 쓰면 {error.cooldown.per}초의 쿨타임이 생겨!"
                 f"\n`❗ {int(error.retry_after)}초 후에 다시 시도해 주십시오.`"
             )
-
-        elif isinstance(error, commands.errors.CheckFailure):
-            pass
 
         # ServerDisconnectedError의 경우 섭렉으로 판정
         elif "ServerDisconnectedError" in str(error):

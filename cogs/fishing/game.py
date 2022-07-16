@@ -3,30 +3,32 @@
     낚시 본게임이 있는 Cog입니다
 """
 
+import io
+import os
+import random
+
 # 필수 임포트
 import aiohttp
 import asyncio
-from discord.commands import slash_command
-from discord.ui import View
-from discord.ext import commands
 import discord
-import os
-import io
+from discord.commands import slash_command
+from discord.ext import commands
+from discord.ui import View
 
 from classes.fish import Fish
-from utils import logger
-
-# 부가 임포트
-from utils.util_box import rdpc, wait_for_reaction
-from utils import on_working
 from classes.room import Room
 from classes.user import User
-import random
-from constants import Constants
 from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
+from constants import Constants
+from utils import logger
+from utils import on_working
 
 # 자체 낚시카드 생성 관련 임포트
 from utils.fish_card.fish_card import get_card
+
+# 부가 임포트
+from utils.util_box import rdpc
+
 
 # 물고기 이미지 로드 관련 임포트(실험용)
 # from utils.get_fish_img import get_image
@@ -52,13 +54,17 @@ class FishingGameCog(commands.Cog):
             @discord.ui.button(
                 label="낚싯줄 당기기", style=discord.ButtonStyle.blurple, emoji="🎣"
             )
-            async def button1_callback(self, button: discord.ui.Button, interaction: discord.Interaction):
+            async def button1_callback(
+                self, button: discord.ui.Button, interaction: discord.Interaction
+            ):
                 self.button_value = "당김"
                 self.stop()
                 await interaction.response.defer()
 
             @discord.ui.button(label="그만하기", style=discord.ButtonStyle.red, emoji="🚫")
-            async def button2_callback(self, button: discord.ui.Button, interaction: discord.Interaction):
+            async def button2_callback(
+                self, button: discord.ui.Button, interaction: discord.Interaction
+            ):
                 self.button_value = "그만둠"
                 self.stop()
 
@@ -104,14 +110,14 @@ class FishingGameCog(commands.Cog):
                 else:
                     return True
 
-        room = Room(ctx.channel)
-        user = User(ctx.author)
+        room = await Room.fetch(ctx.channel)
+        user = await User.fetch(ctx.author)
         effect = room.effects
         probability_per_turn = room.fishing_probability  # 턴 당 낚일 확률
 
         # 낚시터 파산 확인
         if room.fee + room.maintenance > 100:
-            user.fishing_now = False
+            await user.set_fishing_now(False)
             return await ctx.respond(
                 """이 낚시터는 파산한 듯해...\n`❗ 낚시터의 수수료와 유지비의 합이 100%을 넘기면 파산 상태가 되어 낚시를 할 수 없습니다.`
                 ```cs\n#도움말\n'이프야 수수료' 명령어로 수수료를 조정하거나,\n'이프야 철거 (시설명)' 명령어로 유지비가 높은 시설을 철거해 주세요.```"""
@@ -140,7 +146,7 @@ class FishingGameCog(commands.Cog):
             )
 
         # 낚시 시작
-        user.fishing_now = True
+        await user.set_fishing_now(True)
 
         # POINT와 FAKE를 낚시터 티어에 따라 추가
         points = []
@@ -213,7 +219,7 @@ class FishingGameCog(commands.Cog):
 
             else:
                 await ctx.respond("오류 발생")
-                user.finish_fishing()
+                await user.finish_fishing()
                 return None
 
         if not timing:  # 끝날 때까지 한 번도 미동이 없었던 경우:
@@ -230,7 +236,7 @@ class FishingGameCog(commands.Cog):
         throw, window = await fishing_result(window, user, room, fish, effect)
 
         if not throw:
-            return user.finish_fishing()
+            return await user.finish_fishing()
 
         # 이 아래는 쓰레기인 경우의 추가 선택지
         view = TrashButtonView(ctx)
@@ -243,20 +249,20 @@ class FishingGameCog(commands.Cog):
             )
             if not int(fish.length / 10) == 0:
                 embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 더러워졌어!")
-            room.add_cleans(fish.length / -10)
+            await room.add_cleans(fish.length / -10)
             fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
-            room.add_exp(fame)  # 쓰레기 버릴 때 명성 깎기
+            await room.add_exp(fame)  # 쓰레기 버릴 때 명성 깎기
 
         else:
             embed = discord.Embed(
                 title=f"💦 '{fish.name}'을(를) 치웠다! 물이 더 깨끗해진 것 같아!", colour=0x4BC59F
             )
-            room.add_cleans(fish.length / 10)  # 처리한 경우 크기/10 만큼의 청결도가 추가됨
-            user.add_money(fish.cost())
+            await room.add_cleans(fish.length / 10)  # 처리한 경우 크기/10 만큼의 청결도가 추가됨
+            await user.add_money(fish.cost())
             if not int(fish.length / 10) == 0:
                 embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 깨끗해졌어!")
 
-        user.finish_fishing()  # 낚시 종료 판정
+        await user.finish_fishing()  # 낚시 종료 판정
         await window.edit(embed=embed, view=None)
 
     @slash_command(name="ㄴㅅ", description="이프와 함께 물고기를 낚아요!")
@@ -279,7 +285,7 @@ async def fishing_stoped(ctx, window, user: User):
         await ctx.respond(
             "아무리 낚시가 안 된다고 해도 그렇지 낚싯줄을 끊으면 어떻게 해!!! 💢\n```❗ 낚시 중간에 메시지를 지우지 마세요.```"
         )
-    user.finish_fishing()
+    await user.finish_fishing()
 
 
 async def fishing_failed(window, user: User, text: str):
@@ -288,7 +294,7 @@ async def fishing_failed(window, user: User, text: str):
         title="낚시 실패", description=text, colour=discord.Colour.light_grey()
     )
     await window.edit(embed=embed, view=None)
-    user.finish_fishing()
+    await user.finish_fishing()
 
 
 async def fishing_result(window, user: User, room: Room, fish, effect):
@@ -298,9 +304,26 @@ async def fishing_result(window, user: User, room: Room, fish, effect):
         fish.cost() + fish.fee(user, room) + fish.maintenance(room) + fish.bonus(room)
     )
     fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
+
+    # 도감 추가 & 기록 추가
+    await user.get_fish(fish)
+
+    # 물고기 금액이 양수일 경우
+    if fish.cost() > 0:
+        # 개인 명성 & 낚시터 명성 부여
+        await user.add_exp(fame)
+        await room.add_exp(fame)
+
+        await user.give_money(net_profit)
+
+        # 주인이 아니면 낚시터 주인에게 돈 부여
+        if room.owner_id != user.id:
+            owner = await User.fetch(room.owner_id)
+            await owner.give_money(fish.fee(user, room) * -1)
+
     information = f"{fish.rarity_str()} | 📏 {fish.length:,}cm | ✨ {int(fame)} | 💵 {fish.cost():,} `→ {user.money:,} 💰`"
 
-    if user.update_biggest(fish):
+    if await user.update_biggest(fish):
         information += "\n`📏 오늘 낚은 것 중 가장 커! (일일 최고 크기)`"
 
     if len(user.fish_history):
@@ -327,8 +350,8 @@ async def fishing_result(window, user: User, room: Room, fish, effect):
         # 쓰레기이지만 처리 비용이 없는 경우 어쩔 수 없이 버림
         elif fish.cost() + user.money < 0:
             information += "\n`💦 미안하지만 널 처리하기에는 지갑이... (처리할 돈이 없어 물에 도로 던졌다)`"
-            room.add_cleans(fish.length / -10)  # 버린 경우 크기/10 만큼의 청결도가 깎임
-            room.add_exp(fame)  # 쓰레기 버릴 때 명성 깎기
+            await room.add_cleans(fish.length / -10)  # 버린 경우 크기/10 만큼의 청결도가 깎임
+            await room.add_exp(fame)  # 쓰레기 버릴 때 명성 깎기
 
         # 팔 수 있는 특수 쓰레기인 경우 오히려 돈을 얻음
         elif fish.cost() > 0:
@@ -341,21 +364,6 @@ async def fishing_result(window, user: User, room: Room, fish, effect):
                 f"\n🧹 : {-1 * fish.cost()}💰을 내고 쓰레기를 치운다. (소지금 : {str(user.money)}💰)"
                 "\n💦 : ... 그냥 다시 물에 버리자```"
             )
-    # 도감 추가 & 기록 추가
-    user.get_fish(fish)
-
-    # 물고기 금액이 양수일 경우
-    if fish.cost() > 0:
-        # 개인 명성 & 낚시터 명성 부여
-        user.add_exp(fame)
-        room.add_exp(fame)
-
-        user.give_money(net_profit)
-
-        # 주인이 아니면 낚시터 주인에게 돈 부여
-        if room.owner_id != user.id:
-            owner = User(room.owner_id)
-            owner.give_money(fish.fee(user, room) * -1)
 
     if throw:
         embed = discord.Embed(

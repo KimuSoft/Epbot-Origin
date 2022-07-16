@@ -19,36 +19,45 @@ class FishAdminCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name = "디버그", guild_ids = config.ADMIN_COMMAND_GUILD, description="관리자 디버그용 도구입니다. (관리자 전용)")
+    @slash_command(
+        name="디버그",
+        guild_ids=config.ADMIN_COMMAND_GUILD,
+        description="관리자 디버그용 도구입니다. (관리자 전용)",
+    )
     @administrator()
-    async def 테스트(self, ctx, command_type:
-        Option(str, "관리자 명령어 종류", choices = ["지형변경", "명성설정", "명성부여", "돈부여", "기타"]),
-        num: int = None, user: discord.Member = None):
-
+    async def 테스트(
+        self,
+        ctx,
+        command_type: Option(
+            str, "관리자 명령어 종류", choices=["지형변경", "명성설정", "명성부여", "돈부여", "기타"]
+        ),
+        num: int = None,
+        user: discord.Member = None,
+    ):
+        room = await Room.fetch(ctx.channel)
         if command_type == "지형변경":
-            Room(ctx.channel).biome = num
+            await room.set_biome(num)
             await ctx.respond(content=f"여기의 지형을 '{Constants.BIOME_KR[num]}'(으)로 바꿔써!")
 
         elif command_type == "명성설정":
-            room = Room(ctx.channel)
-            origin_exp = room.exp
-            room.exp = num
+            origin_exp = await room.get_exp()
+            await room.set_exp(num)
             await ctx.respond(content=f"여기의 명성을 `{origin_exp}`에서 `{num}`(으)로 바꿔써!")
-        
+
         elif command_type == "명성부여":
-            room = Room(ctx.channel)
-            origin_exp = room.exp
-            room.exp += num
-            await ctx.respond(content=f"여기의 명성을 `{origin_exp}`에서 `{room.exp:,}`(으)로 바꿔써!")
+            origin_exp = await room.get_exp()
+            room.set_exp(origin_exp + num)
+            await ctx.respond(
+                content=f"여기의 명성을 `{origin_exp}`에서 `{await room.get_exp():,}`(으)로 바꿔써!"
+            )
 
         elif command_type == "돈부여":
-            user = User(user)
-            user.give_money(num)
+            user = await User.fetch(user)
+            await user.give_money(num)
             await ctx.respond(f"<@!{user.id}>가 `{user.money:,}💰` 가 됐어!")
 
-        else:    
+        else:
             await ctx.respond("Hello, This is KOI3125 test command!")
-
 
 
 def setup(bot):

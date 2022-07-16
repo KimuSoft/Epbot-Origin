@@ -14,19 +14,19 @@
     fee = 5
 """
 
-from datetime import datetime, timezone
-import random
-import copy
 import ast
+import copy
+import random
+from datetime import datetime, timezone
 
 from discord import Thread
+
 from classes.facility import Facility, NotExistFacility, UNITDATA
-from constants import Constants
-from db.seta_sqlite import S_SQLite
-from db.seta_pgsql import S_PgSQL
-from utils import logger
-from db import seta_json as sj
 from classes.fish import Fish
+from constants import Constants
+from db.seta_pgsql import S_PgSQL
+from db.seta_sqlite import S_SQLite
+from utils import logger
 
 db = S_PgSQL()
 fishdb = S_SQLite("static/fishing.db")
@@ -73,16 +73,18 @@ class Room:
 
     # ------------------------------------- add(상대적 값 수정/+=이나 -=대신 이쪽을 권장) ------------------------------------- #
 
-    def add_cleans(self, value: int):
+    async def add_cleans(self, value: int):
         """청결도에 value 만큼 더합니다.
         float 같은 값을 넣어도 int로 자동변환합니다."""
-        db.update_sql("rooms", f"cleans = cleans + {int(value)}", f"id='{self.id}'")
+        await db.update_sql(
+            "rooms", f"cleans = cleans + {int(value)}", f"id='{self.id}'"
+        )
         self._cleans += int(value)
 
-    def add_exp(self, value: int):
+    async def add_exp(self, value: int):
         """낚시터 명성에 value 만큼 더합니다.
         float 같은 값을 넣어도 int로 자동변환합니다."""
-        db.update_sql("rooms", f"exp = exp + {int(value)}", f"id='{self.id}'")
+        await db.update_sql("rooms", f"exp = exp + {int(value)}", f"id='{self.id}'")
         self._exp += int(value)
 
     # ------------------------------------- getter/setter(읽기/쓰기 전용) ------------------------------------- #
@@ -93,20 +95,17 @@ class Room:
         return self._owner_id
         # return db.select_sql('rooms', 'owner', f'WHERE id={self.id}')[0][0]
 
-    @owner_id.setter
-    def owner_id(self, _id: int):
-        db.update_sql("rooms", f"owner='{_id}'", f"id='{self.id}'")
+    async def set_owner_id(self, _id: int):
+        await db.update_sql("rooms", f"owner='{_id}'", f"id='{self.id}'")
         self._owner_id = _id
 
-    @property
-    def cleans(self):
+    async def get_cleans(self):
         """int: 땅의 청결도 (*값 수정 가능*)
         ※ 자주 변하는 값이므로 부를 때마다 쿼리를 날려 DB에서 얻어옵니다."""
-        return db.select_sql("rooms", "cleans", f"WHERE id='{self.id}'")[0][0]
+        return (await db.select_sql("rooms", "cleans", f"WHERE id='{self.id}'"))[0][0]
 
-    @cleans.setter
-    def cleans(self, value: int):
-        db.update_sql("rooms", f"cleans={int(value)}", f"id='{self.id}'")
+    async def set_cleans(self, value: int):
+        await db.update_sql("rooms", f"cleans={int(value)}", f"id='{self.id}'")
         self._cleans = value
 
     @property
@@ -115,9 +114,8 @@ class Room:
         return self._season
         # return db.select_sql('rooms', 'season', f'WHERE id={self.id}')[0][0]
 
-    @season.setter
-    def season(self, value: int):
-        db.update_sql("rooms", f"season={int(value)}", f"id='{self.id}'")
+    async def set_season(self, value: int):
+        await db.update_sql("rooms", f"season={int(value)}", f"id='{self.id}'")
         self._season = value
 
     @property
@@ -126,9 +124,8 @@ class Room:
         return self._biome
         # return db.select_sql('rooms', 'biome', f'WHERE id={self.id}')[0][0]
 
-    @biome.setter
-    def biome(self, value: int):
-        db.update_sql("rooms", f"biome={int(value)}", f"id='{self.id}'")
+    async def set_biome(self, value: int):
+        await db.update_sql("rooms", f"biome={int(value)}", f"id='{self.id}'")
         self._biome = value
 
     @property
@@ -137,20 +134,17 @@ class Room:
         return self._fee
         # return db.select_sql('rooms', 'fe', f'WHERE id={self.id}')[0][0]
 
-    @fee.setter
-    def fee(self, value: int):
-        db.update_sql("rooms", f"fee={int(value)}", f"id='{self.id}'")
+    async def set_fee(self, value: int):
+        await db.update_sql("rooms", f"fee={int(value)}", f"id='{self.id}'")
         self._fee = int(value)
 
-    @property
-    def exp(self):
+    async def get_exp(self):
         """int: 땅의 명성 값 (*값 수정 가능*)
         ※ 자주 변하는 값이므로 부를 때마다 쿼리를 날려 DB에서 얻어옵니다."""
-        return db.select_sql("rooms", "exp", f"WHERE id='{self.id}'")[0][0]
+        return (await db.select_sql("rooms", "exp", f"WHERE id='{self.id}'"))[0][0]
 
-    @exp.setter
-    def exp(self, value: int):
-        db.update_sql("rooms", f"exp={int(value)}", f"id='{self.id}'")
+    async def set_exp(self, value: int):
+        await db.update_sql("rooms", f"exp={int(value)}", f"id='{self.id}'")
         self._exp = int(value)
 
     @property
@@ -159,19 +153,18 @@ class Room:
         return self._land_value
         # return db.select_sql('rooms', 'land_value', f'WHERE id={self.id}')[0][0]
 
-    @land_value.setter
-    def land_value(self, value: int):
-        db.update_sql("rooms", f"land_value={int(value)}", f"id='{self.id}'")
+    async def set_land_value(self, value: int):
+        await db.update_sql("rooms", f"land_value={int(value)}", f"id='{self.id}'")
         self._land_value = int(value)
 
-    @property
-    def working_now(self):
+    async def get_working_now(self):
         """bool: 현재 땅이 작업 중인지 여부 (*값 수정 가능*)"""
-        return db.select_sql("rooms", "selling_now", f"WHERE id='{self.id}'")[0][0]
+        return (await db.select_sql("rooms", "selling_now", f"WHERE id='{self.id}'"))[0][
+            0
+        ]
 
-    @working_now.setter
-    def working_now(self, value: bool):
-        db.update_sql("rooms", f"selling_now={int(value)}", f"id='{self.id}'")
+    async def set_working_now(self, value: bool):
+        await db.update_sql("rooms", f"selling_now={int(value)}", f"id='{self.id}'")
         self._working_now = bool(value)
 
     # ------------------------------------- getter(읽기 전용) ------------------------------------- #
@@ -292,7 +285,7 @@ class Room:
 
         return True
 
-    def build_facility(self, facility: str):
+    async def build_facility(self, facility: str):
         """지정 코드의 시설을 건설합니다.
 
         Parameters
@@ -308,13 +301,13 @@ class Room:
         if facility in self.facilities:
             raise AlreadyBuilt
         self._facilities.append(facility)
-        db.update_sql(
+        await db.update_sql(
             "rooms",
             f"facilities='{db.json_convert(self.facilities)}'",
             f"id='{self.id}'",
         )
 
-    def break_facility(self, facility: str):
+    async def break_facility(self, facility: str):
         """지정 코드의 시설을 철거합니다.
 
         Parameters
@@ -330,7 +323,7 @@ class Room:
         if facility not in self.facilities:
             raise Exception
         self._facilities.remove(facility)
-        db.update_sql(
+        await db.update_sql(
             "rooms",
             f"facilities='{db.json_convert(self.facilities)}'",
             f"id='{self.id}'",
@@ -476,37 +469,40 @@ class Room:
 
     # ------------------------------------- __init__ ------------------------------------- #
 
-    def __init__(self, channel):
+    @staticmethod
+    async def fetch(channel):
+        room = Room()
+
         if isinstance(channel, int) or isinstance(
             channel, str
         ):  # ID만으로 생성하는 경우(매우 비권장)
             # logger.warn('권장되지 않은 사용 : ID로 Room 객체 생성')
-            self.id = channel
+            room.id = channel
 
         elif isinstance(channel, Thread):
             # 스레드로 생성하는 경우 엄마 채널을 기준으로 간주함.
             channel = channel.parent
             if not channel:
                 raise Exception
-            self.id = channel.id
-            self.name = channel.name.replace('"', "").replace("'", "")
-            self.history = (datetime.now(timezone.utc) - channel.created_at).days
+            room.id = channel.id
+            room.name = channel.name.replace('"', "").replace("'", "")
+            room.history = (datetime.now(timezone.utc) - channel.created_at).days
 
         else:
             # 채널 객체로 생성하는 경우
-            self.channel = channel
-            self.id = channel.id
-            self.name = channel.name.replace('"', "").replace("'", "")
-            self.history = (datetime.now(timezone.utc) - channel.created_at).days
+            room.channel = channel
+            room.id = channel.id
+            room.name = channel.name.replace('"', "").replace("'", "")
+            room.history = (datetime.now(timezone.utc) - channel.created_at).days
 
-        data = self._load_data()
+        data = await room._load_data()
 
         # 낚시터 데이터가 없다면 생성
         if not data:
             # ID로 최초 객체를 생성한 경우 이프가 기본 주인이 됨.
-            self.owner_id = (
-                self.channel.guild.owner_id
-                if self.channel is not None
+            await room.set_owner_id(
+                room.channel.guild.owner_id
+                if room.channel is not None
                 else 693818502657867878
             )
 
@@ -517,12 +513,12 @@ class Room:
                 biome = choose({0: 1, 1: 7, 2: 10, 3: 3, 4: 5, 5: 2, 6: 3})
 
             first_data = DEFAULT_ROOM_VALUES
-            first_data["id"] = str(self.id)
-            first_data["name"] = self.name
-            first_data["owner"] = self.owner_id
+            first_data["id"] = str(room.id)
+            first_data["name"] = room.name
+            first_data["owner"] = room.owner_id
             first_data["season"] = random.randint(1, 4)
             first_data["biome"] = biome
-            db.insert_dict("rooms", first_data)
+            await db.insert_dict("rooms", first_data)
             """
             db.insert_sql(
                 'rooms',
@@ -530,46 +526,48 @@ class Room:
                 f"'{self.id}', '{self.name}', '{owner_id}', {random.randint(1, 4)}, {biome}"
                 )
             """
-            data = self._load_data()
+            data = room._load_data()
 
         data = data[0]
-        self._owner_id = int(data[1])
-        self._exp = int(data[2])
-        self._cleans = int(data[3])
-        self._season = int(data[4])
-        self._biome = int(data[5])
-        self._facilities = ast.literal_eval(str(data[6]))
-        self._land_value = int(data[7])
-        self._fee = int(data[8])
+        room._owner_id = int(data[1])
+        room._exp = int(data[2])
+        room._cleans = int(data[3])
+        room._season = int(data[4])
+        room._biome = int(data[5])
+        room._facilities = ast.literal_eval(str(data[6]))
+        room._land_value = int(data[7])
+        room._fee = int(data[8])
         if isinstance(channel, int):
-            self.name = data[0]
+            room.name = data[0]
 
         # 저장된 채널명과 다르면 갱신(ID로 객체를 생성했을 때는 적용 안 됨)
-        if not isinstance(channel, int) and self.name != data[0]:
-            db.update_sql("rooms", f"name='{self.name}'", f"id='{self.id}'")
+        if not isinstance(channel, int) and room.name != data[0]:
+            await db.update_sql("rooms", f"name='{room.name}'", f"id='{room.id}'")
 
         # 지가가 0인데 땅주인과 채널 주인이 다르면 채널 주인으로 지정
         if (
-            self.channel is not None
-            and self.land_value == 0
-            and self.owner_id != channel.guild.owner_id
+            room.channel is not None
+            and room.land_value == 0
+            and room.owner_id != channel.guild.owner_id
         ):
-            self.owner_id = self.channel.guild.owner_id
+            await room.set_owner_id(room.channel.guild.owner_id)
 
         # 수수료가 범위 밖으로 설정된 경우
-        payfromto = self.fee_range
-        if self.fee < payfromto[0]:
+        payfromto = room.fee_range
+        if room.fee < payfromto[0]:
             logger.debug("가능 수수료보다 낮아서 재조정")
-            self.fee = payfromto[0]
+            await room.set_fee(payfromto[0])
 
-        elif self.fee > payfromto[1]:
+        elif room.fee > payfromto[1]:
             logger.debug("가능 수수료보다 높아서 재조정")
-            self.fee = payfromto[1]
+            await room.set_fee(payfromto[1])
 
-    def reload(self):
+        return room
+
+    async def reload(self):
         """데이터에서 값을 다시 불러옵니다"""
 
-        data = self._load_data()[0]
+        data = (await self._load_data())[0]
         self._owner_id = int(data[1])
         self._exp = data[2]
         self._cleans = data[3]
@@ -579,16 +577,16 @@ class Room:
         self._land_value = data[7]
         self._fee = data[8]
 
-    def _load_data(self):
-        return db.select_sql(
+    async def _load_data(self):
+        return await db.select_sql(
             "rooms",
             "name, owner, exp, cleans, season, biome, facilities, land_value, fee",
             f"WHERE id='{self.id}'",
         )
 
-    def delete(self):
+    async def delete(self):
         """낚시터 정보를 삭제합니다."""
-        return db.delete_sql("rooms", f"WHERE id='{self.id}'")
+        return await db.delete_sql("rooms", f"WHERE id='{self.id}'")
 
 
 # ------------------------------------- 외부 함수 ------------------------------------- #
@@ -607,20 +605,20 @@ def choose(probabilities: dict):
     return random.choice(prb_list)
 
 
-def search_land(owner_id, zeroland=True):
+async def search_land(owner_id, zeroland=True):
     """해당 ID를 가진 사람의 땅 이름, 지가 리스트를 반환
     zeroland : 0원 땅도 불러올지 여부
     """
-    return db.select_sql(
+    return await db.select_sql(
         "rooms",
         "id, name, land_value",
         f"WHERE owner='{owner_id}' {'and not land_value = 0' if not zeroland else ''} ORDER BY land_value DESC",
     )
 
 
-def working_now(_id: int):
+async def get_working_now(_id: int):
     """Room 객체를 굳이 생성하지 않아도 땅의 작업 중 여부를 받아올 수 있게 함"""
-    return db.select_sql("rooms", "selling_now", f"WHERE id='{_id}'")[0][0]
+    return (await db.select_sql("rooms", "selling_now", f"WHERE id='{_id}'"))[0][0]
 
 
 # ------------------------------------- 오류 ------------------------------------- #

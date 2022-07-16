@@ -32,12 +32,14 @@ class Sentence:
         self.content = sentence
         # logger.debug(f"'{sentence}' 문장 객체 생성")
 
-    def prohibition(self, tags=["*"]):
+    def prohibition(self, tags=None):
         """금칙어 관련 해당 태그 목록과 걸린 목록을 반환
         tags에 아무 것도 넣지 않으면 모든 태그를 검사
 
         <금칙어 태그>
         욕설금지, 야한말금지, 정치발언금지, ..."""
+        if tags is None:
+            tags = ["*"]
         correct = []  # 걸린 태그 리스트
         what = []  # 걸린 말의 키워드
 
@@ -85,7 +87,7 @@ class Sentence:
         return correct, what
 
     # 처음 객체를 만들면 어떤 어미인지 분석합니다.
-    def termination(self, tags=["*"]):
+    def termination(self, tags=None):
         """말투 태그 목록에 들어있는 것 중 문장에 해당하는 태그 목록을 반환
         tags에 아무 것도 넣지 않으면 모든 태그를 검사
 
@@ -93,6 +95,8 @@ class Sentence:
         예요체, ㅂ니다체, 냥냥체, 마침표, ..."""
 
         # 불필요한 요소를 제외하고 키워드화
+        if tags is None:
+            tags = ["*"]
         replaces = [".", "?", "!", "/", "❤️", "⭐", "💕", "\n", "~", "|", "*", "_"]
         keyword = to_keyword(self.content, replaces)
         correct = []  # 걸린 태그 리스트
@@ -187,7 +191,7 @@ class Sentence:
         # logger.debug(f"말투 // {correct}")
         return correct
 
-    def determination(self, tags=["*"]):
+    def determination(self, tags=None):
         """말투 태그 목록에 들어있는 것 중 문장에 해당하는 태그 목록을 반환
         tags에 아무 것도 넣지 않으면 모든 태그를 검사
 
@@ -195,6 +199,8 @@ class Sentence:
         예요체, ㅂ니다체, 냥냥체, 마침표, ..."""
 
         # 불필요한 요소를 제외하고 키워드화
+        if tags is None:
+            tags = ["*"]
         replaces = [".", "?", "!", "/", "❤️", "⭐", "💕", "\n"]
         keyword = to_keyword(self.content, replaces)
         correct = []  # 걸린 태그 리스트

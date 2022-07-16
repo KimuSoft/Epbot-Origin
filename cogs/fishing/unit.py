@@ -3,22 +3,23 @@
     건설, 철거 등 시설 관련 명령어가 있습니다.
 """
 
-# 필수 임포트
-from discord.commands import slash_command
-from discord.commands import Option
-from discord.ui import View
-from discord.ext import commands
-import discord
 import os
 
-from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
-from constants import Constants
-from utils import logger
+import discord
+from discord.commands import Option
+
+# 필수 임포트
+from discord.commands import slash_command
+from discord.ext import commands
+from discord.ui import View
 
 # 부가 임포트
 from classes.room import Room, Facility, NotExistFacility
-from utils.util_box import ox
+from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
+from constants import Constants
+from utils import logger
 from utils.on_working import on_working
+
 
 # from utils.on_working import p_requirements
 
@@ -32,7 +33,7 @@ class UnitCog(commands.Cog):
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
     async def 업그레이드(self, ctx):
-        room = Room(ctx.channel)
+        room = await Room.fetch(ctx.channel)
         try:
             facility = Facility(f"_TIER{room.tier + 1}")
 
@@ -43,12 +44,12 @@ class UnitCog(commands.Cog):
                 `❗ 축하합니다! 모든 업그레이드를 완료하셨습니다!`"""
             )
 
-        room.working_now = True  # 땅 작업 시작
+        await room.set_working_now(True)  # 땅 작업 시작
         embed = discord.Embed(
             title=f"{room.name} 땅에 '{facility.name}' 시설을 건설하여 {room.tier + 1}티어로 업그레이드할 거야?",
             description=(
                 f"```cs\n{facility.description}\n{facility.effect_information()}"
-                f"```현재 낚시터 명성 : ✨ {room.exp} ( ✨ {facility.cost} 소모 )"
+                f"```현재 낚시터 명성 : ✨ {await room.get_exp()} ( ✨ {facility.cost} 소모 )"
             ),
             colour=0x4BC59F,
         )
@@ -88,15 +89,15 @@ class UnitCog(commands.Cog):
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
-            room.working_now = False  # 땅 작업 종료
+            await room.set_working_now(False)  # 땅 작업 종료
             embed = discord.Embed(
                 title="낚시터 업그레이드를 취소하였다.", colour=discord.Colour.light_grey()
             )
             return await window.edit_original_message(embed=embed, view=None)
 
         # 낚시터 명성이 부족한 경우
-        if facility.cost > room.exp:
-            room.working_now = False  # 땅 작업 종료
+        if facility.cost > await room.get_exp():
+            await room.set_working_now(False)  # 땅 작업 종료
             return await window.edit_original_message(
                 content=f"""으움... 기각당했어...
                 `❗ 낚시터 명성이 부족합니다. ( ✨ {facility.cost} 필요 )`""",
@@ -106,10 +107,10 @@ class UnitCog(commands.Cog):
 
         # 1티어의 경우 전용 시설이 없으므로 무시
         if not room.tier == 1:
-            room.break_facility(f"_TIER{room.tier}")
-        room.build_facility(facility.code)
-        room.add_exp(facility.cost * -1)
-        room.working_now = False
+            await room.break_facility(f"_TIER{room.tier}")
+        await room.build_facility(facility.code)
+        await room.add_exp(facility.cost * -1)
+        await room.set_working_now(False)
         await window.edit_original_message(
             content=f"""<@{ctx.author.id}> {room.name} 낚시터가 {room.tier} 티어로 업그레이드 했어! 축하해!
             `🎉 이제 새로운 종류의 시설을 건설할 수 있게 되었습니다!`""",
@@ -120,7 +121,7 @@ class UnitCog(commands.Cog):
     @slash_command(name="공영화", description="낚시터를 공영화해요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True, landwork=True, owner_only=True)
     async def 공영화(self, ctx):
-        room = Room(ctx.channel)
+        room = await Room.fetch(ctx.channel)
         if ctx.channel.guild.owner_id != ctx.author.id:
             return await ctx.respond(
                 "낚시터 공영화는 서버 주인만 할 수 있어!"
@@ -143,7 +144,7 @@ class UnitCog(commands.Cog):
             colour=0x4BC59F,
         )
 
-        room.working_now = True
+        await room.set_working_now(True)
 
         class OXButtonView(View):
             def __init__(self, ctx):
@@ -180,7 +181,7 @@ class UnitCog(commands.Cog):
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
-            room.working_now = False
+            await room.set_working_now(False)
             embed = discord.Embed(
                 title="낚시터 공영화를 취소하였다.", colour=discord.Colour.light_grey()
             )
@@ -193,22 +194,22 @@ class UnitCog(commands.Cog):
             if i.startswith("_"):
                 continue
             fac = Facility(i)
-            room.break_facility(i)
-            room.add_exp(fac.cost)
+            await room.break_facility(i)
+            await room.add_exp(fac.cost)
             breaked_cost += fac.cost
             breaked.append(fac.name)
-        room.build_facility("_TIER0")
+        await room.build_facility("_TIER0")
         await window.edit_original_message(
             content=f"<@{ctx.author.id}> {room.name} 낚시터는 이제 공공 낚시터야!",
             embed=None,
             view=None,
         )
-        room.working_now = False
+        await room.set_working_now(False)
 
     @slash_command(name="민영화", description="이 낚시터(채널)을 민영화해요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True, landwork=True, owner_only=True)
     async def 민영화(self, ctx):
-        room = Room(ctx.channel)
+        room = await Room.fetch(ctx.channel)
         if ctx.channel.guild.owner_id != ctx.author.id:
             return await ctx.respond(
                 "낚시터 민영화는 서버 주인만 할 수 있어!" "\n`❗ 낚시터 민영화는 서버 주인만 할 수 있습니다.`"
@@ -223,7 +224,7 @@ class UnitCog(commands.Cog):
             title=f"{room.name} 낚시터를 공공 낚시터에서 다시 일반 낚시터로 만들 거야?", colour=0x4BC59F
         )
 
-        room.working_now = True
+        await room.set_working_now(True)
 
         class OXButtonView(View):
             def __init__(self, ctx):
@@ -260,25 +261,25 @@ class UnitCog(commands.Cog):
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
-            room.working_now = False
+            await room.set_working_now(False)
             embed = discord.Embed(
                 title="낚시터 민영화를 취소하였다.", colour=discord.Colour.light_grey()
             )
             return await window.edit_original_message(embed=embed, view=None)
-        room.break_facility("_TIER0")
+        await room.break_facility("_TIER0")
         await window.edit_original_message(
             content=f"<@{ctx.author.id}> {room.name} 낚시터는 이제 공공 낚시터가 아니야!",
             embed=None,
             view=None,
         )
-        room.working_now = False
+        await room.set_working_now(False)
 
     @slash_command(name="다운그레이드", description="이 낚시터(채널)의 티어를 내려요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
     async def 다운그레이드(self, ctx):
-        room = Room(ctx.channel)
+        room = await Room.fetch(ctx.channel)
 
         if room.tier == 1:
             return await ctx.respond(
@@ -291,7 +292,7 @@ class UnitCog(commands.Cog):
                 title=f"{room.name} 땅을 1티어로 다운그레이드할 거야?",
                 description=(
                     f"**❗ 티어를 낮출 시 상위 티어의 시설들은 자동으로 철거 됩니다!**"
-                    f"\n현재 낚시터 명성 : ✨ {room.exp:,}"
+                    f"\n현재 낚시터 명성 : ✨ {await room.get_exp():,}"
                 ),
                 colour=0x4BC59F,
             )
@@ -301,14 +302,14 @@ class UnitCog(commands.Cog):
                 title=f"{room.name} 땅을 {room.tier - 1}티어로 다운그레이드할 거야?",
                 description=(
                     f"**❗ 티어를 낮출 시 상위 티어의 시설들은 자동으로 철거 됩니다!**"
-                    f"\n현재 낚시터 명성 : ✨ {room.exp:,} ( ✨ {facility.cost:,} 다시 받음 )"
+                    f"\n현재 낚시터 명성 : ✨ {await room.get_exp():,} ( ✨ {facility.cost:,} 다시 받음 )"
                 ),
                 colour=0x4BC59F,
             )
 
         now_facility = Facility(f"_TIER{room.tier}")
 
-        room.working_now = True
+        await room.set_working_now(True)
 
         class OXButtonView(View):
             def __init__(self, ctx):
@@ -345,7 +346,7 @@ class UnitCog(commands.Cog):
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
-            room.working_now = False
+            await room.set_working_now(False)
             embed = discord.Embed(
                 title="낚시터 다운그레이드를 취소하였다.", colour=discord.Colour.light_grey()
             )
@@ -359,16 +360,16 @@ class UnitCog(commands.Cog):
                 continue
             fac = Facility(i)
             if fac.tier >= room.tier:
-                room.break_facility(i)
-                room.add_exp(fac.cost)
+                await room.break_facility(i)
+                await room.add_exp(fac.cost)
                 breaked_cost += fac.cost
                 breaked.append(fac.name)
 
-        room.break_facility(f"_TIER{room.tier}")
+        await room.break_facility(f"_TIER{room.tier}")
         if facility is not None:  # 1티어는 건물이 따로 없음
-            room.build_facility(facility.code)
-        room.add_exp(now_facility.cost)
-        room.working_now = False
+            await room.build_facility(facility.code)
+        await room.add_exp(now_facility.cost)
+        await room.set_working_now(False)
 
         bonus = (
             ""
@@ -384,9 +385,8 @@ class UnitCog(commands.Cog):
 
     @slash_command(name="시설", description="특정 티어의 시설중 낚시터에 알려드려요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True, landwork=True, twoball=False)
-    async def 시설(self, ctx,
-    tier: Option(int, "시설 목록을 알고 싶은 특정 티어를 입력해주세요!") = 1):
-        room = Room(ctx.channel)
+    async def 시설(self, ctx, tier: Option(int, "시설 목록을 알고 싶은 특정 티어를 입력해주세요!") = 1):
+        room = await Room.fetch(ctx.channel)
 
         if room.tier < int(tier):
             return await ctx.respond(
@@ -462,7 +462,7 @@ class UnitCog(commands.Cog):
                 "\n`❗ 만약 티어를 낮추려는 거라면 '이프야 다운그레이드' 명령어를 사용해 주세요.`"
             )
 
-        room = Room(ctx.channel)
+        room = await Room.fetch(ctx.channel)
 
         if facility.code not in room.facilities:
             return await ctx.respond(
@@ -470,7 +470,7 @@ class UnitCog(commands.Cog):
                 `❗ 아직 건설되지 않은 시설입니다.`"""
             )
 
-        room.working_now = True
+        await room.set_working_now(True)
         embed = discord.Embed(
             title=f"{room.name} 땅에서 '{facility.name}' 시설을 철거할 거야?",
             description=f"반환되는 낚시터 명성 : ✨ {facility.cost}",
@@ -516,12 +516,12 @@ class UnitCog(commands.Cog):
                 title="시설 철거를 취소하였다.", colour=discord.Colour.light_grey()
             )
             await window.edit_original_message(embed=embed, view=None)
-            room.working_now = False
+            await room.set_working_now(False)
             return
 
-        room.break_facility(facility.code)
-        room.add_exp(facility.cost)
-        room.working_now = False
+        await room.break_facility(facility.code)
+        await room.add_exp(facility.cost)
+        await room.set_working_now(False)
         await window.edit_original_message(
             content=f"<@{ctx.author.id}> {room.name} 땅에서 **{facility.name}**을(를) 철거했어!",
             embed=None,
@@ -549,9 +549,9 @@ class UnitCog(commands.Cog):
                 "\n`❗ 만약 업그레이드 하시려는 거라면 '/업그레이드' 명령어를 사용해 주세요.`"
             )
 
-        room = Room(ctx.channel)
+        room = await Room.fetch(ctx.channel)
 
-        if facility.cost > room.exp:
+        if facility.cost > await room.get_exp():
             return await ctx.respond(
                 f"""흐으음... 이 낚시터에는 아직 이른 시설이라고 생각해
                 `❗ 낚시터 명성이 부족합니다. ( ✨ {facility.cost} 필요 )`"""
@@ -562,12 +562,12 @@ class UnitCog(commands.Cog):
         except Exception as e:
             return await ctx.respond(str(e))
 
-        room.working_now = True  # 땅 작업 시작
+        await room.set_working_now(True)  # 땅 작업 시작
         embed = discord.Embed(
             title=f"{room.name} 땅에 '{facility.name}' 시설을 건설할 거야?",
             description=(
                 f"```cs\n{facility.description}\n{facility.effect_information()}```"
-                f"현재 낚시터 명성 : **✨ {room.exp}** ( ✨ {facility.cost} 소모 )"
+                f"현재 낚시터 명성 : **✨ {await room.get_exp()}** ( ✨ {facility.cost} 소모 )"
             ),
             colour=0x4BC59F,
         )
@@ -611,12 +611,12 @@ class UnitCog(commands.Cog):
                 title="시설 건설을 취소하였다.", colour=discord.Colour.light_grey()
             )
             await window.edit_original_message(embed=embed, view=None)
-            room.working_now = False  # 땅 작업 종료
+            await room.set_working_now(False)  # 땅 작업 종료
             return
 
-        room.build_facility(facility.code)
-        room.add_exp(facility.cost * -1)
-        room.working_now = False  # 땅 작업 종료
+        await room.build_facility(facility.code)
+        await room.add_exp(facility.cost * -1)
+        await room.set_working_now(False)  # 땅 작업 종료
         await window.edit_original_message(
             content=f"<@{ctx.author.id}> {room.name} 땅에 **{facility.name}**을(를) 건설했어!",
             embed=None,

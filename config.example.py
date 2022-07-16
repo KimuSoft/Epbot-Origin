@@ -7,7 +7,6 @@ load_dotenv()
 """ Debug Option """
 debug = True
 query_logging = False
-profiling = False
 
 """Administrator Setting"""
 ADMINS = [
@@ -15,15 +14,11 @@ ADMINS = [
 ]
 
 """ PostgreSQL Database Configuration """
-HOST = "127.0.0.1"  # HOST를 localhost로 세팅할 경우 HOST를 사용하지 않음(DB 서버와 이프 서버를 같이 돌릴 경우 권장)
-DBNAME = "postgres"
-USER = "postgres"
-PASSWORD = "test"
-PORT = "5432"
+PG_DSN = "postgresql://postgres:test@localhost:5432/postgres"
 
 """ FishCard Server Setting"""
 CARD_SERVER = "http://localhost:3000"  # 슬래시로 끝내지 말아주세요
-CARD_TOKEN = os.getenv('IMAGE_GENERATOR_TOKEN', '')  # python scripts/genscript.py
+CARD_TOKEN = os.getenv("IMAGE_GENERATOR_TOKEN", "")  # python scripts/genscript.py
 
 """ Discord Bot Configuration """
 TOKEN = ""
@@ -39,7 +34,7 @@ ACTIVITIES = [
 ]
 DEBUG_ACTIVITIES = ["버그 수정 중. . ."]
 
-""" Loggin & Announcement Channel Setting """
+""" Logging & Announcement Channel Setting """
 ERROR_LOGGING_CHANNEL = 1234567890
 ANNOUNCE_CHANNEL = 1234567890
 
