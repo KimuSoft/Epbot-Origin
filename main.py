@@ -108,22 +108,25 @@ class ManagementCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_application_command_error(
-        self, ctx: discord.commands.context.ApplicationContext, error: Exception
+            self, ctx: discord.commands.context.ApplicationContext, error: Exception
     ):
         """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
         user = ctx.author
         await (await User.fetch(user)).set_fishing_now(False)
+
+        if isinstance(error, discord.CheckFailure):
+            return
+
         if isinstance(error, discord.ApplicationCommandInvokeError):
             try:
                 if isinstance(error.original, discord.errors.NotFound):
                     return await ctx.respond(
                         "저기 혹시... 갑자기 메시지를 지우거나 한 건 아니지...? 그러지 말아 줘..."
                     )
-
                 logger.err(error.original)
             except Exception as e:
                 logger.err(e)
-                pass
+                return
 
         # 명령어 쿨타임이 다 차지 않은 경우
         elif isinstance(error, commands.CommandOnCooldown):
@@ -148,6 +151,10 @@ class ManagementCog(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):  # 슬래시 커맨드 제외 오류 처리
         """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
+
+        if isinstance(error, commands.errors.CheckFailure):
+            return
+
         channel = ctx.channel
         (await User.fetch(ctx.author)).fishing_now = False
 
@@ -178,9 +185,6 @@ class ManagementCog(commands.Cog):
                 f"이 명령어는 {error.cooldown.rate}번 쓰면 {error.cooldown.per}초의 쿨타임이 생겨!"
                 f"\n`❗ {int(error.retry_after)}초 후에 다시 시도해 주십시오.`"
             )
-
-        elif isinstance(error, commands.errors.CheckFailure):
-            return
 
         # ServerDisconnectedError의 경우 섭렉으로 판정
         elif "ServerDisconnectedError" in str(error):
