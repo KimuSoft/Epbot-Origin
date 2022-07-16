@@ -99,6 +99,10 @@ class Room:
         await db.update_sql("rooms", f"owner='{_id}'", f"id='{self.id}'")
         self._owner_id = _id
 
+    @property
+    def cleans(self):
+        return self._cleans
+
     async def get_cleans(self):
         """int: 땅의 청결도 (*값 수정 가능*)
         ※ 자주 변하는 값이므로 부를 때마다 쿼리를 날려 DB에서 얻어옵니다."""
@@ -137,6 +141,10 @@ class Room:
     async def set_fee(self, value: int):
         await db.update_sql("rooms", f"fee={int(value)}", f"id='{self.id}'")
         self._fee = int(value)
+
+    @property
+    def exp(self):
+        return self._exp
 
     async def get_exp(self):
         """int: 땅의 명성 값 (*값 수정 가능*)
