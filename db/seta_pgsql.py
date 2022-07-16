@@ -1,11 +1,15 @@
 import asyncio
 import json
+import sys
 
 import aiopg
 
 import config
 from utils import logger
 from utils.asynchelper import synchronize_async_helper
+
+if sys.version_info >= (3, 8) and sys.platform.lower().startswith("win"):
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 pool = synchronize_async_helper(aiopg.create_pool(dsn=config.PG_DSN).__aenter__())
 

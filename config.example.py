@@ -7,7 +7,6 @@ load_dotenv()
 """ Debug Option """
 debug = True
 query_logging = False
-profiling = False
 
 """Administrator Setting"""
 ADMINS = [
@@ -15,7 +14,7 @@ ADMINS = [
 ]
 
 """ PostgreSQL Database Configuration """
-PG_DSN = "postgresql://postgres:postgres@127.0.0.1:5432/test"
+PG_DSN = "postgresql://postgres:test@localhost:5432/postgres"
 
 """ FishCard Server Setting"""
 CARD_SERVER = "http://localhost:3000"  # 슬래시로 끝내지 말아주세요
