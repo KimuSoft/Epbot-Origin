@@ -584,9 +584,9 @@ class Room:
             f"WHERE id='{self.id}'",
         )
 
-    def delete(self):
+    async def delete(self):
         """낚시터 정보를 삭제합니다."""
-        return db.delete_sql("rooms", f"WHERE id='{self.id}'")
+        return await db.delete_sql("rooms", f"WHERE id='{self.id}'")
 
 
 # ------------------------------------- 외부 함수 ------------------------------------- #
@@ -605,20 +605,20 @@ def choose(probabilities: dict):
     return random.choice(prb_list)
 
 
-def search_land(owner_id, zeroland=True):
+async def search_land(owner_id, zeroland=True):
     """해당 ID를 가진 사람의 땅 이름, 지가 리스트를 반환
     zeroland : 0원 땅도 불러올지 여부
     """
-    return db.select_sql(
+    return await db.select_sql(
         "rooms",
         "id, name, land_value",
         f"WHERE owner='{owner_id}' {'and not land_value = 0' if not zeroland else ''} ORDER BY land_value DESC",
     )
 
 
-async def working_now(_id: int):
+async def get_working_now(_id: int):
     """Room 객체를 굳이 생성하지 않아도 땅의 작업 중 여부를 받아올 수 있게 함"""
-    return await db.select_sql("rooms", "selling_now", f"WHERE id='{_id}'")[0][0]
+    return (await db.select_sql("rooms", "selling_now", f"WHERE id='{_id}'"))[0][0]
 
 
 # ------------------------------------- 오류 ------------------------------------- #

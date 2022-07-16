@@ -27,14 +27,14 @@ class ShortInfoCog(commands.Cog):
     async def 계절(self, ctx):
         room = await Room.fetch(ctx.channel)
         await ctx.respond(
-            content=f"`이 낚시터의 계절 : {Constants.SEASON_KR[room.season]}`", guild_ids=SCRS
+            content=f"`이 낚시터의 계절 : {Constants.SEASON_KR[room.season]}`"
         )
 
-    @slash_command(name="지형", description="이 낚시터(채널)의 지형을 알려줘요!")
+    @slash_command(name="지형", description="이 낚시터(채널)의 지형을 알려줘요!", guild_ids=SCRS)
     async def 지형(self, ctx):
         room = await Room.fetch(ctx.channel)
         await ctx.respond(
-            content=f"`이 낚시터의 지형 : {Constants.BIOME_KR[room.biome]}`", guild_ids=SCRS
+            content=f"`이 낚시터의 지형 : {Constants.BIOME_KR[room.biome]}`"
         )
 
     @slash_command(name="돈", description="지금 가지고 계신 돈을 알려줘요!", guild_ids=SCRS)
@@ -73,7 +73,7 @@ class ShortInfoCog(commands.Cog):
         embed = discord.Embed(title=ctx.author.display_name + "의 정보!", colour=0x4BC59F)
         embed.add_field(
             name="**현재 소지금**",
-            value=f"**{user.money:,}💰**\n( 총 자산 {user.all_money:,}💰 )",
+            value=f"**{user.money:,}💰**\n( 총 자산 {await user.get_all_money:,}💰 )",
             inline=True,
         )
         embed.add_field(

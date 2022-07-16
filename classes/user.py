@@ -89,17 +89,17 @@ class User:
         self._fishing_now = bool(value)
 
     @property
-    async def level(self):
+    def level(self):
         exp = self.exp
         return int((exp / 15) ** 0.5 + 1 if exp > 0 else 1)
 
     @property
-    def all_money(self):
+    async def get_all_money(self):
         """자신의 모든 땅값까지 합쳐 계산한 총자산을 반환합니다."""
-        allmoney = self._money
-        for i in self.myland_list(zeroland=False):
-            allmoney += i[2]
-        return allmoney
+        all_money = self._money
+        for i in await self.get_lands(zeroland=False):
+            all_money += i[2]
+        return all_money
 
     @property
     def theme(self):
@@ -121,10 +121,7 @@ class User:
         if value not in self._theme:
             raise NoTheme
 
-        def keybigyo(a):
-            return a != value
-
-        self._theme.sort(key=keybigyo)
+        self._theme.sort(key=lambda x: x != value)
         await db.update_sql(
             "users", f"theme='{db.json_convert(self._theme)}'", f"id='{self.id}'"
         )
@@ -146,10 +143,10 @@ class User:
         await room.set_land_value(value)
         await room.set_owner_id(self.id)
 
-    def myland_list(self, zeroland=True):
+    async def get_lands(self, zeroland=True):
         """내가 가진 땅의 리스트를 반환
         [(ID, 이름, 지가), (ID, 이름, 지가), ...]"""
-        return search_land(self.id, zeroland)
+        return await search_land(self.id, zeroland)
 
     async def update_biggest(self, fish):
         """물고기가 현재 낚은 것보다 큰 경우 갱신
@@ -219,7 +216,7 @@ class User:
 
             await db.insert_dict("users", first_value)
             # db.insert_sql('users', 'id, name', f"'{result.id}', '{result.name}'")
-            data = result._load_data()
+            data = await result._load_data()
 
         data = data[0]
         result.name = str(data[0]).replace("'", "").replace('"', "")
