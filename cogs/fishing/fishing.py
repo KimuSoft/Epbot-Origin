@@ -33,7 +33,6 @@ class InfoCog(commands.Cog):
         await ctx.defer()
 
         room = await Room.fetch(ctx.channel)
-        print(room)
         fee_range = room.fee_range
         cleans = await room.get_cleans()
         created_at = ctx.channel.created_at
