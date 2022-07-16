@@ -159,9 +159,9 @@ class Room:
 
     async def get_working_now(self):
         """bool: 현재 땅이 작업 중인지 여부 (*값 수정 가능*)"""
-        return (await db.select_sql("rooms", "selling_now", f"WHERE id='{self.id}'"))[0][
+        return (await db.select_sql("rooms", "selling_now", f"WHERE id='{self.id}'"))[
             0
-        ]
+        ][0]
 
     async def set_working_now(self, value: bool):
         await db.update_sql("rooms", f"selling_now={int(value)}", f"id='{self.id}'")

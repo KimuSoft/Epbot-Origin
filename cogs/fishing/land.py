@@ -248,7 +248,6 @@ class LandCog(commands.Cog):
             await room.set_land_value(0)
             await room.set_working_now(False)
 
-
             await window.edit_original_message(embed=embed, view=None)
 
     @slash_command(name="내땅", description="무슨 땅을 가지고 있는지 확인해요!", guild_ids=SCRS)
@@ -354,6 +353,7 @@ class LandCog(commands.Cog):
             return await ctx.respond(
                 f"흐음... 돈이 부족해!\n`❗ 현재 땅값과 소지금의 합이 {(room.land_value + user.money):,} 💰입니다.`"
             )
+
         class OXButtonView(View):
             def __init__(self, ctx):
                 super().__init__(timeout=10)

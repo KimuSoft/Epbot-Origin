@@ -108,7 +108,7 @@ class ManagementCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_application_command_error(
-            self, ctx: discord.commands.context.ApplicationContext, error: Exception
+        self, ctx: discord.commands.context.ApplicationContext, error: Exception
     ):
         """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
         user = ctx.author
@@ -123,15 +123,13 @@ class ManagementCog(commands.Cog):
                     return await ctx.respond(
                         "저기 혹시... 갑자기 메시지를 지우거나 한 건 아니지...? 그러지 말아 줘..."
                     )
-            
+
             except AttributeError:
                 pass
-            
+
             except Exception as e:
                 logger.error(e)
-                return await ctx.respond(
-                    "아쉽다... 오류가 발생했어... 그러지 말아 줘..."
-                )
+                return await ctx.respond("아쉽다... 오류가 발생했어... 그러지 말아 줘...")
 
         # 명령어 쿨타임이 다 차지 않은 경우
         elif isinstance(error, commands.CommandOnCooldown):

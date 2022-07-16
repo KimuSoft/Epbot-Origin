@@ -26,16 +26,12 @@ class ShortInfoCog(commands.Cog):
     @slash_command(name="계절", description="이 낚시터(채널)의 계절을 알려줘요!", guild_ids=SCRS)
     async def 계절(self, ctx):
         room = await Room.fetch(ctx.channel)
-        await ctx.respond(
-            content=f"`이 낚시터의 계절 : {Constants.SEASON_KR[room.season]}`"
-        )
+        await ctx.respond(content=f"`이 낚시터의 계절 : {Constants.SEASON_KR[room.season]}`")
 
     @slash_command(name="지형", description="이 낚시터(채널)의 지형을 알려줘요!", guild_ids=SCRS)
     async def 지형(self, ctx):
         room = await Room.fetch(ctx.channel)
-        await ctx.respond(
-            content=f"`이 낚시터의 지형 : {Constants.BIOME_KR[room.biome]}`"
-        )
+        await ctx.respond(content=f"`이 낚시터의 지형 : {Constants.BIOME_KR[room.biome]}`")
 
     @slash_command(name="돈", description="지금 가지고 계신 돈을 알려줘요!", guild_ids=SCRS)
     async def 돈(self, ctx):
