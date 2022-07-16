@@ -226,7 +226,7 @@ class InfoCog(commands.Cog):
         try:
             fish = Fish(search_fish(fish_name))
         except NotFishException:
-            return await ctx.send(
+            return await ctx.respond(
                 """우움... 내 도감에서는 안 보이는데...?
                 `❗ 아직 잡은 적이 없거나 존재하지 않는 물고기입니다.`"""
             )
@@ -236,7 +236,7 @@ class InfoCog(commands.Cog):
         if fish.rarity != 1 and (
             fish.rarity not in user.dex.keys() or fish.id not in user.dex[fish.rarity]
         ):
-            return await ctx.send(
+            return await ctx.respond(
                 """우움... 내 도감에서는 안 보이는데...?
                 `❗ 아직 잡은 적이 없거나 존재하지 않는 물고기입니다.`"""
             )
