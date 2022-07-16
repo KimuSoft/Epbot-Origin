@@ -55,7 +55,8 @@ class LandCog(commands.Cog):
             )
             return None
 
-        room.working_now = True
+        await room.set_working_now(True)
+
         embed = discord.Embed(
             title=f"{room.name} 땅을 {value:,}로 매입하시겠습니까?",
             description=f"소지금 : {user.money:,} 💰",
@@ -101,12 +102,14 @@ class LandCog(commands.Cog):
                 title="매입을 취소하였다.", colour=discord.Colour.light_grey()
             )
             await window.edit_original_message(embed=embed, view=None)
-            room.working_now = False
+            await room.set_working_now(False)
+
             return None
 
         origin_owner_id = room.owner_id
         await user.purchase_land(room, value)
-        room.working_now = False
+        await room.set_working_now(False)
+
         if min_purchase == 30000 and not (
             ctx.channel.topic is not None and "#매입보고" in ctx.channel.topic
         ):
@@ -134,12 +137,12 @@ class LandCog(commands.Cog):
     ):
         user = await User.fetch(ctx.author)
         if land_num != None:
-            lands = user.myland_list()
+            lands = await user.get_lands()
             room = await Room.fetch(lands[land_num - 1][0])
         else:
             room = await Room.fetch(ctx.channel)
 
-        if room.working_now:
+        if await room.get_working_now():
             await ctx.respond(
                 "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
             )
@@ -182,7 +185,8 @@ class LandCog(commands.Cog):
 
         view = OXButtonView(ctx)
 
-        room.working_now = True
+        await room.set_working_now(True)
+
         if room.channel is not None and room.owner_id == room.channel.guild.owner_id:
             # 자기 서버 땅인데 추가로 돈이 걸린 경우
 
@@ -199,7 +203,8 @@ class LandCog(commands.Cog):
                     title="돈 회수를 취소했다.", colour=discord.Colour.light_grey()
                 )
                 await window.edit_original_message(embed=embed, view=None)
-                room.working_now = False
+                await room.set_working_now(False)
+
                 return None
 
             embed = discord.Embed(
@@ -207,10 +212,11 @@ class LandCog(commands.Cog):
             )
             user = await User.fetch(ctx.author)
             await user.add_money(room.land_value)  # 돈 돌려 주고
-            room.land_value = 0
+            await room.set_land_value(0)
 
             await window.edit_original_message(embed=embed, view=None)
-            room.working_now = False
+            await room.set_working_now(False)
+
             return None
 
         else:  # 다른 사람 땅인 경우
@@ -227,7 +233,8 @@ class LandCog(commands.Cog):
                     title="땅 매각을 취소했다.", colour=discord.Colour.light_grey()
                 )
                 await window.edit_original_message(embed=embed, view=None)
-                room.working_now = False
+                await room.set_working_now(False)
+
                 return None
 
             embed = discord.Embed(
@@ -238,8 +245,9 @@ class LandCog(commands.Cog):
             user = await User.fetch(ctx.author)
             await user.add_money(room.land_value)
             await room.set_owner_id(693818502657867878)
-            room.land_value = 0
-            room.working_now = False
+            await room.set_land_value(0)
+            await room.set_working_now(False)
+
 
             await window.edit_original_message(embed=embed, view=None)
 
@@ -253,7 +261,7 @@ class LandCog(commands.Cog):
         user = await User.fetch(ctx.author)
 
         window = await ctx.respond(content="`내 땅 목록`")
-        mylands = list(user.myland_list())
+        mylands = list(await user.get_lands())
         list_str = ""
         ridx = 0
 
@@ -331,7 +339,8 @@ class LandCog(commands.Cog):
         user = await User.fetch(ctx.author)
         room = await Room.fetch(ctx.channel)
         land_value = room.land_value
-        room.working_now = True
+        await room.set_working_now(True)
+
 
         if value < 30000:
             await ctx.respond("땅 가격은 최소 30,000 💰부터 가능해!")
@@ -389,12 +398,14 @@ class LandCog(commands.Cog):
                 title="변경을 취소하였다.", colour=discord.Colour.light_grey()
             )
             await window.edit_original_message(embed=embed, view=None)
-            room.working_now = False
+            await room.set_working_now(False)
+
             return None
 
         await user.give_money(land_value - value)
-        room.land_value = value
-        room.working_now = False
+        await room.set_land_value(value)
+        await room.set_working_now(False)
+
         await window.edit_original_message(
             content=f"{room.name} 땅의 가격을 변경했어!", embed=None, view=None
         )
@@ -480,7 +491,8 @@ class LandCog(commands.Cog):
         user = await User.fetch(ctx.author)
 
         price = room.cleans * 150
-        room.working_now = True
+        await room.set_working_now(True)
+
         embed = discord.Embed(
             title=f"청소 업체를 불러 {room.name} 땅의 청결도를 0으로 만드시겠습니까?",
             description=f"예상 필요 금액 {-1 * price:,} 💰",
@@ -525,12 +537,14 @@ class LandCog(commands.Cog):
             embed = discord.Embed(
                 title="청소 업체 부르기를 취소했다.", colour=discord.Colour.light_grey()
             )
-            room.working_now = False
+            await room.set_working_now(False)
+
             return await window.edit_original_message(embed=embed, view=None)
 
         if user.money < -1 * price:
             embed = discord.Embed(title="돈이 부족해...", colour=discord.Colour.light_grey())
-            room.working_now = False
+            await room.set_working_now(False)
+
             return await window.edit_original_message(embed=embed, view=None)
 
         embed = discord.Embed(
@@ -541,7 +555,8 @@ class LandCog(commands.Cog):
         await room.set_cleans(0)
 
         await window.edit_original_message(embed=embed, view=None)
-        room.working_now = False
+        await room.set_working_now(False)
+
 
 
 def setup(bot):
