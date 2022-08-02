@@ -11,6 +11,8 @@ from discord.ext import commands
 import discord
 import os
 import math
+
+from cogs.fishing import fishing_group
 from utils import logger
 
 # 부가 임포트
@@ -24,15 +26,15 @@ class LandCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name="매입", description="이 낚시터(채널)을 매입해요!", guild_ids=SCRS)
+    @fishing_group(name="매입", description="이 낚시터(채널)을 매입해요!", guild_ids=SCRS)
     @on_working(fishing=True, landwork=True, prohibition=True, twoball=False)
-    async def 매입(self, ctx, price: Option(int, "매입 가격을 입력해요!") = None):
+    async def buy(self, ctx, price: Option(int, "매입 가격을 입력해요!") = None):
         user = await User.fetch(ctx.author)
         room = await Room.fetch(ctx.channel)
         land_value = room.land_value
         min_purchase = room.min_purchase
 
-        if price == None:
+        if price is None:
             if land_value == 0:
                 value = 30000
             else:
@@ -126,17 +128,17 @@ class LandCog(commands.Cog):
                 view=None,
             )
 
-    @slash_command(name="매각", description="자신의 낚시터를 매각하세요!", guild_ids=SCRS)
+    @fishing_group(name="매각", description="자신의 낚시터를 매각하세요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, twoball=False
     )  # 번호로 다른 채널을 건드릴 수도 있으니 landwork는 제외
-    async def 매각(
+    async def sell(
         self,
         ctx,
         land_num: Option(int, "매각하고 싶으신 땅 번호를 입력하세요! (미입력시 이 낚시터로 자동 선택)") = None,
     ):
         user = await User.fetch(ctx.author)
-        if land_num != None:
+        if land_num is not None:
             lands = await user.get_lands()
             room = await Room.fetch(lands[land_num - 1][0])
         else:
@@ -252,7 +254,7 @@ class LandCog(commands.Cog):
 
     @slash_command(name="내땅", description="무슨 땅을 가지고 있는지 확인해요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True)
-    async def 내땅(
+    async def my_land(
         self,
         ctx,
         land_name: Option(str, "땅의 이름으로 검색해요! (미 입력시 소유하는 모든 땅의 목록을 보여드려요!)") = None,
@@ -330,11 +332,11 @@ class LandCog(commands.Cog):
         )
         await window.edit_original_message(embed=embed, view=None)
 
-    @slash_command(name="땅값변경", description="이 낚시터(채널)의 땅값을 바꿔요!", guild_ids=SCRS)
+    @fishing_group(name="땅값변경", description="이 낚시터(채널)의 땅값을 바꿔요!", guild_ids=SCRS)
     @on_working(
         fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
     )
-    async def 땅값변경(self, ctx, value: Option(int, "변경하실 땅값을 입력하세요!")):
+    async def change_land_value(self, ctx, value: Option(int, "변경하실 땅값을 입력하세요!")):
         user = await User.fetch(ctx.author)
         room = await Room.fetch(ctx.channel)
         land_value = room.land_value
@@ -408,11 +410,11 @@ class LandCog(commands.Cog):
             content=f"{room.name} 땅의 가격을 변경했어!", embed=None, view=None
         )
 
-    @slash_command(name="지형변경", description="이 낚시터(채널)의 지형을 바꿔요!", guild_ids=SCRS)
+    @fishing_group(name="지형변경", description="이 낚시터(채널)의 지형을 바꿔요!", guild_ids=SCRS)
     @on_working(
         fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
     )
-    async def 지형변경(
+    async def change_biome(
         self,
         ctx,
         value: Option(
@@ -456,11 +458,11 @@ class LandCog(commands.Cog):
         await room.set_biome(biome_kr.index(value))
         await ctx.respond(f"와아 이제 여긴 {value}야!")
 
-    @slash_command(name="수수료", description="이 낚시터(채널)의 수수료를 설정하세요!", guild_ids=SCRS)
+    @fishing_group(name="수수료설정", description="이 낚시터(채널)의 수수료를 설정하세요!", guild_ids=SCRS)
     @on_working(
         fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
     )
-    async def 수수료(self, ctx, value: Option(int, "변경하실 수수료를 입력해주세요!")):
+    async def change_fee(self, ctx, value: Option(int, "변경하실 수수료를 입력해주세요!")):
         room = await Room.fetch(ctx.channel)
 
         fee_range = room.fee_range
@@ -527,7 +529,7 @@ class LandCog(commands.Cog):
     @on_working(
         fishing=True, prohibition=True, twoball=False, owner_only=True, landwork=True
     )
-    async def 청소업체(self, ctx):
+    async def clean_corp(self, ctx):
         room = await Room.fetch(ctx.channel)
 
         if room.cleans >= 0:
