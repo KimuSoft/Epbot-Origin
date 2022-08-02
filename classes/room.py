@@ -20,6 +20,7 @@ import random
 from datetime import datetime, timezone
 
 from discord import Thread
+import discord
 
 from classes.facility import Facility, NotExistFacility, UNITDATA
 from classes.fish import Fish
@@ -50,7 +51,7 @@ DEFAULT_ROOM_VALUES = {
 class Room:
     """채널 기본 정보"""
 
-    channel = None  # 채널 객체 자체
+    channel: discord.TextChannel = None  # 채널 객체 자체
     id = None  # 채널 아이디
     name: str = "알 수 없는 낚시터"  # 채널명
 

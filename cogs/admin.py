@@ -5,6 +5,7 @@
     eval 명령어도 추가
 """
 
+import ast
 import datetime
 import os
 import random
@@ -24,6 +25,18 @@ from utils import logger
 from utils import on_working
 from utils.util_box import wait_for_saying, ox
 
+# https://gist.github.com/simmsb/2c3c265813121492655bc95aa54da6b9
+def insert_returns(body):
+    if isinstance(body[-1], ast.Expr):
+        body[-1] = ast.Return(body[-1].value)
+        ast.fix_missing_locations(body[-1])
+
+    if isinstance(body[-1], ast.If):
+        insert_returns(body[-1].body)
+        insert_returns(body[-1].orelse)
+
+    if isinstance(body[-1], ast.With):
+        insert_returns(body[-1].body)
 
 class AdminCog(commands.Cog):
     def __init__(self, bot):
@@ -43,7 +56,13 @@ class AdminCog(commands.Cog):
 
         text = args
         try:
-            exec(text)
+            async def aexec(code):
+                exec(
+                    f'async def __ex(): ' +
+                    ''.join(f'\n {l}' for l in code.split('\n'))
+                )
+                return await locals()['__ex']()
+            await aexec(text)
         except Exception as e:
             embed = discord.Embed(color=0x980000, timestamp=datetime.datetime.today())
             embed.add_field(
@@ -78,7 +97,34 @@ class AdminCog(commands.Cog):
 
         text = args
         try:
-            result = eval(text)
+            fn_name = "_eval_expr"
+
+            cmd = text
+
+            # add a layer of indentation
+            cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
+
+            # wrap in async def body
+            body = f"async def {fn_name}():\n{cmd}"
+
+            parsed = ast.parse(body)
+            body = parsed.body[0].body
+
+            insert_returns(body)
+
+            env = {
+                'bot': ctx.bot,
+                'discord': discord,
+                'ctx': ctx,
+                '__import__': __import__,
+                'here': here,
+                'me': me,
+                'Room': Room,
+                'User': User
+            }
+            exec(compile(parsed, filename="<ast>", mode="exec"), env)
+
+            result = (await eval(f"{fn_name}()", env))
         except Exception as e:
             embed = discord.Embed(color=0x980000, timestamp=datetime.datetime.today())
             embed.add_field(
