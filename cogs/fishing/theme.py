@@ -9,8 +9,9 @@ from discord.ext import commands
 from classes.room import Room
 
 # 부가 임포트
-from classes.user import User
+from cogs.fishing import theme_group as _theme_group
 from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
+from classes.user import User
 from constants import Constants
 from utils import logger
 
@@ -19,14 +20,16 @@ class ThemeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name="테마", description="낚시카드의 테마를 선택하세요!", guild_ids=SCRS)
-    async def 테마(self, ctx):
+    theme_group = _theme_group
+
+    @theme_group.command(name="설정", description="낚시카드의 테마를 선택하세요!", guild_ids=SCRS)
+    async def theme(self, ctx):
         epUser = await User.fetch(ctx.author)
         view = ThemeSelectView(epUser)
         await ctx.respond(content="골라바", view=view)
 
-    @slash_command(name="미리보기", guild_ids=SCRS, description="낚시카드의 테마를 미리 경헙해보세요")
-    async def 미리보기(
+    @theme_group.command(name="미리보기", guild_ids=SCRS, description="낚시카드의 테마를 미리 경헙해보세요")
+    async def preview(
         self,
         ctx,
         theme_id: Option(str, "미리보기할 테마 아이디를 입력해 주세요.") = None,
