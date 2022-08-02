@@ -160,7 +160,7 @@ class ManagementCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, msg: discord.Message):  # 메시지 처리
-        if msg.content.startswith('이프야') or (msg.content.startswith('ㅇ') and not msg.content.startswith('ㅇㅇ')):
+        if msg.content.startswith('이프야') or (msg.content.startswith('ㅇ') and not msg.content.startswith('ㅇㅇ') and len(msg.content) > 1):
             await msg.reply("머랭!\n`❗ 이제 이프는 슬래시 커맨드를 지원합니다! 채팅창에 한 번 '/'를 쳐 보세요!`")
 
 
