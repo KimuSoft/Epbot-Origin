@@ -26,7 +26,7 @@ class LandCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @fishing_group(name="매입", description="이 낚시터(채널)을 매입해요!", guild_ids=SCRS)
+    @fishing_group.command(name="매입", description="이 낚시터(채널)을 매입해요!", guild_ids=SCRS)
     @on_working(fishing=True, landwork=True, prohibition=True, twoball=False)
     async def buy(self, ctx, price: Option(int, "매입 가격을 입력해요!") = None):
         user = await User.fetch(ctx.author)
@@ -128,7 +128,7 @@ class LandCog(commands.Cog):
                 view=None,
             )
 
-    @fishing_group(name="매각", description="자신의 낚시터를 매각하세요!", guild_ids=SCRS)
+    @fishing_group.command(name="매각", description="자신의 낚시터를 매각하세요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, twoball=False
     )  # 번호로 다른 채널을 건드릴 수도 있으니 landwork는 제외
@@ -332,7 +332,7 @@ class LandCog(commands.Cog):
         )
         await window.edit_original_message(embed=embed, view=None)
 
-    @fishing_group(name="땅값변경", description="이 낚시터(채널)의 땅값을 바꿔요!", guild_ids=SCRS)
+    @fishing_group.command(name="땅값변경", description="이 낚시터(채널)의 땅값을 바꿔요!", guild_ids=SCRS)
     @on_working(
         fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
     )
@@ -410,7 +410,7 @@ class LandCog(commands.Cog):
             content=f"{room.name} 땅의 가격을 변경했어!", embed=None, view=None
         )
 
-    @fishing_group(name="지형변경", description="이 낚시터(채널)의 지형을 바꿔요!", guild_ids=SCRS)
+    @fishing_group.command(name="지형변경", description="이 낚시터(채널)의 지형을 바꿔요!", guild_ids=SCRS)
     @on_working(
         fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
     )
@@ -458,7 +458,7 @@ class LandCog(commands.Cog):
         await room.set_biome(biome_kr.index(value))
         await ctx.respond(f"와아 이제 여긴 {value}야!")
 
-    @fishing_group(name="수수료설정", description="이 낚시터(채널)의 수수료를 설정하세요!", guild_ids=SCRS)
+    @fishing_group.command(name="수수료설정", description="이 낚시터(채널)의 수수료를 설정하세요!", guild_ids=SCRS)
     @on_working(
         fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
     )
@@ -525,7 +525,7 @@ class LandCog(commands.Cog):
         )
         await window.edit_original_message(embed=embed, view=None)
 
-    @slash_command(name="청소업체", description="돈을 지불하고 청결도를 0으로 만들어요!", guild_ids=SCRS)
+    @fishing_group.command(name="청소업체", description="돈을 지불하고 청결도를 0으로 만들어요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, twoball=False, owner_only=True, landwork=True
     )
