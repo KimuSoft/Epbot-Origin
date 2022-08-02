@@ -12,6 +12,7 @@ from discord.commands import Option
 from discord.commands import slash_command
 from discord.ext import commands
 from discord.ui import View
+from classes.facility import UNITDATA
 
 # 부가 임포트
 from classes.room import Room, Facility, NotExistFacility
@@ -22,6 +23,9 @@ from utils.on_working import on_working
 
 
 # from utils.on_working import p_requirements
+
+async def autocomplete_facilities(ctx: discord.AutocompleteContext):
+    return [i['name'] if 'name' in i else k in i for k, i in UNITDATA.items()]
 
 
 class UnitCog(commands.Cog):
@@ -532,7 +536,7 @@ class UnitCog(commands.Cog):
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def 건설(self, ctx, name: Option(str, "건설하실 시설의 이름을 입력해주세요!")):
+    async def 건설(self, ctx, name: Option(str, "건설하실 시설의 이름을 입력해주세요!", autocomplete=autocomplete_facilities)):
         arg1 = " ".join(name).replace("_", "")
 
         try:
