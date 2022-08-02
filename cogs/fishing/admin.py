@@ -25,7 +25,7 @@ class FishAdminCog(commands.Cog):
         description="관리자 디버그용 도구입니다. (관리자 전용)",
     )
     @administrator()
-    async def 테스트(
+    async def test(
         self,
         ctx,
         command_type: Option(

@@ -8,6 +8,7 @@ import ast
 from utils import logger
 
 # 부가 임포트
+from cogs.fishing import fishing_group as _fishing_group
 from classes.room import Room, Facility, NotExistFacility
 from classes.user import User
 from classes.fish import Fish, NotFishException, search_fish
@@ -26,10 +27,12 @@ class InfoCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name="여기", description="이 낚시터(채널)의 정보를 보여줘요!", guild_ids=SCRS)
+    fishing_group = _fishing_group
+
+    @fishing_group.command(name="정보", description="이 채널의 낚시터 정보를 보여줘요!", guild_ids=SCRS)
     @commands.cooldown(1, 10, commands.BucketType.user)
     @on_working(prohibition=True)
-    async def 여기(self, ctx: discord.commands.context.ApplicationContext):
+    async def fishing_info(self, ctx: discord.commands.context.ApplicationContext):
         await ctx.defer()
 
         room = await Room.fetch(ctx.channel)
@@ -100,7 +103,7 @@ class InfoCog(commands.Cog):
 
     @slash_command(name="랭킹", description="이프의 랭킹을 보여줘요!", guild_ids=SCRS)
     @on_working(prohibition=True)
-    async def 랭킹(
+    async def ranking(
         self,
         ctx: discord.commands.context.ApplicationContext,
         type: Option(str, "보고 싶으신 랭킹의 종류를 고르세요!", choices=["개인", "낚시터"]),
@@ -187,7 +190,7 @@ class InfoCog(commands.Cog):
     @slash_command(name="낚시중지", description="낚시 오류 발생시 낚시를 멈춰요!")
     @commands.cooldown(1, 600, commands.BucketType.user)
     @on_working(prohibition=True)
-    async def 낚시중지(self, ctx: discord.commands.context.ApplicationContext):
+    async def stop_fishing(self, ctx: discord.commands.context.ApplicationContext):
         await ctx.defer()
 
         user = await User.fetch(ctx.author)
@@ -200,7 +203,7 @@ class InfoCog(commands.Cog):
 
     @slash_command(name="도감", description="물고기의 정보 or 도감을 보여드려요!", guild_ids=SCRS)
     @on_working(prohibition=True)
-    async def 도감(
+    async def dex(
         self,
         ctx: discord.commands.context.ApplicationContext,
         fish_name: Option(str, "검색하고 싶은 물고기 이름") = None,
@@ -258,9 +261,9 @@ class InfoCog(commands.Cog):
         embed.add_field(name="🏞️ **서식지**", value=f"**>> {biome}**")
         await ctx.respond(embed=embed)
 
-    @slash_command(name="분석", description="물고기가 낚이는 확률을 보여드려요!", guild_ids=SCRS)
+    @fishing_group(name="분석", description="이 낚시터에 서식하는 물고기와 확률을 분석해 드려요!", guild_ids=SCRS)
     @commands.cooldown(3, 30)
-    async def 분석(
+    async def statistics(
         self,
         ctx: discord.commands.context.ApplicationContext,
         type: Option(str, "분석 결과의 종류", choices=["일반", "단순 표현"]),

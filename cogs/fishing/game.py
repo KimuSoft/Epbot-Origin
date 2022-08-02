@@ -41,7 +41,7 @@ class FishingGameCog(commands.Cog):
     @slash_command(name="낚시", description="이프와 함께 물고기를 낚아요!", guild_ids=SCRS)
     @commands.cooldown(1, 5, commands.BucketType.user)
     @on_working.on_working(fishing=True, prohibition=True)
-    async def 낚시(self, ctx: discord.commands.ApplicationContext):
+    async def fish(self, ctx: discord.commands.ApplicationContext):
 
         await ctx.defer()
 
