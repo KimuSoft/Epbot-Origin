@@ -24,7 +24,7 @@ from utils import logger
 from utils import on_working
 
 # 자체 낚시카드 생성 관련 임포트
-from utils.fish_card.fish_card import get_card
+from utils.fish_card import get_card_async
 
 # 부가 임포트
 from utils.util_box import rdpc
@@ -47,7 +47,7 @@ class FishingGameCog(commands.Cog):
 
         class FishButtonView(View):
             def __init__(self, ctx):
-                super().__init__(timeout=random.randint(1, 3))
+                super().__init__(timeout=(random.randint(1, 3) + ctx.bot.latency))
                 self.ctx = ctx
                 self.button_value = None
 
@@ -233,7 +233,10 @@ class FishingGameCog(commands.Cog):
         else:
             fish.owner = user
 
-        throw, window = await fishing_result(window, user, room, fish, effect)
+        try:
+            throw, window = await fishing_result(ctx, user, room, fish, effect)
+        except Exception as e:
+            print(e)
 
         if not throw:
             return await user.finish_fishing()
@@ -250,20 +253,22 @@ class FishingGameCog(commands.Cog):
             if not int(fish.length / 10) == 0:
                 embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 더러워졌어!")
             await room.add_cleans(fish.length / -10)
-            fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
+            fame = fish.exp() * \
+                effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
             await room.add_exp(fame)  # 쓰레기 버릴 때 명성 깎기
 
         else:
             embed = discord.Embed(
                 title=f"💦 '{fish.name}'을(를) 치웠다! 물이 더 깨끗해진 것 같아!", colour=0x4BC59F
             )
-            await room.add_cleans(fish.length / 10)  # 처리한 경우 크기/10 만큼의 청결도가 추가됨
+            # 처리한 경우 크기/10 만큼의 청결도가 추가됨
+            await room.add_cleans(fish.length / 10)
             await user.add_money(fish.cost())
             if not int(fish.length / 10) == 0:
                 embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 깨끗해졌어!")
 
         await user.finish_fishing()  # 낚시 종료 판정
-        await window.edit(embed=embed, view=None)
+        await ctx.edit(embed=embed, view=None)
 
     @slash_command(name="ㄴㅅ", description="이프와 함께 물고기를 낚아요!")
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -297,7 +302,7 @@ async def fishing_failed(window, user: User, text: str):
     await user.finish_fishing()
 
 
-async def fishing_result(window, user: User, room: Room, fish, effect):
+async def fishing_result(window: discord.ApplicationContext, user: User, room: Room, fish, effect):
     """낚시가 성공했을 때 결과 보여주기"""
     throw = False
     net_profit = (
@@ -376,15 +381,22 @@ async def fishing_result(window, user: User, room: Room, fish, effect):
             title=f"{fish.icon()} {fish.name}", description=information
         )
 
+    # try:
+    #     # 서버로부터 낚시카드 전송
+    #     image = await get_fishcard_image_file_from_url(fish)
+    # except Exception:  # aiohttp.ClientConnectorError:
+    #     # 실패 시 레거시 코드로 직접 낚시카드를 만들어 전송
+    #     image = await make_fishcard_image_file(window, fish, room, user)
+
+    #     # embed.set_footer(text="※ 낚시카드 서버와의 연결에 실패하여 레거시 코드로 임시 낚시카드를 생성하였습니다.")
+    (bytes, image) = await make_fishcard_image_file(window, fish, room, user)
+    bytes: io.BytesIO = bytes
     try:
-        # 서버로부터 낚시카드 전송
-        image = await get_fishcard_image_file_from_url(fish)
-    except Exception:  # aiohttp.ClientConnectorError:
-        # 실패 시 레거시 코드로 직접 낚시카드를 만들어 전송
-        image = await make_fishcard_image_file(fish, room, user)
-        embed.set_footer(text="※ 낚시카드 서버와의 연결에 실패하여 레거시 코드로 임시 낚시카드를 생성하였습니다.")
-    await window.edit(embed=embed, file=image, view=None)
-    return throw, window
+        embed.set_image(url='attachment://fishcard.png')
+        await window.respond(embed=embed, file=image, view=None)
+        return throw, window
+    finally:
+        bytes.close()
 
 
 async def get_fishcard_image_file_from_url(fish: Fish):
@@ -400,17 +412,15 @@ async def get_fishcard_image_file_from_url(fish: Fish):
                 logger.warn("서버로부터 낚시카드를 불러올 수 없음.")
                 return
             data = await loop.run_in_executor(None, io.BytesIO, await resp.read())
-            return discord.File(data, "fishCard.png")
+            return discord.File(data, "fishcard.png")
 
 
-async def make_fishcard_image_file(fish: Fish, room: Room, user: User):
+async def make_fishcard_image_file(ctx: discord.ApplicationContext, fish: Fish, room: Room, user: User):
     """직접 제작한 낚시카드 이미지 DiscordFile로 반환"""
-    image = await get_card(fish, room, user)
-    with io.BytesIO() as image_binary:
-        await image.save(image_binary, "PNG")
-        image_binary.seek(0)
-        return discord.File(fp=image_binary, filename="fishcard.png")
-        # embed.set_image(url="attachment://fishcard.png")
+    image = await get_card_async(ctx.bot.loop, fish, room, user)
+
+    return (image, discord.File(image, filename="fishcard.png"))
+    # embed.set_image(url="attachment://fishcard.png")
 
 
 def setup(bot):

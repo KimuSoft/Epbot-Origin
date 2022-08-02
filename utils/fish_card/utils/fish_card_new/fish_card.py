@@ -7,6 +7,7 @@ from functools import partial
 from PIL import Image, ImageDraw, ImageFont
 
 from db import seta_json
+from utils import logger
 from utils.seta_josa import Josa
 
 font_exist = "utils/fish_card/NotoSansCJKkr-Bold.otf"
@@ -30,52 +31,56 @@ async def get_card_async(fish=None, room=None, user=None, theme="default"):
 
 
 def get_card(fish=None, room=None, user=None, theme="default"):
-    here = os.path.dirname(os.path.realpath(__file__))
-    theme_exist = f"{here}/theme/{theme}"
-    theme = seta_json.get_json(f"{theme_exist}/theme.json")
+    try:
+        here = os.path.dirname(os.path.realpath(__file__))
+        theme_exist = f"{here}/theme/{theme}"
+        theme = seta_json.get_json(f"{theme_exist}/theme.json")
 
-    if f"rank-{fish.rarity}" not in theme.keys():
-        img = Image.open(f"{theme_exist}/default.png")
-        layout = theme["default"]
-    else:
-        img = Image.open(f"{theme_exist}/rank-{fish.rarity}.png")
-        layout = theme[f"rank-{fish.rarity}"]
-    draw = ImageDraw.Draw(img)
+        if f"rank-{fish.rarity}" not in theme.keys():
+            img = Image.open(f"{theme_exist}/default.png")
+            layout = theme["default"]
+        else:
+            img = Image.open(f"{theme_exist}/rank-{fish.rarity}.png")
+            layout = theme[f"rank-{fish.rarity}"]
+        draw = ImageDraw.Draw(img)
 
-    time = datetime.today()
-    # 기본 변수들이 들어간 딕셔너리 생성
-    format_dict = {
-        "name": fish.name,
-        "cost": f"{fish.cost():,}",  # 물고기 원가
-        "length": f"{fish.length:,}",  # 물고기 크기
-        "average_cost": f"{fish.average_cost:,}",  # 평균 물고기 크기
-        "average_length": f"{fish.average_length}",  # 물고기 평균가
-        "fees_p": room.fee + room.maintenance,  # 수수료 + 유지비 (%)
-        "fee_p": room.fee,  # 수수료 (%)
-        "maintenance_p": room.maintenance,  # 유지비 (%)
-        "bonus_p": room.bonus,  # 보너스 (%)
-        "fees": fish.fee(user, room) + fish.maintenance(room),  # 수수료 + 유지비
-        "fee": fish.fee(user, room),  # 수수료
-        "maintenance": fish.maintenance(room),  # 유지비
-        "bonus": fish.bonus(room),  # 보너스
-        "time": time.strftime("%Y-%m-%d %H"),  # 현재 시간
-        "roomname": room.name,  # 낚은 낚시터 이름
-        "username": deEmojify(user.name),  # 낚은 유저의 이름
-        "profit": fish.cost()
-        + fish.fee(user, room)
-        + fish.maintenance(room)
-        + fish.bonus(room),
-    }
+        time = datetime.today()
+        # 기본 변수들이 들어간 딕셔너리 생성
+        format_dict = {
+            "name": fish.name,
+            "cost": f"{fish.cost():,}",  # 물고기 원가
+            "length": f"{fish.length:,}",  # 물고기 크기
+            "average_cost": f"{fish.average_cost:,}",  # 평균 물고기 크기
+            "average_length": f"{fish.average_length}",  # 물고기 평균가
+            "fees_p": room.fee + room.maintenance,  # 수수료 + 유지비 (%)
+            "fee_p": room.fee,  # 수수료 (%)
+            "maintenance_p": room.maintenance,  # 유지비 (%)
+            "bonus_p": room.bonus,  # 보너스 (%)
+            "fees": fish.fee(user, room) + fish.maintenance(room),  # 수수료 + 유지비
+            "fee": fish.fee(user, room),  # 수수료
+            "maintenance": fish.maintenance(room),  # 유지비
+            "bonus": fish.bonus(room),  # 보너스
+            "time": time.strftime("%Y-%m-%d %H"),  # 현재 시간
+            "roomname": room.name,  # 낚은 낚시터 이름
+            "username": deEmojify(user.name),  # 낚은 유저의 이름
+            "profit": fish.cost()
+            + fish.fee(user, room)
+            + fish.maintenance(room)
+            + fish.bonus(room),
+        }
 
-    for object in layout:
-        draw.text(
-            tuple(object["position"]),
-            Josa().convert(object["text"]).format(format_dict),
-            font=fonts[object["size"]],
-            fill=(0, 0, 0),
-        )
+        for object in layout:
+            draw.text(
+                tuple(object["position"]),
+                Josa().convert(object["text"]).format(format_dict),
+                font=fonts[object["size"]],
+                fill=(0, 0, 0),
+            )
 
-    return img
+        return img
+    except Exception as e:
+        logger.err(e)
+        raise e
 
 
 def deEmojify(inputString):

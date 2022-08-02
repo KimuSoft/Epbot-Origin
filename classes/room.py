@@ -494,14 +494,16 @@ class Room:
                 raise Exception
             room.id = channel.id
             room.name = channel.name.replace('"', "").replace("'", "")
-            room.history = (datetime.now(timezone.utc) - channel.created_at).days
+            room.history = (datetime.now(timezone.utc) -
+                            channel.created_at).days
 
         else:
             # 채널 객체로 생성하는 경우
             room.channel = channel
             room.id = channel.id
             room.name = channel.name.replace('"', "").replace("'", "")
-            room.history = (datetime.now(timezone.utc) - channel.created_at).days
+            room.history = (datetime.now(timezone.utc) -
+                            channel.created_at).days
 
         data = await room._load_data()
 
@@ -534,7 +536,7 @@ class Room:
                 f"'{self.id}', '{self.name}', '{owner_id}', {random.randint(1, 4)}, {biome}"
                 )
             """
-            data = room._load_data()
+            data = await room._load_data()
 
         data = data[0]
         room._owner_id = int(data[1])
