@@ -3,7 +3,6 @@ import os
 
 import discord
 from discord.commands import Option
-from discord.commands import slash_command
 from discord.ext import commands
 
 from classes.room import Room
@@ -24,8 +23,8 @@ class ThemeCog(commands.Cog):
 
     @theme_group.command(name="설정", description="낚시카드의 테마를 선택하세요!", guild_ids=SCRS)
     async def theme(self, ctx):
-        epUser = await User.fetch(ctx.author)
-        view = ThemeSelectView(epUser)
+        ep_user = await User.fetch(ctx.author)
+        view = ThemeSelectView(ep_user)
         await ctx.respond(content="골라바", view=view)
 
     @theme_group.command(name="미리보기", guild_ids=SCRS, description="낚시카드의 테마를 미리 경헙해보세요")
@@ -67,15 +66,15 @@ def setup(bot):
 
 
 class ThemeSelect(discord.ui.Select):
-    def __init__(self, epUser: User):
+    def __init__(self, ep_user: User):
         options = []
         for i in Constants.THEMES:
-            icon = "✅" if i["id"] in epUser.themes else "❌"
+            icon = "✅" if i["id"] in ep_user.themes else "❌"
             label = i["name"]
-            if i["id"] == epUser.theme:
+            if i["id"] == ep_user.theme:
                 label += " (사용 중)"
 
-            label = i["name"] + " (미보유)" if i["id"] not in epUser.themes else label
+            label = i["name"] + " (미보유)" if i["id"] not in ep_user.themes else label
             options.append(
                 discord.SelectOption(
                     label=label, description=i["description"], emoji=icon
@@ -100,24 +99,24 @@ class ThemeSelect(discord.ui.Select):
             )
         if self.values[0] not in [i["name"] for i in Constants.THEMES]:
             return await interaction.response.edit_message(content="으앙 오류", view=None)
-        themeId = list(filter(lambda e: e["name"] == self.values[0], Constants.THEMES))[
+        theme_id = list(filter(lambda e: e["name"] == self.values[0], Constants.THEMES))[
             0
         ]["id"]
-        epUser = await User.fetch(interaction.user)
-        print(epUser.theme)
-        print(epUser.themes)
-        epUser.theme = themeId
-        print(epUser.theme)
-        print(epUser.themes)
+        ep_user = await User.fetch(interaction.user)
+        print(ep_user.theme)
+        print(ep_user.themes)
+        ep_user.theme = theme_id
+        print(ep_user.theme)
+        print(ep_user.themes)
         return await interaction.response.edit_message(
             content=f"테마를 `{self.values[0]}`으로 바꿨어!", view=None
         )
 
 
 class ThemeSelectView(discord.ui.View):
-    def __init__(self, epUser: User):
+    def __init__(self, ep_user: User):
         super().__init__()
-        s = ThemeSelect(epUser)
+        s = ThemeSelect(ep_user)
         self.add_item(s)
 
 

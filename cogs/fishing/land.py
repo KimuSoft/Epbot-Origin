@@ -268,7 +268,7 @@ class LandCog(commands.Cog):
         list_str = ""
         ridx = 0
 
-        if land_name == None:
+        if land_name is None:
             land_name = ""
         for idx, val in enumerate(mylands):
             if (len(land_name) == 0 and val[2] != 0) or (

@@ -420,7 +420,7 @@ async def make_fishcard_image_file(ctx: discord.ApplicationContext, fish: Fish, 
     """직접 제작한 낚시카드 이미지 DiscordFile로 반환"""
     image = await get_card_async(ctx.bot.loop, fish, room, user)
 
-    return (image, discord.File(image, filename="fishcard.png"))
+    return image, discord.File(image, filename="fishcard.png")
     # embed.set_image(url="attachment://fishcard.png")
 
 

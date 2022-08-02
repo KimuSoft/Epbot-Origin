@@ -9,7 +9,6 @@ import discord
 from discord.commands import Option
 
 # 필수 임포트
-from discord.commands import slash_command
 from discord.ext import commands
 from discord.ui import View
 from classes.facility import UNITDATA
@@ -17,13 +16,9 @@ from classes.facility import UNITDATA
 # 부가 임포트
 from classes.room import Room, Facility, NotExistFacility
 from cogs.fishing import fishing_group, land_group
-from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
 from constants import Constants
 from utils import logger
 from utils.on_working import on_working
-
-
-# from utils.on_working import p_requirements
 
 
 async def autocomplete_facilities(ctx: discord.AutocompleteContext):
