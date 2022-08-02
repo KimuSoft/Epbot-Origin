@@ -61,7 +61,7 @@ class FishingGameCog(commands.Cog):
                 self.stop()
                 await interaction.response.defer()
 
-            @discord.ui.button(label="그만하기", style=discord.ButtonStyle.red, emoji="🚫")
+            @discord.ui.button(label="그만하기", style=discord.ButtonStyle.secondary)
             async def button2_callback(
                 self, button: discord.ui.Button, interaction: discord.Interaction
             ):
