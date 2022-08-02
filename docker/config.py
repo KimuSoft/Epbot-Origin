@@ -14,16 +14,10 @@ ADMINS = [
 ]
 
 """ PostgreSQL Database Configuration """
-HOST = os.getenv(
-    "EP_DB_HOST"
-)  # HOST를 localhost로 세팅할 경우 HOST를 사용하지 않음(DB 서버와 이프 서버를 같이 돌릴 경우 권장)
-DBNAME = os.getenv("EP_DB_NAME")
-USER = os.getenv("EP_DB_USER")
-PASSWORD = os.getenv("EP_DB_PASSWORD")
-PORT = int(os.getenv("EP_DB_PORT", "5432"))
+PG_DSN = os.getenv("EP_PG_DSN")
 
 """ FishCard Server Setting"""
-CARD_SERVER = os.getenv("EP_CARD_SERVER", "").replace("$HOST", HOST)  # 슬래시로 끝내지 말아주세요
+CARD_SERVER = os.getenv("EP_CARD_SERVER", "")  # 슬래시로 끝내지 말아주세요
 CARD_TOKEN = os.getenv("EP_CARD_TOKEN", "")
 
 """ Discord Bot Configuration """
@@ -36,7 +30,7 @@ PREFIXES = ["이프야 ", "ㅇ", "잎", "ep "]
 ACTIVITIES = [
     "{}곳의 서버에서 검열 삭제",
     "{}곳의 서버에서 낚시",
-    "'이프야 도움말'을 입력해 보라고 이야기",
+    "'/'을 입력해 보라고 이야기",
     "EpBot | ep help",
 ]
 DEBUG_ACTIVITIES = ["버그 수정 중. . ."]
