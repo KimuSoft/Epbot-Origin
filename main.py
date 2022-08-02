@@ -18,11 +18,16 @@ LOADING_DIR = ["cogs", "cogs/fishing"]
 
 db = S_PgSQL()
 
+intents = discord.Intents.default()
+
+intents.message_content = True
+
 
 class EpBot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(
             help_command=None,
+            intents=intents
         )
 
         # Cogs 로드(Cogs 폴더 안에 있는 것이라면 자동으로 인식합니다)
@@ -154,51 +159,9 @@ class ManagementCog(commands.Cog):
             await error_send(ctx, self.bot, error)
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):  # 슬래시 커맨드 제외 오류 처리
-        """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
-
-        if isinstance(error, commands.errors.CheckFailure):
-            return
-
-        channel = ctx.channel
-        (await User.fetch(ctx.author)).fishing_now = False
-
-        if isinstance(channel, discord.channel.DMChannel):
-            if isinstance(error, commands.errors.CheckFailure):
-                return
-            return await ctx.send(
-                """으에, 이프는 DM은 안 받고 이써!
-                `❗ 이프와는 개인 메시지로 놀 수 없습니다.`"""
-            )
-
-        # 해당하는 명령어가 없는 경우
-        if isinstance(error, commands.errors.CommandNotFound):
-            if ctx.message.content.startswith("이프야"):
-                await ctx.send("머랭!")
-            elif "ep" in ctx.message.content:
-                await ctx.send("Meringue! >ㅅ<")
-
-        elif isinstance(error, discord.errors.NotFound):
-            return await ctx.send(
-                """저기 혹시... 갑자기 메시지를 지우거나 한 건 아니지...? 그러지 말아 줘...
-                `❗ raise discord.errors.NotFound`"""
-            )
-
-        # 명령어 쿨타임이 다 차지 않은 경우
-        elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(
-                f"이 명령어는 {error.cooldown.rate}번 쓰면 {error.cooldown.per}초의 쿨타임이 생겨!"
-                f"\n`❗ {int(error.retry_after)}초 후에 다시 시도해 주십시오.`"
-            )
-
-        # ServerDisconnectedError의 경우 섭렉으로 판정
-        elif "ServerDisconnectedError" in str(error):
-            await ctx.send(f"미, 미아내! 디스코드 랙이 있던 것 같아...\n`❗ {error}`")
-            await error_send(ctx, self.bot, error, 0xFFBB00)
-
-        else:
-            await ctx.send(f"으앙 오류가 발생했어...\n`❗ {str(error)}`")
-            await error_send(ctx, self.bot, error)
+    async def on_message(self, msg: discord.Message):  # 메시지 처리
+        if msg.content.startswith('이프야') or (msg.content.startswith('ㅇ') and not msg.content.startswith('ㅇㅇ')):
+            await msg.reply("머랭!\n`❗ 이제 이프는 슬래시 커맨드를 지원합니다! 채팅창에 한 번 '/'를 쳐 보세요!`")
 
 
 async def error_send(ctx, bot, error, color=0x980000):
