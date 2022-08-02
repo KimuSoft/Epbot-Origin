@@ -16,6 +16,7 @@ from classes.facility import UNITDATA
 
 # 부가 임포트
 from classes.room import Room, Facility, NotExistFacility
+from cogs.fishing import fishing_group, land_group
 from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
 from constants import Constants
 from utils import logger
@@ -32,11 +33,11 @@ class UnitCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name="업그레이드", description="이 낚시터(채널)의 티어를 올려요!", guild_ids=SCRS)
+    @fishing_group.command(name="업그레이드", description="이 낚시터(채널)의 티어를 올려요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def 업그레이드(self, ctx):
+    async def upgrade(self, ctx):
         room = await Room.fetch(ctx.channel)
         try:
             facility = Facility(f"_TIER{room.tier + 1}")
@@ -122,9 +123,9 @@ class UnitCog(commands.Cog):
             view=None,
         )
 
-    @slash_command(name="공영화", description="낚시터를 공영화해요!", guild_ids=SCRS)
+    @fishing_group.command(name="공영화", description="낚시터를 공영화해요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True, landwork=True, owner_only=True)
-    async def 공영화(self, ctx):
+    async def publicize(self, ctx):
         room = await Room.fetch(ctx.channel)
         if ctx.channel.guild.owner_id != ctx.author.id:
             return await ctx.respond(
@@ -210,9 +211,9 @@ class UnitCog(commands.Cog):
         )
         await room.set_working_now(False)
 
-    @slash_command(name="민영화", description="이 낚시터(채널)을 민영화해요!", guild_ids=SCRS)
+    @fishing_group.command(name="민영화", description="이 낚시터(채널)을 민영화해요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True, landwork=True, owner_only=True)
-    async def 민영화(self, ctx):
+    async def privatize(self, ctx):
         room = await Room.fetch(ctx.channel)
         if ctx.channel.guild.owner_id != ctx.author.id:
             return await ctx.respond(
@@ -278,11 +279,11 @@ class UnitCog(commands.Cog):
         )
         await room.set_working_now(False)
 
-    @slash_command(name="다운그레이드", description="이 낚시터(채널)의 티어를 내려요!", guild_ids=SCRS)
+    @fishing_group.command(name="다운그레이드", description="이 낚시터(채널)의 티어를 내려요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def 다운그레이드(self, ctx):
+    async def downgrade(self, ctx):
         room = await Room.fetch(ctx.channel)
 
         if room.tier == 1:
@@ -387,9 +388,9 @@ class UnitCog(commands.Cog):
             view=None,
         )
 
-    @slash_command(name="시설", description="특정 티어의 시설중 낚시터에 알려드려요!", guild_ids=SCRS)
+    @land_group.command(name="건설가능목록", description="특정 티어의 시설중 낚시터에 알려드려요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True, landwork=True, twoball=False)
-    async def 시설(self, ctx, tier: Option(int, "시설 목록을 알고 싶은 특정 티어를 입력해주세요!") = 1):
+    async def facility_list(self, ctx, tier: Option(int, "시설 목록을 알고 싶은 특정 티어를 입력해주세요!") = 1):
         room = await Room.fetch(ctx.channel)
 
         if room.tier < int(tier):
@@ -414,9 +415,9 @@ class UnitCog(commands.Cog):
         )
         await ctx.respond(embed=embed)
 
-    @slash_command(name="설명", description="시설을 설명해드려요!", guild_ids=SCRS)
+    @land_group.command(name="검색", description="시설을 설명해드려요!", guild_ids=SCRS)
     @on_working(prohibition=True)
-    async def 설명(self, ctx, args: Option(str, "궁금하신 시설의 이름을 입력하세요!")):
+    async def search_facility(self, ctx, args: Option(str, "궁금하신 시설의 이름을 입력하세요!")):
         arg1 = " ".join(args)
         try:
             facility = Facility(arg1.upper())
@@ -446,11 +447,11 @@ class UnitCog(commands.Cog):
         embed.set_footer(text="`※ 같은 종류의 시설은 하나만 건설할 수 있습니다.`")
         await ctx.respond(embed=embed)
 
-    @slash_command(name="철거", description="이 낚시터(채널)에 설치된 시설을 철거해요!", guild_ids=SCRS)
+    @land_group.command(name="철거", description="이 낚시터(채널)에 설치된 시설을 철거해요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def 철거(self, ctx, name: Option(str, "철거하실 시설의 이름을 입력해주세요!")):
+    async def break_facility(self, ctx, name: Option(str, "철거하실 시설의 이름을 입력해주세요!")):
         arg1 = " ".join(name).replace("_", "")
 
         try:
@@ -532,11 +533,11 @@ class UnitCog(commands.Cog):
             view=None,
         )
 
-    @slash_command(name="건설", description="이 낚시터(채널)에 시설을 건설해요!", guild_ids=SCRS)
+    @land_group.command(name="건설", description="이 낚시터(채널)에 시설을 건설해요!", guild_ids=SCRS)
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def 건설(self, ctx, name: Option(str, "건설하실 시설의 이름을 입력해주세요!", autocomplete=autocomplete_facilities)):
+    async def build_facility(self, ctx, name: Option(str, "건설하실 시설의 이름을 입력해주세요!", autocomplete=autocomplete_facilities)):
         arg1 = " ".join(name).replace("_", "")
 
         try:
