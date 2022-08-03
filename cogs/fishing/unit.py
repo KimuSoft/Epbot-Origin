@@ -22,7 +22,27 @@ from utils.on_working import on_working
 
 
 async def autocomplete_facilities(ctx: discord.AutocompleteContext):
-    return [i["name"] if "name" in i else k in i for k, i in UNITDATA.items()]
+    room = await Room.fetch(ctx.interaction.channel)
+
+    def filter_items(x):
+        k: str = x[0]
+        if ctx.value not in k:
+            return False
+
+        try:
+            if room.can_build_it(Facility(k)):
+                return True
+            return False
+        except Exception:
+            return False
+
+    return [
+        i["name"] if "name" in i else k in i
+        for k, i in filter(
+            filter_items,
+            UNITDATA.items(),
+        )
+    ]
 
 
 class UnitCog(commands.Cog):
@@ -275,9 +295,7 @@ class UnitCog(commands.Cog):
         )
         await room.set_working_now(False)
 
-    @fishing_group.command(
-        name="다운그레이드", description="이 낚시터(채널)의 티어를 내려요!"
-    )
+    @fishing_group.command(name="다운그레이드", description="이 낚시터(채널)의 티어를 내려요!")
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
