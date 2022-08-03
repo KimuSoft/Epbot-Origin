@@ -128,7 +128,7 @@ class ManagementCog(commands.Cog):
                 raise error.original
             except Exception as e:
                 logger.err(e)
-                await ctx.send_followup(f"으앙 오류가 발생했어...\n`❗ {str(e)}`")
+                await ctx.respond(f"으앙 오류가 발생했어...\n`❗ {str(e)}`")
                 await error_send(ctx, self.bot, e)
                 return
 
