@@ -8,7 +8,7 @@ import ast
 from utils import logger
 
 # 부가 임포트
-from cogs.fishing import fishing_group as _fishing_group
+from cogs.fishing import fishing_group
 from classes.room import Room, Facility, NotExistFacility
 from classes.user import User
 from classes.fish import Fish, NotFishException, search_fish
@@ -26,8 +26,6 @@ userdata = S_PgSQL()
 class InfoCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    fishing_group = _fishing_group
 
     @fishing_group.command(name="정보", description="이 채널의 낚시터 정보를 보여줘요!", guild_ids=SCRS)
     @commands.cooldown(1, 10, commands.BucketType.user)
