@@ -215,8 +215,7 @@ class InfoCog(commands.Cog):
         if fish_name is None:
             dexfish = 0
             for i in range(1, 6):
-                dexfish += len(user.dex[str(i)]
-                               ) if str(i) in user.dex.keys() else 0
+                dexfish += len(user.dex[str(i)]) if str(i) in user.dex.keys() else 0
             embed = discord.Embed(
                 title="📖 이프 도감",
                 description=f"완성률 **{int(100 * dexfish / 788)}% (788마리 중 {dexfish}마리)**",
@@ -239,8 +238,7 @@ class InfoCog(commands.Cog):
             return await ctx.respond("`/도감 <물고기>`")
 
         if fish.rarity != 1 and (
-            fish.rarity not in user.dex.keys(
-            ) or fish.id not in user.dex[fish.rarity]
+            fish.rarity not in user.dex.keys() or fish.id not in user.dex[fish.rarity]
         ):
             return await ctx.respond(
                 """우움... 내 도감에서는 안 보이는데...?
@@ -254,14 +252,15 @@ class InfoCog(commands.Cog):
         embed = discord.Embed(
             title=f"{fish.id}. {fish.icon()} {fish.name}", colour=color
         )
-        embed.add_field(name="📏 **평균 크기**",
-                        value=f"**{fish.average_length}**cm")
+        embed.add_field(name="📏 **평균 크기**", value=f"**{fish.average_length}**cm")
         embed.add_field(name="✨ **희귀도**", value=f"**{fish.rarity_str()}**")
         embed.add_field(name="💵 **평균가**", value=f"**{fish.average_cost}**")
         embed.add_field(name="🏞️ **서식지**", value=f"**>> {biome}**")
         await ctx.respond(embed=embed)
 
-    @fishing_group(name="분석", description="이 낚시터에 서식하는 물고기와 확률을 분석해 드려요!", guild_ids=SCRS)
+    @fishing_group.command(
+        name="분석", description="이 낚시터에 서식하는 물고기와 확률을 분석해 드려요!", guild_ids=SCRS
+    )
     @commands.cooldown(3, 30)
     async def statistics(
         self,
@@ -280,8 +279,7 @@ class InfoCog(commands.Cog):
         bar_str += "⬛" * (accuracy - len(bar_str))
         if not (type == "단순 표현"):
             bar_str = f"`{bar_str}`"
-        embed = discord.Embed(title="📊 통계청 조사 결과",
-                              description=bar_str, colour=0x4BC59F)
+        embed = discord.Embed(title="📊 통계청 조사 결과", description=bar_str, colour=0x4BC59F)
 
         # 낚을 수 있는 물고기 정보
         canfishing = room.can_fishing_dict
