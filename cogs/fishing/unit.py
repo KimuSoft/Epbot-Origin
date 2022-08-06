@@ -26,15 +26,43 @@ async def autocomplete_facilities(ctx: discord.AutocompleteContext):
 
     def filter_items(x):
         k: str = x[0]
-        if ctx.value not in k:
+        i = x[1]
+        name: str = i["name"] if "name" in i else k
+        print(name)
+        if ctx.value not in name:
             return False
 
         try:
             if room.can_build_it(Facility(k)):
                 return True
             return False
-        except Exception:
+        except Exception as e:
             return False
+
+    return [
+        i["name"] if "name" in i else k in i
+        for k, i in filter(
+            filter_items,
+            UNITDATA.items(),
+        )
+    ]
+
+
+async def autocomplete_facilities_uninstall(ctx: discord.AutocompleteContext):
+    room = await Room.fetch(ctx.interaction.channel)
+
+    def filter_items(x):
+        k: str = x[0]
+        i = x[1]
+
+        if k not in room.facilities:
+            return False
+
+        name: str = i["name"] if "name" in i else k
+        if ctx.value not in name:
+            return False
+
+        return True
 
     return [
         i["name"] if "name" in i else k in i
@@ -469,7 +497,13 @@ class UnitCog(commands.Cog):
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def break_facility(self, ctx, name: Option(str, "철거하실 시설의 이름을 입력해주세요!")):
+    async def break_facility(
+        self,
+        ctx,
+        name: Option(
+            str, "철거하실 시설의 이름을 입력해주세요!", autocomplete=autocomplete_facilities_uninstall
+        ),
+    ):
         arg1 = " ".join(name).replace("_", "")
 
         try:
