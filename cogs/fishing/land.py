@@ -346,7 +346,7 @@ class LandCog(commands.Cog):
 
         if value < 30000:
             await ctx.respond("땅 가격은 최소 30,000 💰부터 가능해!")
-            room.set_working_now(False)
+            await room.set_working_now(False)
             return None
         if value == room.land_value:
             await ctx.respond("흐음... 똑같은뎅?")
