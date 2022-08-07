@@ -26,6 +26,8 @@ async def autocomplete_facilities(ctx: discord.AutocompleteContext):
 
     def filter_items(x):
         k: str = x[0]
+        if k.startswith("_"):
+            return False
         i = x[1]
         name: str = i["name"] if "name" in i else k
         if ctx.value not in name:
@@ -52,6 +54,8 @@ async def autocomplete_facilities_uninstall(ctx: discord.AutocompleteContext):
 
     def filter_items(x):
         k: str = x[0]
+        if k.startswith("_"):
+            return False
         i = x[1]
 
         if k not in room.facilities:
