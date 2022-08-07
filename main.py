@@ -85,7 +85,7 @@ class ManagementCog(commands.Cog):
                 logger.info(f"'{i}' 다시 불러옴")
 
         logger.info("다시시작 완료!")
-        await w.edit_original_message(content="`✔️ 전부 다시 불러와써!`")
+        await ctx.edit(content="`✔️ 전부 다시 불러와써!`")
 
     @slash_command(name="info", description="Show Information about EpBot!")
     async def info(self, ctx):

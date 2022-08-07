@@ -30,7 +30,9 @@ class LandCog(commands.Cog):
 
     @fishing_group.command(name="매입", description="이 낚시터(채널)을 매입해요!")
     @on_working(fishing=True, landwork=True, prohibition=True, twoball=False)
-    async def buy(self, ctx, price: Option(int, "매입 가격을 입력해요!") = None):
+    async def buy(
+        self, ctx: discord.ApplicationContext, price: Option(int, "매입 가격을 입력해요!") = None
+    ):
         user = await User.fetch(ctx.author)
         room = await Room.fetch(ctx.channel)
         land_value = room.land_value
@@ -98,14 +100,13 @@ class LandCog(commands.Cog):
 
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
             embed = discord.Embed(
                 title="매입을 취소하였다.", colour=discord.Colour.light_grey()
             )
-            await window.edit_original_message(embed=embed, view=None)
+            await ctx.edit(embed=embed, view=None)
             await room.set_working_now(False)
 
             return None
@@ -117,14 +118,14 @@ class LandCog(commands.Cog):
         if min_purchase == 30000 and not (
             ctx.channel.topic is not None and "#매입보고" in ctx.channel.topic
         ):
-            await window.edit_original_message(
+            await ctx.edit(
                 content=f"**서버 주인**의 **{room.name}** 낚시터를 <@{user.id}>가 매입했어!"
                 "\n`ℹ️ 돈이 걸려 있지 않은 땅도 매입 멘션을 받으려면 '#매입보고' 태그를 넣어 주세요!`",
                 embed=None,
                 view=None,
             )
         else:
-            await window.edit_original_message(
+            await ctx.edit(
                 content=f"<@{origin_owner_id}>의 **{room.name}** 낚시터를 <@{user.id}>가 매입했어!",
                 embed=None,
                 view=None,
@@ -136,9 +137,10 @@ class LandCog(commands.Cog):
     )  # 번호로 다른 채널을 건드릴 수도 있으니 landwork는 제외
     async def sell(
         self,
-        ctx,
+        ctx: discord.ApplicationContext,
         land_num: Option(int, "매각하고 싶으신 땅 번호를 입력하세요! (미입력시 이 낚시터로 자동 선택)") = None,
     ):
+        await ctx.defer()
         user = await User.fetch(ctx.author)
         if land_num is not None:
             lands = await user.get_lands()
@@ -199,14 +201,14 @@ class LandCog(commands.Cog):
                 description=f"돌려 받는 금액 : {room.land_value:,} 💰",
                 colour=0x4BC59F,
             )
-            window = await ctx.respond(embed=embed, view=view)
+            await ctx.respond(embed=embed, view=view)
             result = await view.wait()
 
             if result is True or view.button_value == "취소함":
                 embed = discord.Embed(
                     title="돈 회수를 취소했다.", colour=discord.Colour.light_grey()
                 )
-                await window.edit_original_message(embed=embed, view=None)
+                await ctx.edit(embed=embed, view=None)
                 await room.set_working_now(False)
 
                 return None
@@ -218,7 +220,7 @@ class LandCog(commands.Cog):
             await user.add_money(room.land_value)  # 돈 돌려 주고
             await room.set_land_value(0)
 
-            await window.edit_original_message(embed=embed, view=None)
+            await ctx.edit(embed=embed, view=None)
             await room.set_working_now(False)
 
             return None
@@ -229,14 +231,14 @@ class LandCog(commands.Cog):
                 description=f"돌려 받는 금액 : {room.land_value:,} 💰",
                 colour=0x4BC59F,
             )
-            window = await ctx.respond(embed=embed, view=view)
+            await ctx.respond(embed=embed, view=view)
             result = await view.wait()
 
             if result is True or view.button_value == "취소함":
                 embed = discord.Embed(
                     title="땅 매각을 취소했다.", colour=discord.Colour.light_grey()
                 )
-                await window.edit_original_message(embed=embed, view=None)
+                await ctx.edit(embed=embed, view=None)
                 await room.set_working_now(False)
 
                 return None
@@ -252,18 +254,18 @@ class LandCog(commands.Cog):
             await room.set_land_value(0)
             await room.set_working_now(False)
 
-            await window.edit_original_message(embed=embed, view=None)
+            await ctx.edit(embed=embed, view=None)
 
     @slash_command(name="내땅", description="무슨 땅을 가지고 있는지 확인해요!", guild_ids=SCRS)
     @on_working(fishing=True, prohibition=True)
     async def my_land(
         self,
-        ctx,
+        ctx: discord.ApplicationContext,
         land_name: Option(str, "땅의 이름으로 검색해요! (미 입력시 소유하는 모든 땅의 목록을 보여드려요!)") = None,
     ):
         user = await User.fetch(ctx.author)
 
-        window = await ctx.respond(content="`내 땅 목록`")
+        await ctx.respond(content="`내 땅 목록`")
         mylands = list(await user.get_lands())
         list_str = ""
         ridx = 0
@@ -282,7 +284,7 @@ class LandCog(commands.Cog):
                     description=f"```cs\n{list_str}```",
                     colour=0x4BC59F,
                 )
-                await window.edit_original_message(embed=embed)
+                await ctx.edit(embed=embed)
 
                 class NextPageView(View):
                     def __init__(self, ctx):
@@ -317,10 +319,10 @@ class LandCog(commands.Cog):
 
                 view = NextPageView(ctx)
 
-                window = await ctx.respond(embed=embed, view=view)
+                await ctx.respond(embed=embed, view=view)
                 result = await view.wait()
                 if result is True or view.button_value == "취소함":
-                    await window.edit_original_message(view=None)
+                    await ctx.edit(view=None)
                     return None
                 else:
                     list_str = ""
@@ -332,13 +334,15 @@ class LandCog(commands.Cog):
             description=f"```cs\n{list_str}```",
             colour=0x4BC59F,
         )
-        await window.edit_original_message(embed=embed, view=None)
+        await ctx.edit(embed=embed, view=None)
 
     @fishing_group.command(name="땅값변경", description="이 낚시터(채널)의 땅값을 바꿔요!")
     @on_working(
         fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
     )
-    async def change_land_value(self, ctx, value: Option(int, "변경하실 땅값을 입력하세요!")):
+    async def change_land_value(
+        self, ctx: discord.ApplicationContext, value: Option(int, "변경하실 땅값을 입력하세요!")
+    ):
         user = await User.fetch(ctx.author)
         room = await Room.fetch(ctx.channel)
         land_value = room.land_value
@@ -392,14 +396,14 @@ class LandCog(commands.Cog):
         embed = discord.Embed(
             title=f"{room.name} 땅을 {value:,}로 변경하시겠습니까?", colour=0x4BC59F
         )
-        window = await ctx.respond(embed=embed, view=view)
+        await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
             embed = discord.Embed(
                 title="변경을 취소하였다.", colour=discord.Colour.light_grey()
             )
-            await window.edit_original_message(embed=embed, view=None)
+            await ctx.edit(embed=embed, view=None)
             await room.set_working_now(False)
 
             return None
@@ -408,9 +412,7 @@ class LandCog(commands.Cog):
         await room.set_land_value(value)
         await room.set_working_now(False)
 
-        await window.edit_original_message(
-            content=f"{room.name} 땅의 가격을 변경했어!", embed=None, view=None
-        )
+        await ctx.edit(content=f"{room.name} 땅의 가격을 변경했어!", embed=None, view=None)
 
     @fishing_group.command(name="지형변경", description="이 낚시터(채널)의 지형을 바꿔요!")
     @on_working(
@@ -464,7 +466,9 @@ class LandCog(commands.Cog):
     @on_working(
         fishing=True, landwork=True, prohibition=True, owner_only=True, twoball=False
     )
-    async def change_fee(self, ctx, value: Option(int, "변경하실 수수료를 입력해주세요!")):
+    async def change_fee(
+        self, ctx: discord.ApplicationContext, value: Option(int, "변경하실 수수료를 입력해주세요!")
+    ):
         room = await Room.fetch(ctx.channel)
 
         fee_range = room.fee_range
@@ -511,27 +515,27 @@ class LandCog(commands.Cog):
         embed = discord.Embed(
             title=f"{room.name} 땅의 수수료를 {value}%로 변경하시겠습니까?", colour=0x4BC59F
         )
-        window = await ctx.respond(embed=embed, view=view)
+        await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
             embed = discord.Embed(
                 title="수수료 변경을 취소하였다.", colour=discord.Colour.light_grey()
             )
-            await window.edit_original_message(embed=embed, view=None)
+            await ctx.edit(embed=embed, view=None)
             return None
 
         await room.set_fee(value)
         embed = discord.Embed(
             title=f"{room.name} 땅의 수수료를 {value}%로 변경하였다!", colour=0x4BC59F
         )
-        await window.edit_original_message(embed=embed, view=None)
+        await ctx.edit(embed=embed, view=None)
 
     @fishing_group.command(name="청소업체", description="돈을 지불하고 청결도를 0으로 만들어요!")
     @on_working(
         fishing=True, prohibition=True, twoball=False, owner_only=True, landwork=True
     )
-    async def clean_corp(self, ctx):
+    async def clean_corp(self, ctx: discord.ApplicationContext):
         room = await Room.fetch(ctx.channel)
 
         if room.cleans >= 0:
@@ -580,7 +584,7 @@ class LandCog(commands.Cog):
 
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view=view)
+        await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
@@ -589,13 +593,13 @@ class LandCog(commands.Cog):
             )
             await room.set_working_now(False)
 
-            return await window.edit_original_message(embed=embed, view=None)
+            return await ctx.edit(embed=embed, view=None)
 
         if user.money < -1 * price:
             embed = discord.Embed(title="돈이 부족해...", colour=discord.Colour.light_grey())
             await room.set_working_now(False)
 
-            return await window.edit_original_message(embed=embed, view=None)
+            return await ctx.edit(embed=embed, view=None)
 
         embed = discord.Embed(
             title=f"{-1 * price:,} 💰로 청소 업체를 불러서 {room.name} 낚시터가 깔끔해졌어!",
@@ -604,7 +608,7 @@ class LandCog(commands.Cog):
         await user.add_money(price)  # 돈 돌려 주고
         await room.set_cleans(0)
 
-        await window.edit_original_message(embed=embed, view=None)
+        await ctx.edit(embed=embed, view=None)
         await room.set_working_now(False)
 
 

@@ -84,7 +84,7 @@ class UnitCog(commands.Cog):
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def upgrade(self, ctx):
+    async def upgrade(self, ctx: discord.ApplicationContext):
         room = await Room.fetch(ctx.channel)
         try:
             facility = Facility(f"_TIER{room.tier + 1}")
@@ -137,7 +137,7 @@ class UnitCog(commands.Cog):
 
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view=view)
+        await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
@@ -145,12 +145,12 @@ class UnitCog(commands.Cog):
             embed = discord.Embed(
                 title="낚시터 업그레이드를 취소하였다.", colour=discord.Colour.light_grey()
             )
-            return await window.edit_original_message(embed=embed, view=None)
+            return await ctx.edit(embed=embed, view=None)
 
         # 낚시터 명성이 부족한 경우
         if facility.cost > await room.get_exp():
             await room.set_working_now(False)  # 땅 작업 종료
-            return await window.edit_original_message(
+            return await ctx.edit(
                 content=f"""으움... 기각당했어...
                 `❗ 낚시터 명성이 부족합니다. ( ✨ {facility.cost} 필요 )`""",
                 embed=None,
@@ -163,7 +163,7 @@ class UnitCog(commands.Cog):
         await room.build_facility(facility.code)
         await room.add_exp(facility.cost * -1)
         await room.set_working_now(False)
-        await window.edit_original_message(
+        await ctx.edit(
             content=f"""<@{ctx.author.id}> {room.name} 낚시터가 {room.tier} 티어로 업그레이드 했어! 축하해!
             `🎉 이제 새로운 종류의 시설을 건설할 수 있게 되었습니다!`""",
             embed=None,
@@ -172,7 +172,7 @@ class UnitCog(commands.Cog):
 
     @fishing_group.command(name="공영화", description="낚시터를 공영화해요!")
     @on_working(fishing=True, prohibition=True, landwork=True, owner_only=True)
-    async def publicize(self, ctx):
+    async def publicize(self, ctx: discord.ApplicationContext):
         room = await Room.fetch(ctx.channel)
         if ctx.channel.guild.owner_id != ctx.author.id:
             return await ctx.respond(
@@ -229,7 +229,7 @@ class UnitCog(commands.Cog):
 
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view=view)
+        await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
@@ -237,7 +237,7 @@ class UnitCog(commands.Cog):
             embed = discord.Embed(
                 title="낚시터 공영화를 취소하였다.", colour=discord.Colour.light_grey()
             )
-            return await window.edit_original_message(embed=embed, view=None)
+            return await ctx.edit(embed=embed, view=None)
 
         breaked = []
         breaked_cost = 0
@@ -251,7 +251,7 @@ class UnitCog(commands.Cog):
             breaked_cost += fac.cost
             breaked.append(fac.name)
         await room.build_facility("_TIER0")
-        await window.edit_original_message(
+        await ctx.edit(
             content=f"<@{ctx.author.id}> {room.name} 낚시터는 이제 공공 낚시터야!",
             embed=None,
             view=None,
@@ -260,7 +260,7 @@ class UnitCog(commands.Cog):
 
     @fishing_group.command(name="민영화", description="이 낚시터(채널)을 민영화해요!")
     @on_working(fishing=True, prohibition=True, landwork=True, owner_only=True)
-    async def privatize(self, ctx):
+    async def privatize(self, ctx: discord.ApplicationContext):
         room = await Room.fetch(ctx.channel)
         if ctx.channel.guild.owner_id != ctx.author.id:
             return await ctx.respond(
@@ -309,7 +309,7 @@ class UnitCog(commands.Cog):
 
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view=view)
+        await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
@@ -317,9 +317,9 @@ class UnitCog(commands.Cog):
             embed = discord.Embed(
                 title="낚시터 민영화를 취소하였다.", colour=discord.Colour.light_grey()
             )
-            return await window.edit_original_message(embed=embed, view=None)
+            return await ctx.edit(embed=embed, view=None)
         await room.break_facility("_TIER0")
-        await window.edit_original_message(
+        await ctx.edit(
             content=f"<@{ctx.author.id}> {room.name} 낚시터는 이제 공공 낚시터가 아니야!",
             embed=None,
             view=None,
@@ -330,7 +330,7 @@ class UnitCog(commands.Cog):
     @on_working(
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
-    async def downgrade(self, ctx):
+    async def downgrade(self, ctx: discord.ApplicationContext):
         room = await Room.fetch(ctx.channel)
 
         if room.tier == 1:
@@ -394,7 +394,7 @@ class UnitCog(commands.Cog):
 
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view=view)
+        await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
@@ -402,7 +402,7 @@ class UnitCog(commands.Cog):
             embed = discord.Embed(
                 title="낚시터 다운그레이드를 취소하였다.", colour=discord.Colour.light_grey()
             )
-            return await window.edit_original_message(embed=embed, view=None)
+            return await ctx.edit(embed=embed, view=None)
 
         breaked = []
         breaked_cost = 0
@@ -428,7 +428,7 @@ class UnitCog(commands.Cog):
             if breaked == []
             else f"\n`❗ {', '.join(breaked)}이(가) 철거되어 추가로 ✨{breaked_cost:,}을 돌려받았습니다.`"
         )
-        await window.edit_original_message(
+        await ctx.edit(
             content=f"<@{ctx.author.id}> {room.name} 낚시터를 {room.tier} 티어로 다운그레이드 했어... 소박해졌네!"
             + bonus,
             embed=None,
@@ -502,7 +502,7 @@ class UnitCog(commands.Cog):
     )
     async def break_facility(
         self,
-        ctx,
+        ctx: discord.ApplicationContext,
         name: Option(
             str, "철거하실 시설의 이름을 입력해주세요!", autocomplete=autocomplete_facilities_uninstall
         ),
@@ -568,21 +568,21 @@ class UnitCog(commands.Cog):
 
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view=view)
+        await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
             embed = discord.Embed(
                 title="시설 철거를 취소하였다.", colour=discord.Colour.light_grey()
             )
-            await window.edit_original_message(embed=embed, view=None)
+            await ctx.edit(embed=embed, view=None)
             await room.set_working_now(False)
             return
 
         await room.break_facility(facility.code)
         await room.add_exp(facility.cost)
         await room.set_working_now(False)
-        await window.edit_original_message(
+        await ctx.edit(
             content=f"<@{ctx.author.id}> {room.name} 땅에서 **{facility.name}**을(를) 철거했어!",
             embed=None,
             view=None,
@@ -594,7 +594,7 @@ class UnitCog(commands.Cog):
     )
     async def build_facility(
         self,
-        ctx,
+        ctx: discord.ApplicationContext,
         name: Option(str, "건설하실 시설의 이름을 입력해주세요!", autocomplete=autocomplete_facilities),
     ):
         arg1 = " ".join(name).replace("_", "")
@@ -667,21 +667,21 @@ class UnitCog(commands.Cog):
 
         view = OXButtonView(ctx)
 
-        window = await ctx.respond(embed=embed, view=view)
+        await ctx.respond(embed=embed, view=view)
         result = await view.wait()
 
         if result is True or view.button_value == "취소함":
             embed = discord.Embed(
                 title="시설 건설을 취소하였다.", colour=discord.Colour.light_grey()
             )
-            await window.edit_original_message(embed=embed, view=None)
+            await ctx.edit(embed=embed, view=None)
             await room.set_working_now(False)  # 땅 작업 종료
             return
 
         await room.build_facility(facility.code)
         await room.add_exp(facility.cost * -1)
         await room.set_working_now(False)  # 땅 작업 종료
-        await window.edit_original_message(
+        await ctx.edit(
             content=f"<@{ctx.author.id}> {room.name} 땅에 **{facility.name}**을(를) 건설했어!",
             embed=None,
             view=None,

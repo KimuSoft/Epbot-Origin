@@ -38,6 +38,7 @@ def insert_returns(body):
     if isinstance(body[-1], ast.With):
         insert_returns(body[-1].body)
 
+
 class AdminCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -56,12 +57,13 @@ class AdminCog(commands.Cog):
 
         text = args
         try:
+
             async def aexec(code):
                 exec(
-                    f'async def __ex(): ' +
-                    ''.join(f'\n {l}' for l in code.split('\n'))
+                    f"async def __ex(): " + "".join(f"\n {l}" for l in code.split("\n"))
                 )
-                return await locals()['__ex']()
+                return await locals()["__ex"]()
+
             await aexec(text)
         except Exception as e:
             embed = discord.Embed(color=0x980000, timestamp=datetime.datetime.today())
@@ -113,18 +115,18 @@ class AdminCog(commands.Cog):
             insert_returns(body)
 
             env = {
-                'bot': ctx.bot,
-                'discord': discord,
-                'ctx': ctx,
-                '__import__': __import__,
-                'here': here,
-                'me': me,
-                'Room': Room,
-                'User': User
+                "bot": ctx.bot,
+                "discord": discord,
+                "ctx": ctx,
+                "__import__": __import__,
+                "here": here,
+                "me": me,
+                "Room": Room,
+                "User": User,
             }
             exec(compile(parsed, filename="<ast>", mode="exec"), env)
 
-            result = (await eval(f"{fn_name}()", env))
+            result = await eval(f"{fn_name}()", env)
         except Exception as e:
             embed = discord.Embed(color=0x980000, timestamp=datetime.datetime.today())
             embed.add_field(
@@ -222,7 +224,7 @@ class AdminCog(commands.Cog):
 
         embed = discord.Embed(title="⌛  **공지를 보낼 채널을 선정하는 중...**", color=0x00A495)
         target_list = []
-        window = await ctx.send(content="", embed=embed)
+        await ctx.send(content="", embed=embed)
 
         load_error = 0
         error_num = 0
