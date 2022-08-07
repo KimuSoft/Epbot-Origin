@@ -28,7 +28,6 @@ async def autocomplete_facilities(ctx: discord.AutocompleteContext):
         k: str = x[0]
         i = x[1]
         name: str = i["name"] if "name" in i else k
-        print(name)
         if ctx.value not in name:
             return False
 
