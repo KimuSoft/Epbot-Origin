@@ -156,7 +156,7 @@ class AdminCog(commands.Cog):
         guild_ids=config.ADMIN_COMMAND_GUILD,
         description="관리자 디버그용 도구입니다. (관리자 전용)",
     )
-    async def 팡(self, ctx):
+    async def 팡(self, ctx: discord.ApplicationContext):
         await ctx.respond(f"펑! 💥\n`지연 시간 : {int(self.bot.latency * 1000)}ms`")
         raise Exception
 
@@ -167,7 +167,7 @@ class AdminCog(commands.Cog):
         guild_ids=config.ADMIN_COMMAND_GUILD,
         description="관리자 디버그용 도구입니다. (관리자 전용)",
     )
-    async def 핑핑(self, ctx):
+    async def 핑핑(self, ctx: discord.ApplicationContext):
         ping = [f"#shard_{i[0]} ({int(i[1] * 1000)}ms)" for i in self.bot.latencies]
         text = "\n".join(ping)
         await ctx.respond(f"퐁퐁! 🏓🏓\n```css\n[ 지연 시간 ]\n{text}```")
@@ -178,7 +178,7 @@ class AdminCog(commands.Cog):
         description="관리자 공지용 도구입니다. (관리자 전용)",
     )
     @on_working.administrator()
-    async def 공지(self, ctx: discord.commands.context.ApplicationContext):
+    async def 공지(self, ctx: discord.ApplicationContext):
         old = await ctx.respond(
             """공지를 어떻게 쓸 거야?
             `✏️ 미리 복사해 둔 공지 내용을 붙여넣어 줘! (준비가 안 됐다면 '취소'라고 적어줘!)`"""

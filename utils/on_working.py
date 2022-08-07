@@ -95,7 +95,7 @@ def on_working(
 def administrator():
     """이프 관리자만 사용 가능하게 설정할 경우"""
 
-    async def predicate(ctx: discord.commands.context.ApplicationContext):
+    async def predicate(ctx: discord.ApplicationContext):
         if not (await User.fetch(ctx.author)).admin:
             try:
                 await ctx.respond("관계자 외 출입금지야!\n`❗ 이프 관리자 전용 명령어입니다.`")

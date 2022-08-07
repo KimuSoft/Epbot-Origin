@@ -27,7 +27,7 @@ class FishAdminCog(commands.Cog):
     @administrator()
     async def test(
         self,
-        ctx,
+        ctx: discord.ApplicationContext,
         command_type: Option(
             str, "관리자 명령어 종류", choices=["지형변경", "명성설정", "명성부여", "돈부여", "기타"]
         ),

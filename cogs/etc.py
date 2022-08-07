@@ -33,7 +33,7 @@ class EtcCog(commands.Cog):
 
     @commands.cooldown(3, 10)
     @slash_command(name="핑", description="이프의 현재 속도를 알려줘요!", guild_ids=SCRS)
-    async def 핑(self, ctx: discord.commands.context.ApplicationContext):
+    async def 핑(self, ctx: discord.ApplicationContext):
         now = datetime.datetime.now()
 
         latency = int(self.bot.latency * 1000)
@@ -51,7 +51,7 @@ class EtcCog(commands.Cog):
         )
 
     @slash_command(name="도움말", description="이프의 사용법을 알려줘요!", guild_ids=SCRS)
-    async def 도움말(self, ctx):
+    async def 도움말(self, ctx: discord.ApplicationContext):
         embed = discord.Embed(title="이프의 도움말", description=INFORMATION, colour=0x4BC59F)
         embed.set_footer(
             text="제작 키뮤소프트(키뮤#8673, Hollume_#3814) / 더욱 자세한 정보가 궁금하다면 '/정보'"
@@ -59,7 +59,7 @@ class EtcCog(commands.Cog):
         await ctx.respond(embed=embed)
 
     @slash_command(name="정보", description="이프의 정보를 알려줘요!", guild_ids=SCRS)
-    async def 정보(self, ctx):
+    async def 정보(self, ctx: discord.ApplicationContext):
         embed = discord.Embed(title="커여운 검열삭제 장인 이프!", colour=0x4BC59F)
         embed.add_field(
             name="개발ㆍ운영 - 키뮤소프트(코로, 키뮤)",

@@ -393,7 +393,6 @@ class LandCog(commands.Cog):
                 self.stop()
                 await interaction.response.defer()
 
-
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
                     await interaction.response.send_message(
@@ -434,7 +433,7 @@ class LandCog(commands.Cog):
     )
     async def change_biome(
         self,
-        ctx,
+        ctx: discord.ApplicationContext,
         value: Option(
             str,
             "변경하실 지형을 입력해주세요!",
@@ -509,13 +508,11 @@ class LandCog(commands.Cog):
                 self.stop()
                 await interaction.response.defer()
 
-
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
                 await interaction.response.defer()
-
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
@@ -585,13 +582,11 @@ class LandCog(commands.Cog):
                 self.stop()
                 await interaction.response.defer()
 
-
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
                 await interaction.response.defer()
-
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:

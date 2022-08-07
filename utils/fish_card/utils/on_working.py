@@ -14,7 +14,7 @@ def on_working(fishing=False, landwork=False, prohibition=False, owner_only=Fals
     owner_only : 낚시터 주인만 작업 가능
     """
 
-    async def predicate(ctx: discord.commands.context.ApplicationContext):
+    async def predicate(ctx: discord.ApplicationContext):
         channel = ctx.channel
 
         if isinstance(channel, DMChannel):
@@ -73,7 +73,7 @@ def on_working(fishing=False, landwork=False, prohibition=False, owner_only=Fals
 def administrator():
     """이프 관리자만 사용 가능하게 설정할 경우"""
 
-    async def predicate(ctx: discord.commands.context.ApplicationContext):
+    async def predicate(ctx: discord.ApplicationContext):
         if not (await User.fetch(ctx.author)).admin:
             try:
                 await ctx.respond("관계자 외 출입금지야!\n`❗ 이프 관리자 전용 명령어입니다.`")
@@ -88,7 +88,7 @@ def administrator():
 def p_requirements(manage_messages=False):
     """이프의 권한이 있어야 사용 가능한 명령어"""
 
-    async def predicate(ctx: discord.commands.context.ApplicationContext):
+    async def predicate(ctx: discord.ApplicationContext):
         if isinstance(ctx.channel, DMChannel):
             return False
 

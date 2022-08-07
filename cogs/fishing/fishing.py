@@ -30,7 +30,7 @@ class InfoCog(commands.Cog):
     @fishing_group.command(name="정보", description="이 채널의 낚시터 정보를 보여줘요!", guild_ids=SCRS)
     @commands.cooldown(1, 10, commands.BucketType.user)
     @on_working(prohibition=True)
-    async def fishing_info(self, ctx: discord.commands.context.ApplicationContext):
+    async def fishing_info(self, ctx: discord.ApplicationContext):
         await ctx.defer()
 
         room = await Room.fetch(ctx.channel)
@@ -103,7 +103,7 @@ class InfoCog(commands.Cog):
     @on_working(prohibition=True)
     async def ranking(
         self,
-        ctx: discord.commands.context.ApplicationContext,
+        ctx: discord.ApplicationContext,
         type: Option(str, "보고 싶으신 랭킹의 종류를 고르세요!", choices=["개인", "낚시터"]),
     ):
         await ctx.defer()
@@ -188,7 +188,7 @@ class InfoCog(commands.Cog):
     @slash_command(name="낚시중지", description="낚시 오류 발생시 낚시를 멈춰요!")
     @commands.cooldown(1, 600, commands.BucketType.user)
     @on_working(prohibition=True)
-    async def stop_fishing(self, ctx: discord.commands.context.ApplicationContext):
+    async def stop_fishing(self, ctx: discord.ApplicationContext):
         await ctx.defer()
 
         user = await User.fetch(ctx.author)
@@ -203,7 +203,7 @@ class InfoCog(commands.Cog):
     @on_working(prohibition=True)
     async def dex(
         self,
-        ctx: discord.commands.context.ApplicationContext,
+        ctx: discord.ApplicationContext,
         fish_name: Option(str, "검색하고 싶은 물고기 이름") = None,
     ):
         await ctx.defer()
@@ -262,7 +262,7 @@ class InfoCog(commands.Cog):
     @commands.cooldown(3, 30)
     async def statistics(
         self,
-        ctx: discord.commands.context.ApplicationContext,
+        ctx: discord.ApplicationContext,
         type: Option(str, "분석 결과의 종류", choices=["일반", "단순 표현"]),
     ):
         await ctx.defer()

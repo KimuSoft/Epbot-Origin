@@ -17,7 +17,7 @@ class CensorshipCog(commands.Cog):
         self.bot = bot
 
     @slash_command(name="검열", description="검열 기능에 대한 설명입니다!", guild_ids=SCRS)
-    async def 검열(self, ctx):
+    async def 검열(self, ctx: discord.ApplicationContext):
         embed = discord.Embed(title="검열 기능은 어디로 갔나요?", colour=0x4BC59F)
         embed.add_field(
             name="왜 없어졌나요?",
@@ -32,7 +32,7 @@ class CensorshipCog(commands.Cog):
         await ctx.respond(embed=embed)
 
     @slash_command(name="태그", description="이 채널의 태그를 확인하세요!", guild_ids=SCRS)
-    async def 태그(self, ctx):
+    async def 태그(self, ctx: discord.ApplicationContext):
         tags = eptag.tag_to_korean(eptag.get_tags(ctx.channel))
 
         embed = discord.Embed(title="이 채널의 태그", colour=0x4BC59F)

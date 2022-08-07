@@ -22,7 +22,7 @@ class ThemeCog(commands.Cog):
     theme_group = _theme_group
 
     @theme_group.command(name="설정", description="낚시카드의 테마를 선택하세요!", guild_ids=SCRS)
-    async def theme(self, ctx):
+    async def theme(self, ctx: discord.ApplicationContext):
         ep_user = await User.fetch(ctx.author)
         view = ThemeSelectView(ep_user)
         await ctx.respond(content="골라바", view=view)
@@ -30,7 +30,7 @@ class ThemeCog(commands.Cog):
     @theme_group.command(name="미리보기", guild_ids=SCRS, description="낚시카드의 테마를 미리 경헙해보세요")
     async def preview(
         self,
-        ctx,
+        ctx: discord.ApplicationContext,
         theme_id: Option(str, "미리보기할 테마 아이디를 입력해 주세요.") = None,
         rarity: Option(int, "미리보기할 테마 희귀도(0~4)를 입력해 주세요.") = 1,
     ):
@@ -99,9 +99,9 @@ class ThemeSelect(discord.ui.Select):
             )
         if self.values[0] not in [i["name"] for i in Constants.THEMES]:
             return await interaction.response.edit_message(content="으앙 오류", view=None)
-        theme_id = list(filter(lambda e: e["name"] == self.values[0], Constants.THEMES))[
-            0
-        ]["id"]
+        theme_id = list(
+            filter(lambda e: e["name"] == self.values[0], Constants.THEMES)
+        )[0]["id"]
         ep_user = await User.fetch(interaction.user)
         print(ep_user.theme)
         print(ep_user.themes)
