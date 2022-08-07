@@ -438,7 +438,9 @@ class UnitCog(commands.Cog):
     @land_group.command(name="건설가능목록", description="특정 티어의 시설중 낚시터에 알려드려요!")
     @on_working(fishing=True, prohibition=True, landwork=True, twoball=False)
     async def facility_list(
-        self, ctx, tier: Option(int, "시설 목록을 알고 싶은 특정 티어를 입력해주세요!") = 1
+        self,
+        ctx: discord.ApplicationContext,
+        tier: Option(int, "시설 목록을 알고 싶은 특정 티어를 입력해주세요!") = 1,
     ):
         room = await Room.fetch(ctx.channel)
 
@@ -466,7 +468,9 @@ class UnitCog(commands.Cog):
 
     @land_group.command(name="검색", description="시설을 설명해드려요!")
     @on_working(prohibition=True)
-    async def search_facility(self, ctx, args: Option(str, "궁금하신 시설의 이름을 입력하세요!")):
+    async def search_facility(
+        self, ctx: discord.ApplicationContext, args: Option(str, "궁금하신 시설의 이름을 입력하세요!")
+    ):
         arg1 = " ".join(args)
         try:
             facility = Facility(arg1.upper())

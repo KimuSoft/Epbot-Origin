@@ -49,7 +49,7 @@ class AdminCog(commands.Cog):
         guild_ids=config.ADMIN_COMMAND_GUILD,
         decription="관리자 디버그용 도구입니다. (관리자 전용)",
     )
-    async def 계란(self, ctx, args: str):
+    async def 계란(self, ctx: discord.ApplicationContext, args: str):
         here = await Room.fetch(ctx.channel)
         me = await User.fetch(ctx.author)
 
@@ -91,7 +91,7 @@ class AdminCog(commands.Cog):
         guild_ids=config.ADMIN_COMMAND_GUILD,
         description="관리자 디버그용 도구입니다. (관리자 전용)",
     )
-    async def 달걀(self, ctx, args: str):
+    async def 달걀(self, ctx: discord.ApplicationContext, args: str):
         here = await Room.fetch(ctx.channel)
         me = await User.fetch(ctx.author)
 
@@ -280,7 +280,7 @@ class AdminCog(commands.Cog):
         description="관리자 공지용 도구입니다. (관리자 전용)",
     )
     @on_working.administrator()
-    async def 업데이트공지(self, ctx, arg):
+    async def 업데이트공지(self, ctx: discord.ApplicationContext, arg):
         embed = discord.Embed(
             title="**공지사항**", color=0x00A495, timestamp=datetime.datetime.now()
         )
@@ -335,7 +335,7 @@ class LogManagerCog(commands.Cog):
         description="관리자 디버그용 도구입니다. (관리자 전용)",
     )
     @on_working.administrator()
-    async def 로그(self, ctx, args: str):
+    async def 로그(self, ctx: discord.ApplicationContext, args: str):
         arg = (
             "".join(args)
             .replace("_", "-")
@@ -355,7 +355,7 @@ class LogManagerCog(commands.Cog):
         description="관리자 디버그용 도구입니다. (관리자 전용)",
     )
     @on_working.administrator()
-    async def 에러로그(self, ctx, args: str):
+    async def 에러로그(self, ctx: discord.ApplicationContext, args: str):
         arg = (
             "".join(args)
             .replace("_", "-")

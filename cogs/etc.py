@@ -86,7 +86,7 @@ class EtcCog(commands.Cog):
         await ctx.respond(embed=embed)
 
     @slash_command(name="지워", description="메세지를 지워요!", guild_ids=SCRS)
-    async def 지워(self, ctx, limit: int):
+    async def 지워(self, ctx: discord.ApplicationContext, limit: int):
         if (await User.fetch(ctx.author)).admin:
             pass
         elif not ctx.author.permissions_in(ctx.channel).manage_roles:
