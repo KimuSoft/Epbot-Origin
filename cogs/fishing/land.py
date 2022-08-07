@@ -33,6 +33,7 @@ class LandCog(commands.Cog):
     async def buy(
         self, ctx: discord.ApplicationContext, price: Option(int, "매입 가격을 입력해요!") = None
     ):
+        await ctx.defer()
         user = await User.fetch(ctx.author)
         room = await Room.fetch(ctx.channel)
         land_value = room.land_value
@@ -78,14 +79,18 @@ class LandCog(commands.Cog):
             @discord.ui.button(
                 label="매입하기", style=discord.ButtonStyle.blurple, emoji="⭕"
             )
-            async def button1_callback(self, button, interaction):
+            async def button1_callback(
+                self, button: discord.Button, interaction: discord.Interaction
+            ):
                 self.button_value = "매입"
                 self.stop()
+                await interaction.response.defer()
 
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
+                await interaction.response.defer()
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
@@ -99,6 +104,8 @@ class LandCog(commands.Cog):
                     return True
 
         view = OXButtonView(ctx)
+
+        await ctx.respond(embed=embed, view=view)
 
         result = await view.wait()
 
@@ -172,11 +179,13 @@ class LandCog(commands.Cog):
             async def button1_callback(self, button, interaction):
                 self.button_value = "매각"
                 self.stop()
+                await interaction.response.defer()
 
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
+                await interaction.response.defer()
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
@@ -298,6 +307,7 @@ class LandCog(commands.Cog):
                     async def button1_callback(self, button, interaction):
                         self.button_value = "넘기기"
                         self.stop()
+                        await interaction.response.defer()
 
                     @discord.ui.button(
                         label="그만보기", style=discord.ButtonStyle.red, emoji="❌"
@@ -305,6 +315,7 @@ class LandCog(commands.Cog):
                     async def button2_callback(self, button, interaction):
                         self.button_value = "취소함"
                         self.stop()
+                        await interaction.response.defer()
 
                     async def interaction_check(self, interaction) -> bool:
                         if interaction.user != self.ctx.author:
@@ -374,11 +385,14 @@ class LandCog(commands.Cog):
             async def button1_callback(self, button, interaction):
                 self.button_value = "땅값변경"
                 self.stop()
+                await interaction.response.defer()
 
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
+                await interaction.response.defer()
+
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
@@ -493,11 +507,15 @@ class LandCog(commands.Cog):
             async def button1_callback(self, button, interaction):
                 self.button_value = "수수료변경"
                 self.stop()
+                await interaction.response.defer()
+
 
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
+                await interaction.response.defer()
+
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
@@ -565,11 +583,15 @@ class LandCog(commands.Cog):
             async def button1_callback(self, button, interaction):
                 self.button_value = "청소"
                 self.stop()
+                await interaction.response.defer()
+
 
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
+                await interaction.response.defer()
+
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:

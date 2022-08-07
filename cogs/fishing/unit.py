@@ -118,11 +118,13 @@ class UnitCog(commands.Cog):
             async def button1_callback(self, button, interaction):
                 self.button_value = "업그레이드"
                 self.stop()
+                await interaction.response.defer()
 
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
+                await interaction.response.defer()
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
@@ -210,11 +212,13 @@ class UnitCog(commands.Cog):
             async def button1_callback(self, button, interaction):
                 self.button_value = "공영화"
                 self.stop()
+                await interaction.response.defer()
 
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
+                await interaction.response.defer()
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
@@ -290,11 +294,13 @@ class UnitCog(commands.Cog):
             async def button1_callback(self, button, interaction):
                 self.button_value = "민영화"
                 self.stop()
+                await interaction.response.defer()
 
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
+                await interaction.response.defer()
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
@@ -375,11 +381,13 @@ class UnitCog(commands.Cog):
             async def button1_callback(self, button, interaction):
                 self.button_value = "다운그레이드"
                 self.stop()
+                await interaction.response.defer()
 
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
+                await interaction.response.defer()
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
@@ -553,11 +561,13 @@ class UnitCog(commands.Cog):
             async def button1_callback(self, button, interaction):
                 self.button_value = "철거"
                 self.stop()
+                await interaction.response.defer()
 
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
+                await interaction.response.defer()
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
@@ -652,11 +662,13 @@ class UnitCog(commands.Cog):
             async def button1_callback(self, button, interaction):
                 self.button_value = "건설"
                 self.stop()
+                await interaction.response.defer()
 
             @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
+                await interaction.response.defer()
 
             async def interaction_check(self, interaction) -> bool:
                 if interaction.user != self.ctx.author:
