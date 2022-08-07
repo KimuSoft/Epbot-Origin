@@ -22,7 +22,8 @@ class ShortInfoCog(commands.Cog):
         self.bot = bot
 
     @slash_command(name="내정보", description="자신의 정보를 확인할 수 있어요!", guild_ids=SCRS)
-    async def profile(self, ctx):
+    async def profile(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
         user = await User.fetch(ctx.author)
         embed = discord.Embed(title=ctx.author.display_name + "의 정보!", colour=0x4BC59F)
         embed.add_field(
