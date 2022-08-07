@@ -265,7 +265,7 @@ class LandCog(commands.Cog):
 
             await ctx.edit(embed=embed, view=None)
 
-    @slash_command(name="내땅", description="무슨 땅을 가지고 있는지 확인해요!", guild_ids=SCRS)
+    @slash_command(name="내땅", description="무슨 땅을 가지고 있는지 확인해요!")
     @on_working(fishing=True, prohibition=True)
     async def my_land(
         self,

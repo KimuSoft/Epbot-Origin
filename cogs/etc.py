@@ -32,7 +32,7 @@ class EtcCog(commands.Cog):
     # 핑 하면 퐁 하면서 봇의 레이턴시(지연 시간)을 알려 주는 예시 명령어야!
 
     @commands.cooldown(3, 10)
-    @slash_command(name="핑", description="이프의 현재 속도를 알려줘요!", guild_ids=SCRS)
+    @slash_command(name="핑", description="이프의 현재 속도를 알려줘요!")
     async def 핑(self, ctx: discord.ApplicationContext):
         now = datetime.datetime.now()
 
@@ -50,7 +50,7 @@ class EtcCog(commands.Cog):
             content=f"퐁! 🏓\n`지연 시간 : {latency}ms (실제 지연시간 {real_latency}ms)`"
         )
 
-    @slash_command(name="도움말", description="이프의 사용법을 알려줘요!", guild_ids=SCRS)
+    @slash_command(name="도움말", description="이프의 사용법을 알려줘요!")
     async def 도움말(self, ctx: discord.ApplicationContext):
         embed = discord.Embed(title="이프의 도움말", description=INFORMATION, colour=0x4BC59F)
         embed.set_footer(
@@ -58,7 +58,7 @@ class EtcCog(commands.Cog):
         )
         await ctx.respond(embed=embed)
 
-    @slash_command(name="정보", description="이프의 정보를 알려줘요!", guild_ids=SCRS)
+    @slash_command(name="정보", description="이프의 정보를 알려줘요!")
     async def 정보(self, ctx: discord.ApplicationContext):
         embed = discord.Embed(title="커여운 검열삭제 장인 이프!", colour=0x4BC59F)
         embed.add_field(
@@ -85,7 +85,7 @@ class EtcCog(commands.Cog):
         )
         await ctx.respond(embed=embed)
 
-    @slash_command(name="지워", description="메세지를 지워요!", guild_ids=SCRS)
+    @slash_command(name="지워", description="메세지를 지워요!")
     async def 지워(self, ctx: discord.ApplicationContext, limit: int):
         if (await User.fetch(ctx.author)).admin:
             pass

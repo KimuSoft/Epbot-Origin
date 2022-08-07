@@ -38,7 +38,7 @@ class FishingGameCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name="낚시", description="이프와 함께 물고기를 낚아요!", guild_ids=SCRS)
+    @slash_command(name="낚시", description="이프와 함께 물고기를 낚아요!")
     @commands.cooldown(1, 5, commands.BucketType.user)
     @on_working.on_working(fishing=True, prohibition=True)
     async def fish(self, ctx: discord.ApplicationContext):

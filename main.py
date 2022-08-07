@@ -23,9 +23,13 @@ intents = discord.Intents.default()
 # intents.message_content = True
 
 
-class EpBot(commands.AutoShardedBot):
+class EpBot(discord.AutoShardedBot):
     def __init__(self):
-        super().__init__(help_command=None, intents=intents)
+        super().__init__(
+            help_command=None,
+            intents=intents,
+            debug_guilds=config.SLASH_COMMAND_REGISTER_SERVER,
+        )
 
         # Cogs 로드(Cogs 폴더 안에 있는 것이라면 자동으로 인식합니다)
         self.add_cog(ManagementCog(self))  # 기본 제공 명령어 Cog

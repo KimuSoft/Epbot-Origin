@@ -21,13 +21,13 @@ class ThemeCog(commands.Cog):
 
     theme_group = _theme_group
 
-    @theme_group.command(name="설정", description="낚시카드의 테마를 선택하세요!", guild_ids=SCRS)
+    @theme_group.command(name="설정", description="낚시카드의 테마를 선택하세요!")
     async def theme(self, ctx: discord.ApplicationContext):
         ep_user = await User.fetch(ctx.author)
         view = ThemeSelectView(ep_user)
         await ctx.respond(content="골라바", view=view)
 
-    @theme_group.command(name="미리보기", guild_ids=SCRS, description="낚시카드의 테마를 미리 경헙해보세요")
+    @theme_group.command(name="미리보기", description="낚시카드의 테마를 미리 경헙해보세요")
     async def preview(
         self,
         ctx: discord.ApplicationContext,

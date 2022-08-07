@@ -27,7 +27,7 @@ class InfoCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @fishing_group.command(name="정보", description="이 채널의 낚시터 정보를 보여줘요!", guild_ids=SCRS)
+    @fishing_group.command(name="정보", description="이 채널의 낚시터 정보를 보여줘요!")
     @commands.cooldown(1, 10, commands.BucketType.user)
     @on_working(prohibition=True)
     async def fishing_info(self, ctx: discord.ApplicationContext):
@@ -99,7 +99,7 @@ class InfoCog(commands.Cog):
 
         await ctx.respond(embed=embed)
 
-    @slash_command(name="랭킹", description="이프의 랭킹을 보여줘요!", guild_ids=SCRS)
+    @slash_command(name="랭킹", description="이프의 랭킹을 보여줘요!")
     @on_working(prohibition=True)
     async def ranking(
         self,
@@ -199,7 +199,7 @@ class InfoCog(commands.Cog):
             `❗ 이 명령어는 꼭 시스템적으로 예기치 못한 버그가 발생했을 때만 사용해 주세요!`"""
         )
 
-    @slash_command(name="도감", description="물고기의 정보 or 도감을 보여드려요!", guild_ids=SCRS)
+    @slash_command(name="도감", description="물고기의 정보 or 도감을 보여드려요!")
     @on_working(prohibition=True)
     async def dex(
         self,
@@ -256,9 +256,7 @@ class InfoCog(commands.Cog):
         embed.add_field(name="🏞️ **서식지**", value=f"**>> {biome}**")
         await ctx.respond(embed=embed)
 
-    @fishing_group.command(
-        name="분석", description="이 낚시터에 서식하는 물고기와 확률을 분석해 드려요!", guild_ids=SCRS
-    )
+    @fishing_group.command(name="분석", description="이 낚시터에 서식하는 물고기와 확률을 분석해 드려요!")
     @commands.cooldown(3, 30)
     async def statistics(
         self,

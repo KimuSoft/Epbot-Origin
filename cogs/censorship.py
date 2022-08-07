@@ -5,7 +5,6 @@ import discord
 from discord.commands import slash_command
 from discord.ext import commands
 
-from config import SLASH_COMMAND_REGISTER_SERVER as SCRS
 from utils import logger
 
 # 부가 임포트
@@ -16,7 +15,7 @@ class CensorshipCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(name="검열", description="검열 기능에 대한 설명입니다!", guild_ids=SCRS)
+    @slash_command(name="검열", description="검열 기능에 대한 설명입니다!")
     async def 검열(self, ctx: discord.ApplicationContext):
         embed = discord.Embed(title="검열 기능은 어디로 갔나요?", colour=0x4BC59F)
         embed.add_field(
@@ -31,7 +30,7 @@ class CensorshipCog(commands.Cog):
         )
         await ctx.respond(embed=embed)
 
-    @slash_command(name="태그", description="이 채널의 태그를 확인하세요!", guild_ids=SCRS)
+    @slash_command(name="태그", description="이 채널의 태그를 확인하세요!")
     async def 태그(self, ctx: discord.ApplicationContext):
         tags = eptag.tag_to_korean(eptag.get_tags(ctx.channel))
 
