@@ -8,7 +8,7 @@ class Constants:
     """상수 그룹 클래스"""
 
     # 이프 버전
-    VERSION = "1.10.9"
+    VERSION = "1.10.10"
 
     # 테마 종류
     THEMES = [
