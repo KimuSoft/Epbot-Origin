@@ -229,7 +229,7 @@ class FishingGameCog(commands.Cog):
         if not timing:  # 끝날 때까지 한 번도 미동이 없었던 경우:
             return await fishing_failed(ctx, user, "자리를 잘못 잡았나...?")
 
-        fish = room.randfish()
+        fish = await room.randfish()
 
         if not fish:
             # 등급을 뽑았는데 해당하는 물고기가 없는 경우

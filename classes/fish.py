@@ -13,9 +13,10 @@ import jwt
 
 import config
 from constants import Constants
-from db.seta_sqlite import S_SQLite
+from db.seta_pgsql import S_PgSQL
 
-db = S_SQLite("static/fishing.db")
+db = S_PgSQL()
+
 rarity_dict = {0: "쓰레기", 1: "흔함", 2: "희귀함", 3: "매우 귀함", 4: "전설", 5: "초전설", 6: "환상"}
 rarity_dict_eng = {
     0: "Trash",
@@ -44,11 +45,13 @@ class Fish:
 
     # ------------------------------------- __init__ ------------------------------------- #
 
-    def __init__(self, code: int):
-        data = db.select_sql(
+    async def fetch(code: int):
+        data = await db.select_sql(
             "fish", "name, cost, length, rarity, biomes, eng_name", f"WHERE id={code}"
         )
+        return Fish(data, code)
 
+    def __init__(self, data, code: int):
         if not data:
             raise NotFishException
 
@@ -152,12 +155,12 @@ class Fish:
         return f"{config.CARD_SERVER}/fish/{theme}/{token}"
 
 
-def search_fish(keyword):
+async def search_fish(keyword):
     if keyword.isdigit():
         return int(keyword)
 
     try:
-        data = db.select_sql(
+        data = await db.select_sql(
             "fish", "id", f"WHERE name LIKE '%{keyword}%' ORDER BY length(name)"
         )[0]
         return data[0]

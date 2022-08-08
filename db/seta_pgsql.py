@@ -118,6 +118,9 @@ class S_PgSQL:
             value = "'" + str(value).replace('"', "\\'") + "'"
             return value
 
-    def json_convert(self, val):
-        res = json.dumps(val, ensure_ascii=False)
+    async def json_convert(self, val):
+        def fn():
+            return json.dumps(val, ensure_ascii=False)
+
+        res = await asyncio.get_event_loop().run_in_executor(None, fn)
         return res

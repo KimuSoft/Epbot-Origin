@@ -36,7 +36,7 @@ class CycleCog(commands.Cog):
         logger.info("AsyncIOScheduler 스케쥴 시작")
         self.sched = AsyncIOScheduler()
 
-        # self.sched.add_job(self.day_end_schedule, "cron", hour="23", minute="55")
+        self.sched.add_job(self.day_end_schedule, "cron", hour="23", minute="55")
         # self.sched.add_job(self.day_end_schedule, 'cron', minute='*/5')
         self.sched.start()
 
@@ -53,6 +53,11 @@ class CycleCog(commands.Cog):
         logger.info("낚시 상태 정기 초기화 완료")
         if len(self.bot.guilds) != 0:
             logger.info(f"통계 : 현재 서버 수 {len(self.bot.guilds)}곳")
+
+    async def day_end_schedule(self):
+        logger.info("자정 스케쥴 실행")
+        await db.update_sql("rooms", "season = season + 1")  # 계절 변화
+        await db.update_sql("rooms", "season = 1", "season = 5")  # 계절 변화
 
 
 """ 사용하지 않음

@@ -44,7 +44,7 @@ class ThemeCog(commands.Cog):
 
         dummy_user = ExampleUser(theme)
         dummy_user.theme = theme
-        fish = await Room.fetch(ctx.channel).randfish()
+        fish = (await Room.fetch(ctx.channel)).randfish()
         fish.owner = dummy_user
         fish.rarity = rarity
 

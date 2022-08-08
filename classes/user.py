@@ -123,13 +123,13 @@ class User:
 
         self._theme.sort(key=lambda x: x != value)
         await db.update_sql(
-            "users", f"theme='{db.json_convert(self._theme)}'", f"id='{self.id}'"
+            "users", f"theme='{await db.json_convert(self._theme)}'", f"id='{self.id}'"
         )
 
     async def add_theme(self, theme: str):
         self._theme.append(theme)
         await db.update_sql(
-            "users", f"theme='{db.json_convert(self._theme)}'", f"id='{self.id}'"
+            "users", f"theme='{await db.json_convert(self._theme)}'", f"id='{self.id}'"
         )
 
     # ------------------------------------- method(메서드) ------------------------------------- #
@@ -176,7 +176,7 @@ class User:
             }
         )
         await db.update_sql(
-            "users", f"fish='{db.json_convert(self.fish_history)}'", f"id='{self.id}'"
+            "users", f"fish='{await db.json_convert(self.fish_history)}'", f"id='{self.id}'"
         )
         await self.write_dex(fish)
 
@@ -187,7 +187,7 @@ class User:
             return False
         self.dex[str(fish.rarity)].append(fish.id)
         await db.update_sql(
-            "users", f"dex='{db.json_convert(self.dex)}'", f"id='{self.id}'"
+            "users", f"dex='{await db.json_convert(self.dex)}'", f"id='{self.id}'"
         )
         return True
 

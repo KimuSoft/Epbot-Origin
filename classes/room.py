@@ -30,7 +30,6 @@ from db.seta_sqlite import S_SQLite
 from utils import logger
 
 db = S_PgSQL()
-fishdb = S_SQLite("static/fishing.db")
 # 주의!!! 그냥 default_effects = UNITDATA["_effects"] 해 버리면
 # dict 특성 상 복제가 아니라 동일 객체 취급 받아서 default_effects의 수정사항이 UNITDATA에 반영되어 버린다!!!
 
@@ -312,7 +311,7 @@ class Room:
         self._facilities.append(facility)
         await db.update_sql(
             "rooms",
-            f"facilities='{db.json_convert(self.facilities)}'",
+            f"facilities='{await db.json_convert(self.facilities)}'",
             f"id='{self.id}'",
         )
 
@@ -334,26 +333,26 @@ class Room:
         self._facilities.remove(facility)
         await db.update_sql(
             "rooms",
-            f"facilities='{db.json_convert(self.facilities)}'",
+            f"facilities='{await db.json_convert(self.facilities)}'",
             f"id='{self.id}'",
         )
 
     # ------------------------------------- (물고기 관련) ------------------------------------- #
 
-    def randfish(self):
+    async def randfish(self):
         """랜덤으로 해당 방에서 낚이는 생선 객체(:class:`Fish`)를 반환합니다. 단, 생성된 조건에서 낚일 생성이 없으면 None을 반환합니다."""
         rank = choose(self.probability_distribution)
 
-        nominated_fishes = fishdb.select_sql(
+        nominated_fishes = await db.select_sql(
             "fish",
             "id",
-            f"WHERE rarity={rank} and biomes LIKE '%{self.biome}%' and seasons LIKE '%{self.season}%' ORDER BY random() LIMIT 1",
+            f"WHERE rarity = '{rank}' and biomes LIKE '%{self.biome}%' and seasons LIKE '%{self.season}%' ORDER BY random() LIMIT 1",
         )
 
         if not nominated_fishes:
             return None
         else:
-            fish = Fish(nominated_fishes[0][0])
+            fish = await Fish.fetch(nominated_fishes[0][0])
             fish.place = self
             return fish
 
@@ -383,10 +382,9 @@ class Room:
         # 기본이 60%까지 가능하므로 시설 보정은 40% 이상 만들지 말자!
         return 20 + history_effect + exp_effect + self.effects["probability"]
 
-    @property
-    def can_fishing_list(self):
+    async def can_fishing_list(self):
         """List[`str`]: 해당 지역에서 낚을 수 있는 물고기의 이름 리스트를 반환"""
-        rank = fishdb.select_sql(
+        rank = await db.select_sql(
             "fish",
             "name",
             f"WHERE biomes LIKE '%{self.biome}%' and seasons LIKE '%{self.season}%'",
@@ -396,17 +394,16 @@ class Room:
         else:
             return [i[0] for i in rank]
 
-    @property
-    def can_fishing_dict(self):
+    async def can_fishing_dict(self):
         """dict: 해당 지역에서 낚을 수 있는 등급 별 물고기의 이름 딕셔너리를 반환
         예시) {0:['쓰레기'], 1:['농어']}
         """
         can_fishing_dict = {}
         for i in range(0, 5):
-            rank = fishdb.select_sql(
+            rank = await db.select_sql(
                 "fish",
                 "name",
-                f"WHERE rarity={i} and biomes LIKE '%{self.biome}%' and seasons LIKE '%{self.season}%'",
+                f"WHERE rarity = '{i}' and biomes LIKE '%{self.biome}%' and seasons LIKE '%{self.season}%'",
             )
             if not rank:
                 can_fishing_dict[i] = []
@@ -414,17 +411,16 @@ class Room:
                 can_fishing_dict[i] = [i[0] for i in rank]
         return can_fishing_dict
 
-    @property
-    def can_fishing_dict_eng(self):
+    async def can_fishing_dict_eng(self):
         """dict: 해당 지역에서 낚을 수 있는 등급 별 물고기의 이름 딕셔너리를 반환
 
         예) {0:['쓰레기'], 1:['농어']}"""
         can_fishing_dict = {}
         for i in range(0, 5):
-            rank = fishdb.select_sql(
+            rank = await db.select_sql(
                 "fish",
                 "eng_name",
-                f"WHERE rarity={i} and biomes LIKE '%{self.biome}%' and seasons LIKE '%{self.season}%' and eng_name is not null",
+                f"WHERE rarity = '{i}' and biomes LIKE '%{self.biome}%' and seasons LIKE '%{self.season}%' and eng_name is not null",
             )
             if not rank:
                 can_fishing_dict[i] = []

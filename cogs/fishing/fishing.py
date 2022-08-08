@@ -226,7 +226,7 @@ class InfoCog(commands.Cog):
             return None
 
         try:
-            fish = Fish(search_fish(fish_name))
+            fish = await Fish.fetch(await search_fish(fish_name))
         except NotFishException:
             return await ctx.respond(
                 """우움... 내 도감에서는 안 보이는데...?
@@ -278,7 +278,7 @@ class InfoCog(commands.Cog):
         embed = discord.Embed(title="📊 통계청 조사 결과", description=bar_str, colour=0x4BC59F)
 
         # 낚을 수 있는 물고기 정보
-        canfishing = room.can_fishing_dict
+        canfishing = await room.can_fishing_dict()
         list_str = "[흔함] " + (
             "<없음>"
             if canfishing[1] == []
