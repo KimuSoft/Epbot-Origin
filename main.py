@@ -1,9 +1,11 @@
+import asyncio
 from discord.ext import commands
 from discord.commands import slash_command
 import discord
 
 import config
 from db.seta_pgsql import S_PgSQL
+from db.seta_sqlite import S_SQLite
 from utils import logger
 import traceback
 import os
@@ -21,6 +23,8 @@ db = S_PgSQL()
 intents = discord.Intents.default()
 
 # intents.message_content = True
+
+fishdb = S_SQLite("static/fishing.db")
 
 
 class EpBot(discord.AutoShardedBot):
@@ -63,7 +67,28 @@ class EpBot(discord.AutoShardedBot):
         await self.change_presence(status=discord.Status.online)
 
     def run(self):
-        super().run(config.token(), reconnect=True)
+        asyncio.get_event_loop().run_until_complete(self._run())
+
+    async def _run(self):
+        logger.info("Refreshing fish data...")
+
+        await db.delete_sql("fish", "")
+
+        data = fishdb.select_sql("fish", "*")
+
+        for i in data:
+            logger.info(str(i))
+
+            engname = f"'{i[10]}'" if i[10] else "NULL"
+
+            await db.insert_sql(
+                "fish",
+                "id, name, cost, length, seasons, rarity, biomes, user_num, historic, room_level, eng_name",
+                f"{i[0]}, '{i[1]}', {i[2]}, '{i[3]}', {i[4]}, '{i[5]}', {i[6]}, {i[7]}, {i[8]}, {i[9]}, {engname}",
+            )
+
+        logger.info("Fish data refreshed.")
+        await super().start(config.token(), reconnect=True)
 
 
 # 기본 제공 명령어
