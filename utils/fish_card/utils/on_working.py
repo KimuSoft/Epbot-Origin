@@ -4,6 +4,7 @@ from discord.ext.commands import check
 from classes.user import User, on_fishing
 from classes.room import Room, get_working_now
 from utils import logger
+import discord
 
 
 def on_working(fishing=False, landwork=False, prohibition=False, owner_only=False):
@@ -92,7 +93,7 @@ def p_requirements(manage_messages=False):
         if isinstance(ctx.channel, DMChannel):
             return False
 
-        per = ctx.channel.guild.me.permissions_in(ctx.channel)
+        per = ctx.channel.permissions_for(ctx.guild.me)
         if not per.send_messages:  # 애초에 보내지도 못하면 할 수가 없지
             logger.warn(f"{ctx.channel.name}({ctx.channel.id})에서 메시지 보내기 권한이 없음")
             return False

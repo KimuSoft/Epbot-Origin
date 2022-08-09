@@ -87,11 +87,12 @@ class EtcCog(commands.Cog):
 
     @slash_command(name="지워", description="메세지를 지워요!")
     async def 지워(self, ctx: discord.ApplicationContext, limit: int):
-        if (await User.fetch(ctx.author)).admin:
-            pass
-        elif not ctx.author.permissions_in(ctx.channel).manage_roles:
+        if (
+            not (await User.fetch(ctx.author)).admin
+            and not ctx.author.guild_permissions.manage_roles
+        ):
             await ctx.respond("마력을 더욱 쌓고 오거라!!")
-            return None
+            return
         limit += 1
         if limit <= 101:
             await ctx.channel.purge(limit=limit)
