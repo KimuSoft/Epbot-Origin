@@ -35,7 +35,7 @@ class ThemeCog(commands.Cog):
         rarity: Option(int, "미리보기할 테마 희귀도(0~4)를 입력해 주세요.") = 1,
     ):
         if not theme_id:
-            theme = await User.fetch(ctx.author.id).theme
+            theme = (await User.fetch(ctx.author.id)).theme
         else:
             theme = theme_id
 
