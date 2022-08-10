@@ -153,7 +153,7 @@ class UnitCog(commands.Cog):
             if facility.cost > await room.get_exp():
                 return await ctx.edit(
                     content=f"""으움... 기각당했어...
-                    `❗ 낚시터 명성이 부족합니다. ( ✨ {facility.cost} 필요 )`""",
+`❗ 낚시터 명성이 부족합니다. ( ✨ {facility.cost} 필요 )`""",
                     embed=None,
                     view=None,
                 )
@@ -629,7 +629,7 @@ class UnitCog(commands.Cog):
         if facility.cost > await room.get_exp():
             return await ctx.respond(
                 f"""흐으음... 이 낚시터에는 아직 이른 시설이라고 생각해
-                `❗ 낚시터 명성이 부족합니다. ( ✨ {facility.cost} 필요 )`"""
+`❗ 낚시터 명성이 부족합니다. ( ✨ {facility.cost} 필요 )`"""
             )
 
         try:
