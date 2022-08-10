@@ -121,9 +121,7 @@ class UnitCog(commands.Cog):
                     self.stop()
                     await interaction.response.defer()
 
-                @discord.ui.button(
-                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
-                )
+                @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
                 async def button2_callback(self, button, interaction):
                     self.button_value = "취소함"
                     self.stop()
@@ -215,9 +213,7 @@ class UnitCog(commands.Cog):
                     self.stop()
                     await interaction.response.defer()
 
-                @discord.ui.button(
-                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
-                )
+                @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
                 async def button2_callback(self, button, interaction):
                     self.button_value = "취소함"
                     self.stop()
@@ -298,9 +294,7 @@ class UnitCog(commands.Cog):
                     self.stop()
                     await interaction.response.defer()
 
-                @discord.ui.button(
-                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
-                )
+                @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
                 async def button2_callback(self, button, interaction):
                     self.button_value = "취소함"
                     self.stop()
@@ -386,9 +380,7 @@ class UnitCog(commands.Cog):
                     self.stop()
                     await interaction.response.defer()
 
-                @discord.ui.button(
-                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
-                )
+                @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
                 async def button2_callback(self, button, interaction):
                     self.button_value = "취소함"
                     self.stop()
@@ -569,9 +561,7 @@ class UnitCog(commands.Cog):
                     self.stop()
                     await interaction.response.defer()
 
-                @discord.ui.button(
-                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
-                )
+                @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
                 async def button2_callback(self, button, interaction):
                     self.button_value = "취소함"
                     self.stop()
@@ -670,9 +660,7 @@ class UnitCog(commands.Cog):
                     self.stop()
                     await interaction.response.defer()
 
-                @discord.ui.button(
-                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
-                )
+                @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red)
                 async def button2_callback(self, button, interaction):
                     self.button_value = "취소함"
                     self.stop()
