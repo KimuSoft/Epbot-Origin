@@ -58,7 +58,7 @@ class EtcCog(commands.Cog):
         )
         await ctx.respond(embed=embed)
 
-    @slash_command(name="정보", description="이프의 정보를 알려줘요!")
+    @slash_command(name="이프", description="이프의 정보를 알려줘요!")
     async def 정보(self, ctx: discord.ApplicationContext):
         embed = discord.Embed(title="커여운 검열삭제 장인 이프!", colour=0x4BC59F)
         embed.add_field(
