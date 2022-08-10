@@ -54,10 +54,12 @@ class ShortInfoCog(commands.Cog):
     #     room = await Room.fetch(ctx.channel)
     #     await ctx.respond(content=f"`이 낚시터의 지형 : {Constants.BIOME_KR[room.biome]}`")
     #
-    # @slash_command(name="돈", description="지금 가지고 계신 돈을 알려줘요!")
-    # async def 돈(self, ctx):
-    #     user = await User.fetch(ctx.author)
-    #     await ctx.respond(content=f"`소지금 : {user.money:,}💰`")
+    @slash_command(name="돈", description="지금 가지고 계신 돈을 알려줘요!")
+    async def 돈(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
+        user = await User.fetch(ctx.author)
+        await ctx.respond(content=f"`소지금 : {user.money:,}💰`")
+
     #
     # @slash_command(name="명성", description="자신과 낚시터가 가지고 있는 명성을 알려줘요!")
     # async def 명성(self, ctx):
