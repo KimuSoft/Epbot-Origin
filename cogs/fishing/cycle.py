@@ -17,6 +17,7 @@ from discord.ext import commands, tasks
 import config
 from db.seta_pgsql import S_PgSQL
 from utils import logger
+from classes.room import working_now
 
 db = S_PgSQL()
 
@@ -49,7 +50,7 @@ class CycleCog(commands.Cog):
     @tasks.loop(minutes=600)
     async def cleaner(self):
         await db.update_sql("users", "fishing_now=0")
-        await db.update_sql("rooms", "selling_now=0")
+        working_now.clear()
         logger.info("낚시 상태 정기 초기화 완료")
         if len(self.bot.guilds) != 0:
             logger.info(f"통계 : 현재 서버 수 {len(self.bot.guilds)}곳")
