@@ -230,7 +230,7 @@ class InfoCog(commands.Cog):
         except NotFishException:
             return await ctx.respond(
                 """우움... 내 도감에서는 안 보이는데...?
-                `❗ 아직 잡은 적이 없거나 존재하지 않는 물고기입니다.`"""
+`❗ 아직 잡은 적이 없거나 존재하지 않는 물고기입니다.`"""
             )
         except Exception:
             return await ctx.respond("`/도감 <물고기>`")
@@ -240,7 +240,7 @@ class InfoCog(commands.Cog):
         ):
             return await ctx.respond(
                 """우움... 내 도감에서는 안 보이는데...?
-                `❗ 아직 잡은 적이 없거나 존재하지 않는 물고기입니다.`"""
+`❗ 아직 잡은 적이 없거나 존재하지 않는 물고기입니다.`"""
             )
 
         color = discord.Colour.dark_orange() if not fish.rarity else 0x4BC59F

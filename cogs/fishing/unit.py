@@ -94,7 +94,7 @@ class UnitCog(commands.Cog):
         except NotExistFacility:
             return await ctx.respond(
                 """더 이상의 업그레이드는 불가능한 것 같아!
-                `❗ 축하합니다! 모든 업그레이드를 완료하셨습니다!`"""
+`❗ 축하합니다! 모든 업그레이드를 완료하셨습니다!`"""
             )
 
         async with room.work():
@@ -183,12 +183,12 @@ class UnitCog(commands.Cog):
         if room.tier > 2:
             return await ctx.respond(
                 """1티어 낚시터만 공공 낚시터로 만들 수 있어!
-                `❗ 공공 낚시터로 만들려면 '이프야 다운그레이드' 명령어로 1티어까지 낮춰 주세요.`"""
+`❗ 공공 낚시터로 만들려면 '이프야 다운그레이드' 명령어로 1티어까지 낮춰 주세요.`"""
             )
         if not room.tier:
             return await ctx.respond(
                 """이미 여기는 공공 낚시터인 걸...?
-                `❗ 다시 주인이 있는 낚시터로 바꾸고 싶다면 '이프야 민영화' 명령어를 사용해 보세요.`"""
+`❗ 다시 주인이 있는 낚시터로 바꾸고 싶다면 '이프야 민영화' 명령어를 사용해 보세요.`"""
             )
 
         embed = discord.Embed(
@@ -271,7 +271,7 @@ class UnitCog(commands.Cog):
         if room.tier != 0:
             return await ctx.respond(
                 """여긴 이미 공공 낚시터가 아닌데...?
-                `❗ 민영화는 공공 낚시터를 일반 낚시터로 되돌리는 명령어입니다.`"""
+`❗ 민영화는 공공 낚시터를 일반 낚시터로 되돌리는 명령어입니다.`"""
             )
 
         embed = discord.Embed(
@@ -339,7 +339,7 @@ class UnitCog(commands.Cog):
         if room.tier == 1:
             return await ctx.respond(
                 """더 이상의 다운그레이드는 불가능한 것 같아!
-                `❗ 1티어에서는 다운그레이드를 하실 수 없어요!`"""
+`❗ 1티어에서는 다운그레이드를 하실 수 없어요!`"""
             )
         elif room.tier == 2:
             facility = None
@@ -451,7 +451,7 @@ class UnitCog(commands.Cog):
         if room.tier < int(tier):
             return await ctx.respond(
                 f"""어... 우리 낚시터는 {room.tier}티어인데...?
-                `❗ 이 낚시터 티어보다 높은 값을 입력했습니다.`"""
+`❗ 이 낚시터 티어보다 높은 값을 입력했습니다.`"""
             )
 
         fs = ""
@@ -537,7 +537,7 @@ class UnitCog(commands.Cog):
         if facility.code not in room.facilities:
             return await ctx.respond(
                 """어... 이프한테 없는 걸 철거하는 능력은 없어.
-                `❗ 아직 건설되지 않은 시설입니다.`"""
+`❗ 아직 건설되지 않은 시설입니다.`"""
             )
 
         async with room.work():
@@ -615,7 +615,7 @@ class UnitCog(commands.Cog):
         except NotExistFacility:
             return await ctx.respond(
                 """흐으음... 어떤 시설을 말하는 건지 잘 모르게써!!
-                `❗ 시설의 이름을 다시 잘 확인해 주세요.`"""
+`❗ 시설의 이름을 다시 잘 확인해 주세요.`"""
             )
 
         if facility.code.startswith("_"):
