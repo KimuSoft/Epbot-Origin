@@ -45,7 +45,7 @@ DEFAULT_ROOM_VALUES = {
     "exp": 0,
 }
 
-working_now: set[str] = set()
+working_now: set[int] = set()
 
 
 class Room:
