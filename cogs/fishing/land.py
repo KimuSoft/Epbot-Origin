@@ -130,7 +130,7 @@ class LandCog(commands.Cog):
                 )
             else:
                 await ctx.delete()
-                await ctx.edit(
+                await ctx.send(
                     content=f"<@{origin_owner_id}>의 **{room.name}** 낚시터를 <@{user.id}>가 매입했어!",
                     embed=None,
                     view=None,
