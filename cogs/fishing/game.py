@@ -120,7 +120,7 @@ class FishingGameCog(commands.Cog):
 
         # 낚시터 파산 확인
         if room.fee + room.maintenance > 100:
-            await user.set_fishing_now(False)
+            user.set_fishing_now(False)
             return await ctx.respond(
                 """이 낚시터는 파산한 듯해...\n`❗ 낚시터의 수수료와 유지비의 합이 100%을 넘기면 파산 상태가 되어 낚시를 할 수 없습니다.`
                 ```cs\n#도움말\n'이프야 수수료' 명령어로 수수료를 조정하거나,\n'이프야 철거 (시설명)' 명령어로 유지비가 높은 시설을 철거해 주세요.```"""
@@ -149,131 +149,135 @@ class FishingGameCog(commands.Cog):
             )
 
         # 낚시 시작
-        await user.set_fishing_now(True)
-
-        # POINT와 FAKE를 낚시터 티어에 따라 추가
-        points = []
-        fakes = []
-        for i in range(0, room.tier + 1):
-            if f"lv{i}_point" in Constants.FISHING_POINT_KR.keys():
-                points += Constants.FISHING_POINT_KR[f"lv{i}_point"]
-            if f"lv{i}_fake" in Constants.FISHING_POINT_KR.keys():
-                fakes += Constants.FISHING_POINT_KR[f"lv{i}_fake"]
-
-        # 낚시가 시작되는 부분
-        description = ""
-        embed = discord.Embed(
-            title="💦  낚시찌를 던졌다! (첨벙)",
-            description=description,
-            colour=Constants.TIER_COLOR[room.tier],
-        )
-
-        view = FishButtonView(ctx)
-        await ctx.respond(embed=embed, view=view)
-        result = await view.wait()
-
-        if not result:
-            view.stop()
-            if view.button_value == "당김":
-                return await fishing_failed(ctx, user, "찌를 올렸지만 아무 것도 없었다...")
-            else:
-                return await fishing_stoped(ctx, user)
-
-        timing = False
-        for i in range(1, 6):  # 총 5턴까지 진행
-            color = Constants.TIER_COLOR[room.tier]
-
-            text = random.choice(Constants.FISHING_POINT_KR["normal"])
-            if rdpc(probability_per_turn):
-                timing = True
-                text = random.choice(points)
-                color = discord.Colour.red()
-            elif rdpc(10 + effect["fake"]):
-                text = random.choice(fakes)
-                color = discord.Colour.red()
-
-            embed = discord.Embed(
-                title="기다리는 중...", description=text + description, colour=color
-            )
-
-            try:
-                view = FishButtonView(ctx)
-                await ctx.edit(embed=embed, view=view)
-                result = await view.wait()  # true : 시간 초과
-
-            except discord.errors.NotFound:
-                return await ctx.send(
-                    "자, 잠깐! 낚시하고 이짜나! 멋대로 메시지 삭제하지 마!!! 💢\n```❗ 낚시 중간에 메시지를 지우지 마세요.```"
-                )
-
-            if not timing and result:
-                continue
-
-            elif result is False and view.button_value == "그만둠":  # 그만하기로 한 경우
-                return await fishing_stoped(ctx, user)
-
-            elif timing and result:  # 물고기는 나왔지만 누르지 않은 경우
-                return await fishing_failed(ctx, user, "물고기가 떠나가 버렸다...")
-
-            elif not timing and view.button_value == "당김":  # 물고기는 없는데 낚아올림
-                return await fishing_failed(ctx, user, "찌를 올렸지만 아무 것도 없었다...")
-
-            elif timing or view.button_value == "당김":  # 물고기 낚기 성공
-                break
-
-            else:
-                await ctx.respond("오류 발생")
-                await user.finish_fishing()
-                return None
-
-        if not timing:  # 끝날 때까지 한 번도 미동이 없었던 경우:
-            return await fishing_failed(ctx, user, "자리를 잘못 잡았나...?")
-
-        fish = await room.randfish()
-
-        if not fish:
-            # 등급을 뽑았는데 해당하는 물고기가 없는 경우
-            return await fishing_failed(ctx, user, "여기는 물고기가 잘 안 낚이는 낚시터일까...?")
-        else:
-            fish.owner = user
-
-        throw, embed, image, bytes = await fishing_result(ctx, user, room, fish, effect)
+        user.set_fishing_now(True)
 
         try:
-            if not throw:
-                await ctx.edit(embed=embed, file=image, view=None)
-                return await user.finish_fishing()
 
-            # 이 아래는 쓰레기인 경우의 추가 선택지
-            view = TrashButtonView(ctx)
-            await ctx.edit(view=view, embed=embed, file=image)
-            result = await view.wait()  # true : 시간 초과
+            # POINT와 FAKE를 낚시터 티어에 따라 추가
+            points = []
+            fakes = []
+            for i in range(0, room.tier + 1):
+                if f"lv{i}_point" in Constants.FISHING_POINT_KR.keys():
+                    points += Constants.FISHING_POINT_KR[f"lv{i}_point"]
+                if f"lv{i}_fake" in Constants.FISHING_POINT_KR.keys():
+                    fakes += Constants.FISHING_POINT_KR[f"lv{i}_fake"]
 
-            if result or view.button_value == "버리기":
+            # 낚시가 시작되는 부분
+            description = ""
+            embed = discord.Embed(
+                title="💦  낚시찌를 던졌다! (첨벙)",
+                description=description,
+                colour=Constants.TIER_COLOR[room.tier],
+            )
+
+            view = FishButtonView(ctx)
+            await ctx.respond(embed=embed, view=view)
+            result = await view.wait()
+
+            if not result:
+                view.stop()
+                if view.button_value == "당김":
+                    return await fishing_failed(ctx, user, "찌를 올렸지만 아무 것도 없었다...")
+                else:
+                    return await fishing_stoped(ctx, user)
+
+            timing = False
+            for i in range(1, 6):  # 총 5턴까지 진행
+                color = Constants.TIER_COLOR[room.tier]
+
+                text = random.choice(Constants.FISHING_POINT_KR["normal"])
+                if rdpc(probability_per_turn):
+                    timing = True
+                    text = random.choice(points)
+                    color = discord.Colour.red()
+                elif rdpc(10 + effect["fake"]):
+                    text = random.choice(fakes)
+                    color = discord.Colour.red()
+
                 embed = discord.Embed(
-                    title=f"💦 '{fish.name}'을(를) 물에 도로 버렸다...", colour=color
+                    title="기다리는 중...", description=text + description, colour=color
                 )
-                if not int(fish.length / 10) == 0:
-                    embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 더러워졌어!")
-                await room.add_cleans(fish.length / -10)
-                fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
-                await room.add_exp(fame)  # 쓰레기 버릴 때 명성 깎기
 
+                try:
+                    view = FishButtonView(ctx)
+                    await ctx.edit(embed=embed, view=view)
+                    result = await view.wait()  # true : 시간 초과
+
+                except discord.errors.NotFound:
+                    return await ctx.send(
+                        "자, 잠깐! 낚시하고 이짜나! 멋대로 메시지 삭제하지 마!!! 💢\n```❗ 낚시 중간에 메시지를 지우지 마세요.```"
+                    )
+
+                if not timing and result:
+                    continue
+
+                elif result is False and view.button_value == "그만둠":  # 그만하기로 한 경우
+                    return await fishing_stoped(ctx, user)
+
+                elif timing and result:  # 물고기는 나왔지만 누르지 않은 경우
+                    return await fishing_failed(ctx, user, "물고기가 떠나가 버렸다...")
+
+                elif not timing and view.button_value == "당김":  # 물고기는 없는데 낚아올림
+                    return await fishing_failed(ctx, user, "찌를 올렸지만 아무 것도 없었다...")
+
+                elif timing or view.button_value == "당김":  # 물고기 낚기 성공
+                    break
+
+                else:
+                    await ctx.respond("오류 발생")
+                    await user.finish_fishing()
+                    return None
+
+            if not timing:  # 끝날 때까지 한 번도 미동이 없었던 경우:
+                return await fishing_failed(ctx, user, "자리를 잘못 잡았나...?")
+
+            fish = await room.randfish()
+
+            if not fish:
+                # 등급을 뽑았는데 해당하는 물고기가 없는 경우
+                return await fishing_failed(ctx, user, "여기는 물고기가 잘 안 낚이는 낚시터일까...?")
             else:
-                embed = discord.Embed(
-                    title=f"💦 '{fish.name}'을(를) 치웠다! 물이 더 깨끗해진 것 같아!", colour=0x4BC59F
-                )
-                # 처리한 경우 크기/10 만큼의 청결도가 추가됨
-                await room.add_cleans(fish.length / 10)
-                await user.add_money(fish.cost())
-                if not int(fish.length / 10) == 0:
-                    embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 깨끗해졌어!")
+                fish.owner = user
 
-            await user.finish_fishing()  # 낚시 종료 판정
-            embed.set_image(url="attachment://fishcard.png")
-            await ctx.edit(embed=embed, view=None)
+            throw, embed, image, bytes = await fishing_result(ctx, user, room, fish, effect)
+
+            try:
+                if not throw:
+                    await ctx.edit(embed=embed, file=image, view=None)
+                    return await user.finish_fishing()
+
+                # 이 아래는 쓰레기인 경우의 추가 선택지
+                view = TrashButtonView(ctx)
+                await ctx.edit(view=view, embed=embed, file=image)
+                result = await view.wait()  # true : 시간 초과
+
+                if result or view.button_value == "버리기":
+                    embed = discord.Embed(
+                        title=f"💦 '{fish.name}'을(를) 물에 도로 버렸다...", colour=color
+                    )
+                    if not int(fish.length / 10) == 0:
+                        embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 더러워졌어!")
+                    await room.add_cleans(fish.length / -10)
+                    fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
+                    await room.add_exp(fame)  # 쓰레기 버릴 때 명성 깎기
+
+                else:
+                    embed = discord.Embed(
+                        title=f"💦 '{fish.name}'을(를) 치웠다! 물이 더 깨끗해진 것 같아!", colour=0x4BC59F
+                    )
+                    # 처리한 경우 크기/10 만큼의 청결도가 추가됨
+                    await room.add_cleans(fish.length / 10)
+                    await user.add_money(fish.cost())
+                    if not int(fish.length / 10) == 0:
+                        embed.set_footer(text=f"🧹낚시터가 {int(fish.length/10)} 만큼 깨끗해졌어!")
+
+                await user.finish_fishing()  # 낚시 종료 판정
+                embed.set_image(url="attachment://fishcard.png")
+                await ctx.edit(embed=embed, view=None)
+            finally:
+                bytes.close()
         finally:
-            bytes.close()
+            user.set_fishing_now(False)
 
     @slash_command(name="ㄴㅅ", description="이프와 함께 물고기를 낚아요!")
     @commands.cooldown(1, 5, commands.BucketType.user)

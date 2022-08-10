@@ -11,7 +11,7 @@ import traceback
 import os
 from datetime import datetime
 
-from classes.user import User
+from classes.user import fishing_now
 
 logger.info("이프가 잠에서 깨어나는 중...")
 boot_start = datetime.today()
@@ -61,14 +61,23 @@ class EpBot(discord.AutoShardedBot):
             logger.info(f"sid {config.SLASH_COMMAND_REGISTER_SERVER}")
         logger.info("////////////////////////////////////////////////////////")
 
-        await db.update_sql("users", "fishing_now=0")  # 플레이 상태 초기화
-
         await self.change_presence(status=discord.Status.online)
 
     def run(self):
         asyncio.get_event_loop().run_until_complete(self._run())
 
     async def _run(self):
+        await super().start(config.token(), reconnect=True)
+
+
+# 기본 제공 명령어
+class ManagementCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @slash_command(name="물고기로드", guild_ids=config.ADMIN_COMMAND_GUILD)
+    async def reload_fish(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
         logger.info("Refreshing fish data...")
 
         await db.delete_sql("fish", "")
@@ -87,13 +96,7 @@ class EpBot(discord.AutoShardedBot):
             )
 
         logger.info("Fish data refreshed.")
-        await super().start(config.token(), reconnect=True)
-
-
-# 기본 제공 명령어
-class ManagementCog(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+        await ctx.respond("끝!")
 
     # cogs 폴더 안의 코드를 수정했다면 굳이 껐다 키지 않아도 다시시작 명령어로 적용이 가능해!
     @slash_command(name="다시시작", guild_ids=config.ADMIN_COMMAND_GUILD)
@@ -142,7 +145,8 @@ class ManagementCog(commands.Cog):
     ):
         """명령어 내부에서 오류 발생 시 작동하는 코드 부분"""
         user = ctx.author
-        await (await User.fetch(user)).set_fishing_now(False)
+        if user.id in fishing_now:
+            fishing_now.remove(user.id)
 
         if isinstance(error, discord.CheckFailure):
             return

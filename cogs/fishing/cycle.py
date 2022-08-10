@@ -18,6 +18,7 @@ import config
 from db.seta_pgsql import S_PgSQL
 from utils import logger
 from classes.room import working_now
+from classes.user import fishing_now
 
 db = S_PgSQL()
 
@@ -49,7 +50,7 @@ class CycleCog(commands.Cog):
 
     @tasks.loop(minutes=600)
     async def cleaner(self):
-        await db.update_sql("users", "fishing_now=0")
+        fishing_now.clear()
         working_now.clear()
         logger.info("낚시 상태 정기 초기화 완료")
         if len(self.bot.guilds) != 0:

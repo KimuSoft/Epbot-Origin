@@ -18,11 +18,12 @@ DEFAULT_USER_VALUES = {
     "name": "알 수 없는 이름",
     "money": 1000,
     "exp": 0,
-    "fishing_now": 0,
     "theme": [],
     "dex": {},
     "fish": [],
 }
+
+fishing_now: set[int] = set()
 
 
 class User:
@@ -82,10 +83,13 @@ class User:
 
     @property
     def fishing_now(self):
-        return db.select_sql("users", "fishing_now", f"WHERE id='{self.id}'")[0][0]
+        return self.id in fishing_now
 
-    async def set_fishing_now(self, value: bool):
-        await db.update_sql("users", f"fishing_now={int(value)}", f"id='{self.id}'")
+    def set_fishing_now(self, value: bool):
+        if value:
+            fishing_now.add(self.id)
+        elif self.id in fishing_now:
+            fishing_now.remove(self.id)
         self._fishing_now = bool(value)
 
     @property
@@ -176,7 +180,9 @@ class User:
             }
         )
         await db.update_sql(
-            "users", f"fish='{await db.json_convert(self.fish_history)}'", f"id='{self.id}'"
+            "users",
+            f"fish='{await db.json_convert(self.fish_history)}'",
+            f"id='{self.id}'",
         )
         await self.write_dex(fish)
 
@@ -284,19 +290,16 @@ class User:
         await self.add_money(value)
 
     async def start_fishing(self):
-        await self.set_fishing_now(True)
+        self.set_fishing_now(True)
 
     async def finish_fishing(self):
-        await self.set_fishing_now(False)
+        self.set_fishing_now(False)
 
 
 async def on_fishing(_id: int):
     """단순히 낚시 중인지 여부만 조사할 경우 굳이 User 객체를 만들지 않아도 되게 만들어 주는 함수입니다.
     처음 하는 유저(데이터에 없는 유저)라면 낚시 중이 아닌 것으로 반환합니다."""
-    data = await db.select_sql("users", "fishing_now", f"WHERE id='{_id}'")
-    if not data:
-        return False
-    return data[0][0]
+    return _id in fishing_now
 
 
 class NotEnoughException(Exception):
