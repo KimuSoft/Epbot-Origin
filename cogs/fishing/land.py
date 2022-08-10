@@ -86,9 +86,7 @@ class LandCog(commands.Cog):
                     self.stop()
                     await interaction.response.defer()
 
-                @discord.ui.button(
-                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
-                )
+                @discord.ui.button(label="취소하기", style=discord.ButtonStyle.secondary)
                 async def button2_callback(self, button, interaction):
                     self.button_value = "취소함"
                     self.stop()
@@ -132,7 +130,7 @@ class LandCog(commands.Cog):
                 )
             else:
                 await ctx.delete()
-                await ctx.send(
+                await ctx.edit(
                     content=f"<@{origin_owner_id}>의 **{room.name}** 낚시터를 <@{user.id}>가 매입했어!",
                     embed=None,
                     view=None,
@@ -181,7 +179,7 @@ class LandCog(commands.Cog):
                 self.stop()
                 await interaction.response.defer()
 
-            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.secondary)
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
@@ -310,9 +308,7 @@ class LandCog(commands.Cog):
                         self.stop()
                         await interaction.response.defer()
 
-                    @discord.ui.button(
-                        label="그만보기", style=discord.ButtonStyle.red, emoji="❌"
-                    )
+                    @discord.ui.button(label="그만보기", style=discord.ButtonStyle.red)
                     async def button2_callback(self, button, interaction):
                         self.button_value = "취소함"
                         self.stop()
@@ -386,9 +382,7 @@ class LandCog(commands.Cog):
                     self.stop()
                     await interaction.response.defer()
 
-                @discord.ui.button(
-                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
-                )
+                @discord.ui.button(label="취소하기", style=discord.ButtonStyle.secondary)
                 async def button2_callback(self, button, interaction):
                     self.button_value = "취소함"
                     self.stop()
@@ -508,7 +502,7 @@ class LandCog(commands.Cog):
                 self.stop()
                 await interaction.response.defer()
 
-            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
+            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.secondary)
             async def button2_callback(self, button, interaction):
                 self.button_value = "취소함"
                 self.stop()
@@ -583,9 +577,7 @@ class LandCog(commands.Cog):
                     self.stop()
                     await interaction.response.defer()
 
-                @discord.ui.button(
-                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
-                )
+                @discord.ui.button(label="취소하기", style=discord.ButtonStyle.secondary)
                 async def button2_callback(self, button, interaction):
                     self.button_value = "취소함"
                     self.stop()
