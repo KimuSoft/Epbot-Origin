@@ -37,3 +37,4 @@ create table fish (
     eng_name text
 );
 alter table rooms drop column selling_now;
+alter table users drop column fishing_now;
