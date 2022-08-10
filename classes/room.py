@@ -171,9 +171,9 @@ class Room:
         return self.id in working_now
 
     def set_working_now(self, value: bool):
-        if value and self.id not in working_now:
+        if value:
             working_now.add(self.id)
-        elif not value and self.id in working_now:
+        elif self.id in working_now:
             working_now.remove(self.id)
         self._working_now = bool(value)
 
