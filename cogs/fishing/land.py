@@ -272,6 +272,7 @@ class LandCog(commands.Cog):
         ctx: discord.ApplicationContext,
         land_name: Option(str, "땅의 이름으로 검색해요! (미 입력시 소유하는 모든 땅의 목록을 보여드려요!)") = None,
     ):
+        await ctx.defer()
         user = await User.fetch(ctx.author)
 
         await ctx.respond(content="`내 땅 목록`")
@@ -354,6 +355,7 @@ class LandCog(commands.Cog):
     async def change_land_value(
         self, ctx: discord.ApplicationContext, value: Option(int, "변경하실 땅값을 입력하세요!")
     ):
+        await ctx.defer()
         user = await User.fetch(ctx.author)
         room = await Room.fetch(ctx.channel)
         land_value = room.land_value
@@ -482,6 +484,7 @@ class LandCog(commands.Cog):
     async def change_fee(
         self, ctx: discord.ApplicationContext, value: Option(int, "변경하실 수수료를 입력해주세요!")
     ):
+        await ctx.defer()
         room = await Room.fetch(ctx.channel)
 
         fee_range = room.fee_range
@@ -551,6 +554,7 @@ class LandCog(commands.Cog):
         fishing=True, prohibition=True, twoball=False, owner_only=True, landwork=True
     )
     async def clean_corp(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
         room = await Room.fetch(ctx.channel)
 
         if room.cleans >= 0:

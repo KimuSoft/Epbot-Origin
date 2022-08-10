@@ -402,7 +402,7 @@ async def fishing_result(
 
 
 async def get_fishcard_image_file_from_url(fish: Fish):
-    url = fish.card_url
+    url = fish.card_data
     if url.startswith("localhost"):
         url = "http://" + url
     logger.debug(f"낚시카드 URL: {url}")

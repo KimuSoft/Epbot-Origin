@@ -6,6 +6,7 @@
 - Fish는 Fish의 복수형입니다.
 """
 
+import json
 import random
 from datetime import datetime
 
@@ -122,8 +123,7 @@ class Fish:
         return int(int(self.cost() * (float(effect["_price"]) - 1)))
 
     @property
-    def card_url(self):
-        theme = self.owner.theme
+    def card_data(self):
         time = datetime.today()
         data = {
             "rarity": str(self.rarity),
@@ -149,10 +149,7 @@ class Fish:
             "self.ownername": de_emojify(self.owner.name),  # 낚은 유저의 이름
             "profit": f"{self.cost() + self.fee(self.owner, self.place) + self.maintenance(self.place) + self.bonus(self.place):,}",
         }
-        # params = urlencode(data)
-        print(data)
-        token = jwt.encode(data, config.CARD_TOKEN)
-        return f"{config.CARD_SERVER}/fish/{theme}/{token}"
+        return data
 
 
 async def search_fish(keyword):

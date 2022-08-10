@@ -1,4 +1,5 @@
 # 필수 임포트
+import json
 import os
 
 import discord
@@ -23,6 +24,7 @@ class ThemeCog(commands.Cog):
 
     @theme_group.command(name="설정", description="낚시카드의 테마를 선택하세요!")
     async def theme(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
         ep_user = await User.fetch(ctx.author)
         view = ThemeSelectView(ep_user)
         await ctx.respond(content="골라바", view=view)
@@ -50,14 +52,7 @@ class ThemeCog(commands.Cog):
 
         from .game import get_fishcard_image_file_from_url
 
-        try:
-            # 서버로부터 낚시카드 전송
-            logger.debug("테스트: 서버로부터 낚시카드 전송")
-            image = await get_fishcard_image_file_from_url(fish)
-        except Exception as e:  # aiohttp.ClientConnectorError:
-            logger.err(e)
-            return await ctx.respond("낚시카드를 불러올 수 없어써!\n" + str(e))
-        await ctx.respond(file=image, view=None)
+        await ctx.respond(f"""```json\n{json.dumps(fish.card_data)}\n```""")
 
 
 def setup(bot):

@@ -50,6 +50,7 @@ class AdminCog(commands.Cog):
         decription="관리자 디버그용 도구입니다. (관리자 전용)",
     )
     async def 계란(self, ctx: discord.ApplicationContext, args: str):
+        await ctx.defer()
         here = await Room.fetch(ctx.channel)
         me = await User.fetch(ctx.author)
 
@@ -92,6 +93,7 @@ class AdminCog(commands.Cog):
         description="관리자 디버그용 도구입니다. (관리자 전용)",
     )
     async def 달걀(self, ctx: discord.ApplicationContext, args: str):
+        await ctx.defer()
         here = await Room.fetch(ctx.channel)
         me = await User.fetch(ctx.author)
 
@@ -157,6 +159,7 @@ class AdminCog(commands.Cog):
         description="관리자 디버그용 도구입니다. (관리자 전용)",
     )
     async def 팡(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
         await ctx.respond(f"펑! 💥\n`지연 시간 : {int(self.bot.latency * 1000)}ms`")
         raise Exception
 
@@ -168,6 +171,7 @@ class AdminCog(commands.Cog):
         description="관리자 디버그용 도구입니다. (관리자 전용)",
     )
     async def 핑핑(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
         ping = [f"#shard_{i[0]} ({int(i[1] * 1000)}ms)" for i in self.bot.latencies]
         text = "\n".join(ping)
         await ctx.respond(f"퐁퐁! 🏓🏓\n```css\n[ 지연 시간 ]\n{text}```")

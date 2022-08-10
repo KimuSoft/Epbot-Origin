@@ -85,6 +85,7 @@ class UnitCog(commands.Cog):
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
     async def upgrade(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
         room = await Room.fetch(ctx.channel)
         try:
             facility = Facility(f"_TIER{room.tier + 1}")
@@ -175,6 +176,7 @@ class UnitCog(commands.Cog):
     @fishing_group.command(name="공영화", description="낚시터를 공영화해요!")
     @on_working(fishing=True, prohibition=True, landwork=True, owner_only=True)
     async def publicize(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
         room = await Room.fetch(ctx.channel)
         if ctx.channel.guild.owner_id != ctx.author.id:
             return await ctx.respond(
@@ -265,6 +267,7 @@ class UnitCog(commands.Cog):
     @fishing_group.command(name="민영화", description="이 낚시터(채널)을 민영화해요!")
     @on_working(fishing=True, prohibition=True, landwork=True, owner_only=True)
     async def privatize(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
         room = await Room.fetch(ctx.channel)
         if ctx.channel.guild.owner_id != ctx.author.id:
             return await ctx.respond(
@@ -337,6 +340,7 @@ class UnitCog(commands.Cog):
         fishing=True, prohibition=True, landwork=True, owner_only=True, twoball=False
     )
     async def downgrade(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
         room = await Room.fetch(ctx.channel)
 
         if room.tier == 1:
@@ -450,6 +454,7 @@ class UnitCog(commands.Cog):
         ctx: discord.ApplicationContext,
         tier: Option(int, "시설 목록을 알고 싶은 특정 티어를 입력해주세요!") = 1,
     ):
+        await ctx.defer()
         room = await Room.fetch(ctx.channel)
 
         if room.tier < int(tier):
@@ -479,6 +484,7 @@ class UnitCog(commands.Cog):
     async def search_facility(
         self, ctx: discord.ApplicationContext, args: Option(str, "궁금하신 시설의 이름을 입력하세요!")
     ):
+        await ctx.defer()
         arg1 = " ".join(args)
         try:
             facility = Facility(arg1.upper())
@@ -519,6 +525,7 @@ class UnitCog(commands.Cog):
             str, "철거하실 시설의 이름을 입력해주세요!", autocomplete=autocomplete_facilities_uninstall
         ),
     ):
+        await ctx.defer()
         arg1 = " ".join(name).replace("_", "")
 
         try:
@@ -611,6 +618,7 @@ class UnitCog(commands.Cog):
         ctx: discord.ApplicationContext,
         name: Option(str, "건설하실 시설의 이름을 입력해주세요!", autocomplete=autocomplete_facilities),
     ):
+        await ctx.defer()
         arg1 = " ".join(name).replace("_", "")
 
         try:
