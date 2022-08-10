@@ -177,7 +177,7 @@ class Room:
             working_now.remove(self.id)
         self._working_now = bool(value)
 
-    async def work(self):
+    def work(self):
         return Working(self)
 
     # ------------------------------------- getter(읽기 전용) ------------------------------------- #
