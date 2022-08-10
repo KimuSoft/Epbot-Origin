@@ -118,6 +118,7 @@ class ManagementCog(commands.Cog):
         logger.info("다시시작 완료!")
         await ctx.edit(content="`✔️ 전부 다시 불러와써!`")
 
+    """
     @slash_command(name="info", description="Show Information about EpBot!")
     async def info(self, ctx: discord.ApplicationContext):
         embed = discord.Embed(
@@ -134,6 +135,7 @@ class ManagementCog(commands.Cog):
             text="Since this bot is originally a Korean bot, English support is still insufficient. 😭"
         )
         await ctx.respond(embed=embed)
+    """
 
     @commands.Cog.listener()
     async def on_command(self, ctx):
