@@ -97,81 +97,80 @@ class UnitCog(commands.Cog):
                 `❗ 축하합니다! 모든 업그레이드를 완료하셨습니다!`"""
             )
 
-        await room.set_working_now(True)  # 땅 작업 시작
-        embed = discord.Embed(
-            title=f"{room.name} 땅에 '{facility.name}' 시설을 건설하여 {room.tier + 1}티어로 업그레이드할 거야?",
-            description=(
-                f"```cs\n{facility.description}\n{facility.effect_information()}"
-                f"```현재 낚시터 명성 : ✨ {await room.get_exp()} ( ✨ {facility.cost} 소모 )"
-            ),
-            colour=0x4BC59F,
-        )
-
-        class OXButtonView(View):
-            def __init__(self, ctx):
-                super().__init__(timeout=10)
-                self.ctx = ctx
-                self.button_value = None
-
-            @discord.ui.button(
-                label="업그레이드", style=discord.ButtonStyle.blurple, emoji="⭕"
-            )
-            async def button1_callback(self, button, interaction):
-                self.button_value = "업그레이드"
-                self.stop()
-                await interaction.response.defer()
-
-            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
-            async def button2_callback(self, button, interaction):
-                self.button_value = "취소함"
-                self.stop()
-                await interaction.response.defer()
-
-            async def interaction_check(self, interaction) -> bool:
-                if interaction.user != self.ctx.author:
-                    await interaction.response.send_message(
-                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
-                        ephemeral=True,
-                    )
-                    self.button_value = None
-                    return False
-                else:
-                    return True
-
-        view = OXButtonView(ctx)
-
-        await ctx.respond(embed=embed, view=view)
-        result = await view.wait()
-
-        if result is True or view.button_value == "취소함":
-            await room.set_working_now(False)  # 땅 작업 종료
+        async with room.work():
             embed = discord.Embed(
-                title="낚시터 업그레이드를 취소하였다.", colour=discord.Colour.light_grey()
+                title=f"{room.name} 땅에 '{facility.name}' 시설을 건설하여 {room.tier + 1}티어로 업그레이드할 거야?",
+                description=(
+                    f"```cs\n{facility.description}\n{facility.effect_information()}"
+                    f"```현재 낚시터 명성 : ✨ {await room.get_exp()} ( ✨ {facility.cost} 소모 )"
+                ),
+                colour=0x4BC59F,
             )
-            return await ctx.edit(embed=embed, view=None)
 
-        # 낚시터 명성이 부족한 경우
-        if facility.cost > await room.get_exp():
-            await room.set_working_now(False)  # 땅 작업 종료
-            return await ctx.edit(
-                content=f"""으움... 기각당했어...
-                `❗ 낚시터 명성이 부족합니다. ( ✨ {facility.cost} 필요 )`""",
+            class OXButtonView(View):
+                def __init__(self, ctx):
+                    super().__init__(timeout=10)
+                    self.ctx = ctx
+                    self.button_value = None
+
+                @discord.ui.button(
+                    label="업그레이드", style=discord.ButtonStyle.blurple, emoji="⭕"
+                )
+                async def button1_callback(self, button, interaction):
+                    self.button_value = "업그레이드"
+                    self.stop()
+                    await interaction.response.defer()
+
+                @discord.ui.button(
+                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
+                )
+                async def button2_callback(self, button, interaction):
+                    self.button_value = "취소함"
+                    self.stop()
+                    await interaction.response.defer()
+
+                async def interaction_check(self, interaction) -> bool:
+                    if interaction.user != self.ctx.author:
+                        await interaction.response.send_message(
+                            "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                            ephemeral=True,
+                        )
+                        self.button_value = None
+                        return False
+                    else:
+                        return True
+
+            view = OXButtonView(ctx)
+
+            await ctx.respond(embed=embed, view=view)
+            result = await view.wait()
+
+            if result is True or view.button_value == "취소함":
+                embed = discord.Embed(
+                    title="낚시터 업그레이드를 취소하였다.", colour=discord.Colour.light_grey()
+                )
+                return await ctx.edit(embed=embed, view=None)
+
+            # 낚시터 명성이 부족한 경우
+            if facility.cost > await room.get_exp():
+                return await ctx.edit(
+                    content=f"""으움... 기각당했어...
+                    `❗ 낚시터 명성이 부족합니다. ( ✨ {facility.cost} 필요 )`""",
+                    embed=None,
+                    view=None,
+                )
+
+            # 1티어의 경우 전용 시설이 없으므로 무시
+            if not room.tier == 1:
+                await room.break_facility(f"_TIER{room.tier}")
+            await room.build_facility(facility.code)
+            await room.add_exp(facility.cost * -1)
+            await ctx.edit(
+                content=f"""<@{ctx.author.id}> {room.name} 낚시터가 {room.tier} 티어로 업그레이드 했어! 축하해!
+                `🎉 이제 새로운 종류의 시설을 건설할 수 있게 되었습니다!`""",
                 embed=None,
                 view=None,
             )
-
-        # 1티어의 경우 전용 시설이 없으므로 무시
-        if not room.tier == 1:
-            await room.break_facility(f"_TIER{room.tier}")
-        await room.build_facility(facility.code)
-        await room.add_exp(facility.cost * -1)
-        await room.set_working_now(False)
-        await ctx.edit(
-            content=f"""<@{ctx.author.id}> {room.name} 낚시터가 {room.tier} 티어로 업그레이드 했어! 축하해!
-            `🎉 이제 새로운 종류의 시설을 건설할 수 있게 되었습니다!`""",
-            embed=None,
-            view=None,
-        )
 
     @fishing_group.command(name="공영화", description="낚시터를 공영화해요!")
     @on_working(fishing=True, prohibition=True, landwork=True, owner_only=True)
@@ -200,69 +199,69 @@ class UnitCog(commands.Cog):
             colour=0x4BC59F,
         )
 
-        await room.set_working_now(True)
+        async with room.work():
 
-        class OXButtonView(View):
-            def __init__(self, ctx):
-                super().__init__(timeout=10)
-                self.ctx = ctx
-                self.button_value = None
-
-            @discord.ui.button(
-                label="공영화하기", style=discord.ButtonStyle.blurple, emoji="⭕"
-            )
-            async def button1_callback(self, button, interaction):
-                self.button_value = "공영화"
-                self.stop()
-                await interaction.response.defer()
-
-            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
-            async def button2_callback(self, button, interaction):
-                self.button_value = "취소함"
-                self.stop()
-                await interaction.response.defer()
-
-            async def interaction_check(self, interaction) -> bool:
-                if interaction.user != self.ctx.author:
-                    await interaction.response.send_message(
-                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
-                        ephemeral=True,
-                    )
+            class OXButtonView(View):
+                def __init__(self, ctx):
+                    super().__init__(timeout=10)
+                    self.ctx = ctx
                     self.button_value = None
-                    return False
-                else:
-                    return True
 
-        view = OXButtonView(ctx)
+                @discord.ui.button(
+                    label="공영화하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+                )
+                async def button1_callback(self, button, interaction):
+                    self.button_value = "공영화"
+                    self.stop()
+                    await interaction.response.defer()
 
-        await ctx.respond(embed=embed, view=view)
-        result = await view.wait()
+                @discord.ui.button(
+                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
+                )
+                async def button2_callback(self, button, interaction):
+                    self.button_value = "취소함"
+                    self.stop()
+                    await interaction.response.defer()
 
-        if result is True or view.button_value == "취소함":
-            await room.set_working_now(False)
-            embed = discord.Embed(
-                title="낚시터 공영화를 취소하였다.", colour=discord.Colour.light_grey()
+                async def interaction_check(self, interaction) -> bool:
+                    if interaction.user != self.ctx.author:
+                        await interaction.response.send_message(
+                            "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                            ephemeral=True,
+                        )
+                        self.button_value = None
+                        return False
+                    else:
+                        return True
+
+            view = OXButtonView(ctx)
+
+            await ctx.respond(embed=embed, view=view)
+            result = await view.wait()
+
+            if result is True or view.button_value == "취소함":
+                embed = discord.Embed(
+                    title="낚시터 공영화를 취소하였다.", colour=discord.Colour.light_grey()
+                )
+                return await ctx.edit(embed=embed, view=None)
+
+            breaked = []
+            breaked_cost = 0
+            facs = room.facilities[:]  # 얕은 복사 (shallow copy)
+            for i in facs:
+                if i.startswith("_"):
+                    continue
+                fac = Facility(i)
+                await room.break_facility(i)
+                await room.add_exp(fac.cost)
+                breaked_cost += fac.cost
+                breaked.append(fac.name)
+            await room.build_facility("_TIER0")
+            await ctx.edit(
+                content=f"<@{ctx.author.id}> {room.name} 낚시터는 이제 공공 낚시터야!",
+                embed=None,
+                view=None,
             )
-            return await ctx.edit(embed=embed, view=None)
-
-        breaked = []
-        breaked_cost = 0
-        facs = room.facilities[:]  # 얕은 복사 (shallow copy)
-        for i in facs:
-            if i.startswith("_"):
-                continue
-            fac = Facility(i)
-            await room.break_facility(i)
-            await room.add_exp(fac.cost)
-            breaked_cost += fac.cost
-            breaked.append(fac.name)
-        await room.build_facility("_TIER0")
-        await ctx.edit(
-            content=f"<@{ctx.author.id}> {room.name} 낚시터는 이제 공공 낚시터야!",
-            embed=None,
-            view=None,
-        )
-        await room.set_working_now(False)
 
     @fishing_group.command(name="민영화", description="이 낚시터(채널)을 민영화해요!")
     @on_working(fishing=True, prohibition=True, landwork=True, owner_only=True)
@@ -283,57 +282,57 @@ class UnitCog(commands.Cog):
             title=f"{room.name} 낚시터를 공공 낚시터에서 다시 일반 낚시터로 만들 거야?", colour=0x4BC59F
         )
 
-        await room.set_working_now(True)
+        async with room.work():
 
-        class OXButtonView(View):
-            def __init__(self, ctx):
-                super().__init__(timeout=10)
-                self.ctx = ctx
-                self.button_value = None
-
-            @discord.ui.button(
-                label="민영화하기", style=discord.ButtonStyle.blurple, emoji="⭕"
-            )
-            async def button1_callback(self, button, interaction):
-                self.button_value = "민영화"
-                self.stop()
-                await interaction.response.defer()
-
-            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
-            async def button2_callback(self, button, interaction):
-                self.button_value = "취소함"
-                self.stop()
-                await interaction.response.defer()
-
-            async def interaction_check(self, interaction) -> bool:
-                if interaction.user != self.ctx.author:
-                    await interaction.response.send_message(
-                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
-                        ephemeral=True,
-                    )
+            class OXButtonView(View):
+                def __init__(self, ctx):
+                    super().__init__(timeout=10)
+                    self.ctx = ctx
                     self.button_value = None
-                    return False
-                else:
-                    return True
 
-        view = OXButtonView(ctx)
+                @discord.ui.button(
+                    label="민영화하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+                )
+                async def button1_callback(self, button, interaction):
+                    self.button_value = "민영화"
+                    self.stop()
+                    await interaction.response.defer()
 
-        await ctx.respond(embed=embed, view=view)
-        result = await view.wait()
+                @discord.ui.button(
+                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
+                )
+                async def button2_callback(self, button, interaction):
+                    self.button_value = "취소함"
+                    self.stop()
+                    await interaction.response.defer()
 
-        if result is True or view.button_value == "취소함":
-            await room.set_working_now(False)
-            embed = discord.Embed(
-                title="낚시터 민영화를 취소하였다.", colour=discord.Colour.light_grey()
+                async def interaction_check(self, interaction) -> bool:
+                    if interaction.user != self.ctx.author:
+                        await interaction.response.send_message(
+                            "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                            ephemeral=True,
+                        )
+                        self.button_value = None
+                        return False
+                    else:
+                        return True
+
+            view = OXButtonView(ctx)
+
+            await ctx.respond(embed=embed, view=view)
+            result = await view.wait()
+
+            if result is True or view.button_value == "취소함":
+                embed = discord.Embed(
+                    title="낚시터 민영화를 취소하였다.", colour=discord.Colour.light_grey()
+                )
+                return await ctx.edit(embed=embed, view=None)
+            await room.break_facility("_TIER0")
+            await ctx.edit(
+                content=f"<@{ctx.author.id}> {room.name} 낚시터는 이제 공공 낚시터가 아니야!",
+                embed=None,
+                view=None,
             )
-            return await ctx.edit(embed=embed, view=None)
-        await room.break_facility("_TIER0")
-        await ctx.edit(
-            content=f"<@{ctx.author.id}> {room.name} 낚시터는 이제 공공 낚시터가 아니야!",
-            embed=None,
-            view=None,
-        )
-        await room.set_working_now(False)
 
     @fishing_group.command(name="다운그레이드", description="이 낚시터(채널)의 티어를 내려요!")
     @on_working(
@@ -371,81 +370,81 @@ class UnitCog(commands.Cog):
 
         now_facility = Facility(f"_TIER{room.tier}")
 
-        await room.set_working_now(True)
+        async with room.work():
 
-        class OXButtonView(View):
-            def __init__(self, ctx):
-                super().__init__(timeout=10)
-                self.ctx = ctx
-                self.button_value = None
-
-            @discord.ui.button(
-                label="다운그레이드", style=discord.ButtonStyle.blurple, emoji="⭕"
-            )
-            async def button1_callback(self, button, interaction):
-                self.button_value = "다운그레이드"
-                self.stop()
-                await interaction.response.defer()
-
-            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
-            async def button2_callback(self, button, interaction):
-                self.button_value = "취소함"
-                self.stop()
-                await interaction.response.defer()
-
-            async def interaction_check(self, interaction) -> bool:
-                if interaction.user != self.ctx.author:
-                    await interaction.response.send_message(
-                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 매각에 간섭할 수 없습니다.```",
-                        ephemeral=True,
-                    )
+            class OXButtonView(View):
+                def __init__(self, ctx):
+                    super().__init__(timeout=10)
+                    self.ctx = ctx
                     self.button_value = None
-                    return False
-                else:
-                    return True
 
-        view = OXButtonView(ctx)
+                @discord.ui.button(
+                    label="다운그레이드", style=discord.ButtonStyle.blurple, emoji="⭕"
+                )
+                async def button1_callback(self, button, interaction):
+                    self.button_value = "다운그레이드"
+                    self.stop()
+                    await interaction.response.defer()
 
-        await ctx.respond(embed=embed, view=view)
-        result = await view.wait()
+                @discord.ui.button(
+                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
+                )
+                async def button2_callback(self, button, interaction):
+                    self.button_value = "취소함"
+                    self.stop()
+                    await interaction.response.defer()
 
-        if result is True or view.button_value == "취소함":
-            await room.set_working_now(False)
-            embed = discord.Embed(
-                title="낚시터 다운그레이드를 취소하였다.", colour=discord.Colour.light_grey()
+                async def interaction_check(self, interaction) -> bool:
+                    if interaction.user != self.ctx.author:
+                        await interaction.response.send_message(
+                            "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 매각에 간섭할 수 없습니다.```",
+                            ephemeral=True,
+                        )
+                        self.button_value = None
+                        return False
+                    else:
+                        return True
+
+            view = OXButtonView(ctx)
+
+            await ctx.respond(embed=embed, view=view)
+            result = await view.wait()
+
+            if result is True or view.button_value == "취소함":
+                embed = discord.Embed(
+                    title="낚시터 다운그레이드를 취소하였다.", colour=discord.Colour.light_grey()
+                )
+                return await ctx.edit(embed=embed, view=None)
+
+            breaked = []
+            breaked_cost = 0
+            facs = room.facilities[:]  # 얕은 복사 (shallow copy)
+            for i in facs:
+                if i.startswith("_"):
+                    continue
+                fac = Facility(i)
+                if fac.tier >= room.tier:
+                    await room.break_facility(i)
+                    await room.add_exp(fac.cost)
+                    breaked_cost += fac.cost
+                    breaked.append(fac.name)
+
+            await room.break_facility(f"_TIER{room.tier}")
+            if facility is not None:  # 1티어는 건물이 따로 없음
+                await room.build_facility(facility.code)
+            await room.add_exp(now_facility.cost)
+
+            bonus = (
+                ""
+                if breaked == []
+                else f"\n`❗ {', '.join(breaked)}이(가) 철거되어 추가로 ✨{breaked_cost:,}을 돌려받았습니다.`"
             )
-            return await ctx.edit(embed=embed, view=None)
-
-        breaked = []
-        breaked_cost = 0
-        facs = room.facilities[:]  # 얕은 복사 (shallow copy)
-        for i in facs:
-            if i.startswith("_"):
-                continue
-            fac = Facility(i)
-            if fac.tier >= room.tier:
-                await room.break_facility(i)
-                await room.add_exp(fac.cost)
-                breaked_cost += fac.cost
-                breaked.append(fac.name)
-
-        await room.break_facility(f"_TIER{room.tier}")
-        if facility is not None:  # 1티어는 건물이 따로 없음
-            await room.build_facility(facility.code)
-        await room.add_exp(now_facility.cost)
-        await room.set_working_now(False)
-
-        bonus = (
-            ""
-            if breaked == []
-            else f"\n`❗ {', '.join(breaked)}이(가) 철거되어 추가로 ✨{breaked_cost:,}을 돌려받았습니다.`"
-        )
-        await ctx.edit(
-            content=f"<@{ctx.author.id}> {room.name} 낚시터를 {room.tier} 티어로 다운그레이드 했어... 소박해졌네!"
-            + bonus,
-            embed=None,
-            view=None,
-        )
+            await ctx.edit(
+                content=f"<@{ctx.author.id}> {room.name} 낚시터를 {room.tier} 티어로 다운그레이드 했어... 소박해졌네!"
+                + bonus,
+                embed=None,
+                view=None,
+            )
 
     @land_group.command(name="건설가능목록", description="특정 티어의 시설중 낚시터에 알려드려요!")
     @on_working(fishing=True, prohibition=True, landwork=True, twoball=False)
@@ -549,65 +548,65 @@ class UnitCog(commands.Cog):
                 `❗ 아직 건설되지 않은 시설입니다.`"""
             )
 
-        await room.set_working_now(True)
-        embed = discord.Embed(
-            title=f"{room.name} 땅에서 '{facility.name}' 시설을 철거할 거야?",
-            description=f"반환되는 낚시터 명성 : ✨ {facility.cost}",
-            colour=0x4BC59F,
-        )
-
-        class OXButtonView(View):
-            def __init__(self, ctx):
-                super().__init__(timeout=10)
-                self.ctx = ctx
-                self.button_value = None
-
-            @discord.ui.button(
-                label="철거하기", style=discord.ButtonStyle.blurple, emoji="⭕"
-            )
-            async def button1_callback(self, button, interaction):
-                self.button_value = "철거"
-                self.stop()
-                await interaction.response.defer()
-
-            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
-            async def button2_callback(self, button, interaction):
-                self.button_value = "취소함"
-                self.stop()
-                await interaction.response.defer()
-
-            async def interaction_check(self, interaction) -> bool:
-                if interaction.user != self.ctx.author:
-                    await interaction.response.send_message(
-                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
-                        ephemeral=True,
-                    )
-                    self.button_value = None
-                    return False
-                else:
-                    return True
-
-        view = OXButtonView(ctx)
-
-        await ctx.respond(embed=embed, view=view)
-        result = await view.wait()
-
-        if result is True or view.button_value == "취소함":
+        async with room.work():
             embed = discord.Embed(
-                title="시설 철거를 취소하였다.", colour=discord.Colour.light_grey()
+                title=f"{room.name} 땅에서 '{facility.name}' 시설을 철거할 거야?",
+                description=f"반환되는 낚시터 명성 : ✨ {facility.cost}",
+                colour=0x4BC59F,
             )
-            await ctx.edit(embed=embed, view=None)
-            await room.set_working_now(False)
-            return
 
-        await room.break_facility(facility.code)
-        await room.add_exp(facility.cost)
-        await room.set_working_now(False)
-        await ctx.edit(
-            content=f"<@{ctx.author.id}> {room.name} 땅에서 **{facility.name}**을(를) 철거했어!",
-            embed=None,
-            view=None,
-        )
+            class OXButtonView(View):
+                def __init__(self, ctx):
+                    super().__init__(timeout=10)
+                    self.ctx = ctx
+                    self.button_value = None
+
+                @discord.ui.button(
+                    label="철거하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+                )
+                async def button1_callback(self, button, interaction):
+                    self.button_value = "철거"
+                    self.stop()
+                    await interaction.response.defer()
+
+                @discord.ui.button(
+                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
+                )
+                async def button2_callback(self, button, interaction):
+                    self.button_value = "취소함"
+                    self.stop()
+                    await interaction.response.defer()
+
+                async def interaction_check(self, interaction) -> bool:
+                    if interaction.user != self.ctx.author:
+                        await interaction.response.send_message(
+                            "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                            ephemeral=True,
+                        )
+                        self.button_value = None
+                        return False
+                    else:
+                        return True
+
+            view = OXButtonView(ctx)
+
+            await ctx.respond(embed=embed, view=view)
+            result = await view.wait()
+
+            if result is True or view.button_value == "취소함":
+                embed = discord.Embed(
+                    title="시설 철거를 취소하였다.", colour=discord.Colour.light_grey()
+                )
+                await ctx.edit(embed=embed, view=None)
+                return
+
+            await room.break_facility(facility.code)
+            await room.add_exp(facility.cost)
+            await ctx.edit(
+                content=f"<@{ctx.author.id}> {room.name} 땅에서 **{facility.name}**을(를) 철거했어!",
+                embed=None,
+                view=None,
+            )
 
     @land_group.command(name="건설", description="이 낚시터(채널)에 시설을 건설해요!")
     @on_working(
@@ -647,69 +646,68 @@ class UnitCog(commands.Cog):
             room.can_build_it(facility)
         except Exception as e:
             return await ctx.respond(str(e))
-
-        await room.set_working_now(True)  # 땅 작업 시작
-        embed = discord.Embed(
-            title=f"{room.name} 땅에 '{facility.name}' 시설을 건설할 거야?",
-            description=(
-                f"```cs\n{facility.description}\n{facility.effect_information()}```"
-                f"현재 낚시터 명성 : **✨ {await room.get_exp()}** ( ✨ {facility.cost} 소모 )"
-            ),
-            colour=0x4BC59F,
-        )
-
-        class OXButtonView(View):
-            def __init__(self, ctx):
-                super().__init__(timeout=10)
-                self.ctx = ctx
-                self.button_value = None
-
-            @discord.ui.button(
-                label="건설하기", style=discord.ButtonStyle.blurple, emoji="⭕"
-            )
-            async def button1_callback(self, button, interaction):
-                self.button_value = "건설"
-                self.stop()
-                await interaction.response.defer()
-
-            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
-            async def button2_callback(self, button, interaction):
-                self.button_value = "취소함"
-                self.stop()
-                await interaction.response.defer()
-
-            async def interaction_check(self, interaction) -> bool:
-                if interaction.user != self.ctx.author:
-                    await interaction.response.send_message(
-                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
-                        ephemeral=True,
-                    )
-                    self.button_value = None
-                    return False
-                else:
-                    return True
-
-        view = OXButtonView(ctx)
-
-        await ctx.respond(embed=embed, view=view)
-        result = await view.wait()
-
-        if result is True or view.button_value == "취소함":
+        async with room.work():
             embed = discord.Embed(
-                title="시설 건설을 취소하였다.", colour=discord.Colour.light_grey()
+                title=f"{room.name} 땅에 '{facility.name}' 시설을 건설할 거야?",
+                description=(
+                    f"```cs\n{facility.description}\n{facility.effect_information()}```"
+                    f"현재 낚시터 명성 : **✨ {await room.get_exp()}** ( ✨ {facility.cost} 소모 )"
+                ),
+                colour=0x4BC59F,
             )
-            await ctx.edit(embed=embed, view=None)
-            await room.set_working_now(False)  # 땅 작업 종료
-            return
 
-        await room.build_facility(facility.code)
-        await room.add_exp(facility.cost * -1)
-        await room.set_working_now(False)  # 땅 작업 종료
-        await ctx.edit(
-            content=f"<@{ctx.author.id}> {room.name} 땅에 **{facility.name}**을(를) 건설했어!",
-            embed=None,
-            view=None,
-        )
+            class OXButtonView(View):
+                def __init__(self, ctx):
+                    super().__init__(timeout=10)
+                    self.ctx = ctx
+                    self.button_value = None
+
+                @discord.ui.button(
+                    label="건설하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+                )
+                async def button1_callback(self, button, interaction):
+                    self.button_value = "건설"
+                    self.stop()
+                    await interaction.response.defer()
+
+                @discord.ui.button(
+                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
+                )
+                async def button2_callback(self, button, interaction):
+                    self.button_value = "취소함"
+                    self.stop()
+                    await interaction.response.defer()
+
+                async def interaction_check(self, interaction) -> bool:
+                    if interaction.user != self.ctx.author:
+                        await interaction.response.send_message(
+                            "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                            ephemeral=True,
+                        )
+                        self.button_value = None
+                        return False
+                    else:
+                        return True
+
+            view = OXButtonView(ctx)
+
+            await ctx.respond(embed=embed, view=view)
+            result = await view.wait()
+
+            if result is True or view.button_value == "취소함":
+                embed = discord.Embed(
+                    title="시설 건설을 취소하였다.", colour=discord.Colour.light_grey()
+                )
+                await ctx.edit(embed=embed, view=None)
+                return
+
+            await room.build_facility(facility.code)
+            await room.add_exp(facility.cost * -1)
+            await ctx.edit(
+                content=f"<@{ctx.author.id}> {room.name} 땅에 **{facility.name}**을(를) 건설했어!",
+                embed=None,
+                view=None,
+            )
 
 
 def setup(bot):

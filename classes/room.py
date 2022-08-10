@@ -175,6 +175,9 @@ class Room:
         await db.update_sql("rooms", f"selling_now={int(value)}", f"id='{self.id}'")
         self._working_now = bool(value)
 
+    async def work(self):
+        return Working(self)
+
     # ------------------------------------- getter(읽기 전용) ------------------------------------- #
 
     @property
@@ -624,6 +627,17 @@ async def search_land(owner_id, zeroland=True):
 async def get_working_now(_id: int):
     """Room 객체를 굳이 생성하지 않아도 땅의 작업 중 여부를 받아올 수 있게 함"""
     return (await db.select_sql("rooms", "selling_now", f"WHERE id='{_id}'"))[0][0]
+
+
+class Working:
+    def __init__(self, room: Room) -> None:
+        self.room = room
+
+    async def __aenter__(self):
+        await self.room.set_working_now(True)
+
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        await self.room.set_working_now(False)
 
 
 # ------------------------------------- 오류 ------------------------------------- #
