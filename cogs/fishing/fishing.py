@@ -196,7 +196,7 @@ class InfoCog(commands.Cog):
         await user.finish_fishing()
         await ctx.respond(
             """낚시를 중지해써!
-            `❗ 이 명령어는 꼭 시스템적으로 예기치 못한 버그가 발생했을 때만 사용해 주세요!`"""
+`❗ 이 명령어는 꼭 시스템적으로 예기치 못한 버그가 발생했을 때만 사용해 주세요!`"""
         )
 
     @slash_command(name="도감", description="물고기의 정보 or 도감을 보여드려요!")
