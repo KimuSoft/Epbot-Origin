@@ -62,7 +62,6 @@ class EpBot(discord.AutoShardedBot):
         logger.info("////////////////////////////////////////////////////////")
 
         await db.update_sql("users", "fishing_now=0")  # 플레이 상태 초기화
-        await db.update_sql("rooms", "selling_now=0")  # 플레이 상태 초기화
 
         await self.change_presence(status=discord.Status.online)
 

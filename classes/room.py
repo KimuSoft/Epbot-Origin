@@ -41,10 +41,11 @@ DEFAULT_ROOM_VALUES = {
     "biome": 0,
     "facilities": [],
     "land_value": 0,
-    "selling_now": 0,
     "fee": 0,
     "exp": 0,
 }
+
+working_now: set[str] = set()
 
 
 class Room:
@@ -165,14 +166,15 @@ class Room:
         await db.update_sql("rooms", f"land_value={int(value)}", f"id='{self.id}'")
         self._land_value = int(value)
 
-    async def get_working_now(self):
+    def get_working_now(self):
         """bool: 현재 땅이 작업 중인지 여부 (*값 수정 가능*)"""
-        return (await db.select_sql("rooms", "selling_now", f"WHERE id='{self.id}'"))[
-            0
-        ][0]
+        return self.id in working_now
 
-    async def set_working_now(self, value: bool):
-        await db.update_sql("rooms", f"selling_now={int(value)}", f"id='{self.id}'")
+    def set_working_now(self, value: bool):
+        if value and self.id not in working_now:
+            working_now.add(self.id)
+        elif not value and self.id in working_now:
+            working_now.remove(self.id)
         self._working_now = bool(value)
 
     async def work(self):
@@ -624,9 +626,9 @@ async def search_land(owner_id, zeroland=True):
     )
 
 
-async def get_working_now(_id: int):
+def get_working_now(_id: int):
     """Room 객체를 굳이 생성하지 않아도 땅의 작업 중 여부를 받아올 수 있게 함"""
-    return (await db.select_sql("rooms", "selling_now", f"WHERE id='{_id}'"))[0][0]
+    return _id in working_now
 
 
 class Working:
@@ -634,10 +636,10 @@ class Working:
         self.room = room
 
     async def __aenter__(self):
-        await self.room.set_working_now(True)
+        self.room.set_working_now(True)
 
     async def __aexit__(self, exc_type, exc_value, traceback):
-        await self.room.set_working_now(False)
+        self.room.set_working_now(False)
 
 
 # ------------------------------------- 오류 ------------------------------------- #

@@ -31,7 +31,7 @@ def on_working(fishing=False, landwork=False, prohibition=False, owner_only=Fals
                 return False
 
         if landwork:  # 땅 작업 중에는 금지
-            if await get_working_now(ctx.channel.id):
+            if get_working_now(ctx.channel.id):
                 try:
                     await ctx.respond(
                         "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"

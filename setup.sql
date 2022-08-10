@@ -36,3 +36,4 @@ create table fish (
     room_level integer default 1,
     eng_name text
 );
+alter table rooms drop column selling_now;

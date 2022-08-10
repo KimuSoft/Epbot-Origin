@@ -154,7 +154,7 @@ class LandCog(commands.Cog):
         else:
             room = await Room.fetch(ctx.channel)
 
-        if await room.get_working_now():
+        if room.get_working_now():
             await ctx.respond(
                 "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
             )
@@ -201,7 +201,10 @@ class LandCog(commands.Cog):
 
         async with room.work():
 
-            if room.channel is not None and room.owner_id == room.channel.guild.owner_id:
+            if (
+                room.channel is not None
+                and room.owner_id == room.channel.guild.owner_id
+            ):
                 # 자기 서버 땅인데 추가로 돈이 걸린 경우
 
                 embed = discord.Embed(
@@ -221,7 +224,8 @@ class LandCog(commands.Cog):
                     return None
 
                 embed = discord.Embed(
-                    title=f"{room.name} 땅에 있던 {room.land_value:,} 💰을 뺐다.", colour=0x4BC59F
+                    title=f"{room.name} 땅에 있던 {room.land_value:,} 💰을 뺐다.",
+                    colour=0x4BC59F,
                 )
                 user = await User.fetch(ctx.author)
                 await user.add_money(room.land_value)  # 돈 돌려 주고
@@ -381,7 +385,9 @@ class LandCog(commands.Cog):
                     self.stop()
                     await interaction.response.defer()
 
-                @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
+                @discord.ui.button(
+                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
+                )
                 async def button2_callback(self, button, interaction):
                     self.button_value = "취소함"
                     self.stop()
@@ -554,73 +560,74 @@ class LandCog(commands.Cog):
         user = await User.fetch(ctx.author)
 
         price = room.cleans * 150
-        await room.set_working_now(True)
+        async with room.work():
 
-        embed = discord.Embed(
-            title=f"청소 업체를 불러 {room.name} 땅의 청결도를 0으로 만드시겠습니까?",
-            description=f"예상 필요 금액 {-1 * price:,} 💰",
-            colour=0x4BC59F,
-        )
-
-        class OXButtonView(View):
-            def __init__(self, ctx):
-                super().__init__(timeout=10)
-                self.ctx = ctx
-                self.button_value = None
-
-            @discord.ui.button(
-                label="청소하기", style=discord.ButtonStyle.blurple, emoji="⭕"
-            )
-            async def button1_callback(self, button, interaction):
-                self.button_value = "청소"
-                self.stop()
-                await interaction.response.defer()
-
-            @discord.ui.button(label="취소하기", style=discord.ButtonStyle.red, emoji="❌")
-            async def button2_callback(self, button, interaction):
-                self.button_value = "취소함"
-                self.stop()
-                await interaction.response.defer()
-
-            async def interaction_check(self, interaction) -> bool:
-                if interaction.user != self.ctx.author:
-                    await interaction.response.send_message(
-                        "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
-                        ephemeral=True,
-                    )
-                    self.button_value = None
-                    return False
-                else:
-                    return True
-
-        view = OXButtonView(ctx)
-
-        await ctx.respond(embed=embed, view=view)
-        result = await view.wait()
-
-        if result is True or view.button_value == "취소함":
             embed = discord.Embed(
-                title="청소 업체 부르기를 취소했다.", colour=discord.Colour.light_grey()
+                title=f"청소 업체를 불러 {room.name} 땅의 청결도를 0으로 만드시겠습니까?",
+                description=f"예상 필요 금액 {-1 * price:,} 💰",
+                colour=0x4BC59F,
             )
-            await room.set_working_now(False)
 
-            return await ctx.edit(embed=embed, view=None)
+            class OXButtonView(View):
+                def __init__(self, ctx):
+                    super().__init__(timeout=10)
+                    self.ctx = ctx
+                    self.button_value = None
 
-        if user.money < -1 * price:
-            embed = discord.Embed(title="돈이 부족해...", colour=discord.Colour.light_grey())
-            await room.set_working_now(False)
+                @discord.ui.button(
+                    label="청소하기", style=discord.ButtonStyle.blurple, emoji="⭕"
+                )
+                async def button1_callback(self, button, interaction):
+                    self.button_value = "청소"
+                    self.stop()
+                    await interaction.response.defer()
 
-            return await ctx.edit(embed=embed, view=None)
+                @discord.ui.button(
+                    label="취소하기", style=discord.ButtonStyle.red, emoji="❌"
+                )
+                async def button2_callback(self, button, interaction):
+                    self.button_value = "취소함"
+                    self.stop()
+                    await interaction.response.defer()
 
-        embed = discord.Embed(
-            title=f"{-1 * price:,} 💰로 청소 업체를 불러서 {room.name} 낚시터가 깔끔해졌어!",
-            colour=0x4BC59F,
-        )
-        await user.add_money(price)  # 돈 돌려 주고
-        await room.set_cleans(0)
+                async def interaction_check(self, interaction) -> bool:
+                    if interaction.user != self.ctx.author:
+                        await interaction.response.send_message(
+                            "다른 사람의 계약서를 건들면 어떻게 해!!! 💢\n```❗ 타인의 부동산에 간섭할 수 없습니다.```",
+                            ephemeral=True,
+                        )
+                        self.button_value = None
+                        return False
+                    else:
+                        return True
 
-        await ctx.edit(embed=embed, view=None)
-        await room.set_working_now(False)
+            view = OXButtonView(ctx)
+
+            await ctx.respond(embed=embed, view=view)
+            result = await view.wait()
+
+            if result is True or view.button_value == "취소함":
+                embed = discord.Embed(
+                    title="청소 업체 부르기를 취소했다.", colour=discord.Colour.light_grey()
+                )
+
+                return await ctx.edit(embed=embed, view=None)
+
+            if user.money < -1 * price:
+                embed = discord.Embed(
+                    title="돈이 부족해...", colour=discord.Colour.light_grey()
+                )
+
+                return await ctx.edit(embed=embed, view=None)
+
+            embed = discord.Embed(
+                title=f"{-1 * price:,} 💰로 청소 업체를 불러서 {room.name} 낚시터가 깔끔해졌어!",
+                colour=0x4BC59F,
+            )
+            await user.add_money(price)  # 돈 돌려 주고
+            await room.set_cleans(0)
+
+            await ctx.edit(embed=embed, view=None)
 
 
 def setup(bot):
