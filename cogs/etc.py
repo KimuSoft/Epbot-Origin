@@ -97,7 +97,7 @@ class EtcCog(commands.Cog):
         if limit <= 101:
             await ctx.channel.purge(limit=limit)
             await ctx.respond(
-                context=f"{ctx.author.mention}님, {limit-1}개의 메세지를 지웠어요!", delete_after=4
+                content=f"{ctx.author.mention}님, {limit-1}개의 메세지를 지웠어요!", delete_after=4
             )
         else:
             await ctx.respond("마력을 더어어어어 더욱 쌓고 오거라!!")
