@@ -2,19 +2,17 @@ import asyncio
 import json
 import sys
 
-import aiopg
+import asyncpg
 
 import config
 from utils import logger
-from utils.asynchelper import synchronize_async_helper
-
-if sys.version_info >= (3, 8) and sys.platform.lower().startswith("win"):
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
-pool = synchronize_async_helper(aiopg.create_pool(dsn=config.PG_DSN).__aenter__())
-
-
 class S_PgSQL:
+    initialized = False
+
+    async def setup(self):
+        self.pool = await asyncpg.create_pool(config.PG_DSN)
+        self.initialized = True
+
     async def update_sql(self, table: str, rec: str, where: str = "", commit=True):
         """
         설명 : 조건에 맞는 행의 내용을 수정함
@@ -93,6 +91,9 @@ class S_PgSQL:
         return result[0][0]
 
     async def sql(self, qur, reading=False, commit=True):
+        if not self.initialized:
+            logger.info('Setup pg connection')
+            await self.setup()
         """
         설명 : SQL문을 사용함
         sql(SQL쿼리, DB 경로, writing)
@@ -101,15 +102,14 @@ class S_PgSQL:
         reading True이면 fetchall로 결과를 반환
         reading False이면 결과를 반환하지 않고 commit함.
         """
-        async with pool.acquire() as conn:
+        async with self.pool.acquire() as c:
+            conn: asyncpg.Connection = c
             logger.query(qur)
-            async with conn.cursor() as cur:
-                if reading:
-                    await cur.execute(qur)
-
-                    return await cur.fetchall()
-                elif commit:
-                    await cur.execute(qur)
+            if reading:
+                return await conn.fetch(qur)
+            elif commit:
+                async with conn.transaction():
+                    return await conn.execute(qur)
 
     def autoquotes(self, value):
         if isinstance(value, int):

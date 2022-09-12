@@ -63,11 +63,6 @@ class EpBot(discord.AutoShardedBot):
 
         await self.change_presence(status=discord.Status.online)
 
-    def run(self):
-        asyncio.get_event_loop().run_until_complete(self._run())
-
-    async def _run(self):
-        await super().start(config.token(), reconnect=True)
 
 
 # 기본 제공 명령어
@@ -223,4 +218,5 @@ async def error_send(ctx, bot, error, color=0x980000):
 
 
 epbot = EpBot()
-epbot.run()
+
+epbot.run(token=config.token())
