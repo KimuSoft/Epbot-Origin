@@ -45,4 +45,4 @@ tomli==2.0.1
 typing_extensions==4.2.0
 tzlocal==2.1
 urllib3==1.26.12
-yarl==1.6.3
+yarl==1.8.1
