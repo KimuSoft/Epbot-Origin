@@ -5,7 +5,7 @@ aiosignal==1.2.0
 APScheduler==3.9.1
 async-timeout==4.0.2
 asyncpg==0.26.0
-attrs==20.3.0
+attrs==22.1.0
 autopep8==1.7.0
 beautifulsoup4==4.11.1
 black @ git+https://github.com/psf/black@b859a377c0bef3793fcceb0efd0086862f6a9365
