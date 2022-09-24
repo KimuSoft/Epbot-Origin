@@ -10,7 +10,7 @@ autopep8==1.7.0
 beautifulsoup4==4.11.1
 black @ git+https://github.com/psf/black@b859a377c0bef3793fcceb0efd0086862f6a9365
 bs4==0.0.1
-certifi==2020.12.5
+certifi==2022.9.24
 cffi==1.15.1
 chardet==3.0.4
 charset-normalizer==2.1.1
