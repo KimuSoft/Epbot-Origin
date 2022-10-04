@@ -35,14 +35,17 @@ def on_working(
                 return False
 
         if landwork:  # 땅 작업 중에는 금지
-            if get_working_now(ctx.channel.id):
-                try:
-                    await ctx.respond(
-                        content="흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
-                    )
-                except Exception:
-                    pass
-                return False
+            '''
+            핑 관련 문제 때문에 사용중지
+            '''
+            # if get_working_now(ctx.channel.id):
+            #     try:
+            #         await ctx.respond(
+            #             content="흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            #         )
+            #     except Exception:
+            #         pass
+            #     return False
 
         if prohibition:  # 낚시금지를 했다면 금지
             if (
