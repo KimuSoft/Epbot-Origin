@@ -87,6 +87,12 @@ class UnitCog(commands.Cog):
     async def upgrade(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         room = await Room.fetch(ctx.channel)
+
+        if room.get_working_now():
+            return await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
+
         try:
             facility = Facility(f"_TIER{room.tier + 1}")
 
@@ -175,6 +181,12 @@ class UnitCog(commands.Cog):
     async def publicize(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         room = await Room.fetch(ctx.channel)
+
+        if room.get_working_now():
+            return await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
+
         if ctx.channel.guild.owner_id != ctx.author.id:
             return await ctx.respond(
                 "낚시터 공영화는 서버 주인만 할 수 있어!"
@@ -264,6 +276,12 @@ class UnitCog(commands.Cog):
     async def privatize(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         room = await Room.fetch(ctx.channel)
+
+        if room.get_working_now():
+            return await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
+
         if ctx.channel.guild.owner_id != ctx.author.id:
             return await ctx.respond(
                 "낚시터 민영화는 서버 주인만 할 수 있어!" "\n`❗ 낚시터 민영화는 서버 주인만 할 수 있습니다.`"
@@ -335,6 +353,11 @@ class UnitCog(commands.Cog):
     async def downgrade(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         room = await Room.fetch(ctx.channel)
+
+        if room.get_working_now():
+            return await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
 
         if room.tier == 1:
             return await ctx.respond(
@@ -448,6 +471,11 @@ class UnitCog(commands.Cog):
         await ctx.defer()
         room = await Room.fetch(ctx.channel)
 
+        if room.get_working_now():
+            return await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
+
         if room.tier < int(tier):
             return await ctx.respond(
                 f"""어... 우리 낚시터는 {room.tier}티어인데...?
@@ -533,6 +561,11 @@ class UnitCog(commands.Cog):
             )
 
         room = await Room.fetch(ctx.channel)
+
+        if room.get_working_now():
+            return await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
 
         if facility.code not in room.facilities:
             return await ctx.respond(
@@ -625,6 +658,11 @@ class UnitCog(commands.Cog):
             )
 
         room = await Room.fetch(ctx.channel)
+
+        if room.get_working_now():
+            return await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
 
         if facility.cost > await room.get_exp():
             return await ctx.respond(

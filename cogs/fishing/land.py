@@ -47,6 +47,11 @@ class LandCog(commands.Cog):
         else:
             value = int(price)
 
+        if room.get_working_now():
+            return await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
+
         if room.owner_id == ctx.author.id:
             await ctx.respond("이미 여기 주인이자나!\n`❓ 낚시터에 걸린 돈을 조정하려면 '/땅값변경' 명령어를 써 보세요.`")
             return None
@@ -355,6 +360,12 @@ class LandCog(commands.Cog):
         user = await User.fetch(ctx.author)
         room = await Room.fetch(ctx.channel)
         land_value = room.land_value
+
+        if room.get_working_now():
+            return await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
+
         async with room.work():
 
             if value < 30000:
@@ -436,6 +447,11 @@ class LandCog(commands.Cog):
         await ctx.defer()
         room = await Room.fetch(ctx.channel.id)
 
+        if room.get_working_now():
+            return await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
+
         if room.cleans < 0:
             return await ctx.respond("지형을 변경하려면 청소를 하셔야 해요! (청결도가 0보다 작아요)")
         if room.tier != 1:
@@ -477,6 +493,11 @@ class LandCog(commands.Cog):
     ):
         await ctx.defer()
         room = await Room.fetch(ctx.channel)
+
+        if room.get_working_now():
+            return await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
 
         fee_range = room.fee_range
         if value < fee_range[0] or fee_range[1] < value:
@@ -547,6 +568,11 @@ class LandCog(commands.Cog):
     async def clean_corp(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         room = await Room.fetch(ctx.channel)
+
+        if room.get_working_now():
+            return await ctx.respond(
+                "흐음... 여기 뭔가 하고 있는 거 같은데 조금 이따가 와 보자!\n`❗ 누군가 이미 땅에서 매입/매각/건설/철거 등의 작업을 하는 중이다.`"
+            )
 
         if room.cleans >= 0:
             return await ctx.respond(
