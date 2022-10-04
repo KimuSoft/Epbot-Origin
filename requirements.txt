@@ -43,6 +43,6 @@ soupsieve==2.3.2.post1
 toml==0.10.2
 tomli==2.0.1
 typing_extensions==4.3.0
-tzlocal==2.1
+tzlocal==4.2
 urllib3==1.26.12
 yarl==1.8.1
