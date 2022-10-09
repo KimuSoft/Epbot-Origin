@@ -54,7 +54,7 @@ class EtcCog(commands.Cog):
     async def 도움말(self, ctx: discord.ApplicationContext):
         embed = discord.Embed(title="이프의 도움말", description=INFORMATION, colour=0x4BC59F)
         embed.set_footer(
-            text="제작 키뮤소프트(키뮤#8673, Hollume_#3814) / 더욱 자세한 정보가 궁금하다면 '/정보'"
+            text="제작 키뮤소프트(키뮤#8673, Hollume_#3814, 파링#1431) / 더욱 자세한 정보가 궁금하다면 '/이프'"
         )
         await ctx.respond(embed=embed)
 
@@ -62,7 +62,7 @@ class EtcCog(commands.Cog):
     async def 정보(self, ctx: discord.ApplicationContext):
         embed = discord.Embed(title="커여운 검열삭제 장인 이프!", colour=0x4BC59F)
         embed.add_field(
-            name="개발ㆍ운영 - 키뮤소프트(코로, 키뮤)",
+            name="개발ㆍ운영 - 키뮤소프트(코로, 키뮤, 파링)",
             value=f"이프의 검열 대상 서버 : {len(self.bot.guilds)}곳",
             inline=False,
         )
