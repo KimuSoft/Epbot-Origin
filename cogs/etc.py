@@ -41,7 +41,7 @@ class EtcCog(commands.Cog):
             f"퐁! 🏓\n`지연 시간 : {latency}ms (실제 지연시간 계산 중...)`",
         )
 
-        wd = await i.original_message()
+        wd = await i.original_response()
 
         real_latency = int(
             (wd.created_at.replace(tzinfo=None) - now).microseconds / 1000
