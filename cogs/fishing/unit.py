@@ -509,7 +509,7 @@ class UnitCog(commands.Cog):
             facility = Facility(arg1.upper())
         except NotExistFacility:
             return await ctx.respond(
-                "어... 어떤 시설인지 잘 모르게써!" "\n`❗ '/설명 <시설명>'이에요. 다시 한 번 시설명을 확인해 주세요.`"
+                "어... 어떤 시설인지 잘 모르게써!" "\n`❗ '/낚시터 시설 검색 <시설명>'이에요. 다시 한 번 시설명을 확인해 주세요.`"
             )
 
         embed = discord.Embed(title=f"《 {facility.name} 》", colour=0x4BC59F)

@@ -460,7 +460,7 @@ class LandCog(commands.Cog):
             return await ctx.respond("지형을 변경하려면 어떤 시설도 있으면 안되요!")
         if room.land_value != 0:
             return await ctx.respond(
-                "지형을 변경하려면 이 땅이 매각된 땅이여야 해요! (`/매각` 을 통해 매각된 땅으로 만들 수 있어요!)"
+                "지형을 변경하려면 이 땅이 매각된 땅이여야 해요! (`/낚시터 매각` 을 통해 매각된 땅으로 만들 수 있어요!)"
             )
         if await room.get_exp() > 50:
             return await ctx.respond("지형을 변경하려면 명성이 50이하여야 해요!")

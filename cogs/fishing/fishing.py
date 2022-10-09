@@ -95,7 +95,7 @@ class InfoCog(commands.Cog):
                     ),
                     inline=False,
                 )
-                embed.set_footer(text="※ 각 시설에 대한 설명이 필요하다면 '/설명 <시설명>'")
+                embed.set_footer(text="※ 각 시설에 대한 설명이 필요하다면 '/낚시터 시설 검색 <시설명>'")
 
         await ctx.respond(embed=embed)
 
@@ -302,7 +302,7 @@ class InfoCog(commands.Cog):
         embed.add_field(
             name="🐟 **여기에서 낚을 수 있는 물고기**", value=f"```css\n{list_str}```", inline=False
         )
-        embed.set_footer(text="※ 만약 통계청 보고서가 깨져 보인다면 '/분석 <단순 표현>'")
+        embed.set_footer(text="※ 만약 통계청 보고서가 깨져 보인다면 '/낚시터 분석 <단순 표현>'")
         await ctx.respond(embed=embed)
 
 
