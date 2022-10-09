@@ -59,11 +59,11 @@ class EtcCog(commands.Cog):
         await ctx.respond(embed=embed)
 
     @slash_command(name="이프", description="이프의 정보를 알려줘요!")
-    async def 정보(self, ctx: discord.ApplicationContext):
-        embed = discord.Embed(title="커여운 검열삭제 장인 이프!", colour=0x4BC59F)
+    async def 이프(self, ctx: discord.ApplicationContext):
+        embed = discord.Embed(title="커여운 낚시 장인 이프!", colour=0x4BC59F)
         embed.add_field(
             name="개발ㆍ운영 - 키뮤소프트(코로, 키뮤, 파링)",
-            value=f"이프의 검열 대상 서버 : {len(self.bot.guilds)}곳",
+            value=f"이프의 낚시터(서버 수) : {len(self.bot.guilds)}곳",
             inline=False,
         )
 
