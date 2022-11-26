@@ -23,4 +23,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ghcr.io/${{ secrets.actor }}/epbot-origin:latest
+          tags: ghcr.io/${{ github.actor }}/epbot-origin:latest
