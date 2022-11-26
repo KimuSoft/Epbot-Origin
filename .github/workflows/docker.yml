@@ -16,11 +16,11 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: registry.pikokr.dev
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: registry.pikokr.dev/kimusoft/epbot:latest
+          tags: ghcr.io/${{ secrets.actor }}/epbot-origin:latest
