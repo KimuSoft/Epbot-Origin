@@ -210,3 +210,11 @@ class Constants:
         10: "NUMBER",
         11: "ATTACHMENT"
     }
+
+    LOGGER_COLORS = {
+        "debug": "\033[1;37m",  # WHITE
+        "query": "\033[1;32m",  # GREEN
+        "info": "\033[1;34m",   # BLUE
+        "warn": "\033[1;33m",   # YELLOW
+        "err": "\033[1;35m",    # MAGENTA
+    }
