@@ -68,7 +68,7 @@ def msg(message):
 def query(message: str):
     """쿼리 로그 옵션이 켜져 있을 때만 기록해 줘요!"""
     if config.query_logging:
-        log("[쿼리] {}".format(message))
+        log(f"[쿼리] {message}")
 
 
 def log(message: str, iserror=False):
