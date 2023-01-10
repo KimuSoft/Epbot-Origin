@@ -45,26 +45,6 @@ def debug(message: str):
         log(f"[디버그] {message}")
 
 
-def msg(message):
-    """
-    디스코드 메시지를 깔끔하게 정리해 기록해 줘요!
-    """
-    if message.content == "":
-        return
-
-    author = message.author
-
-    """message를 넣으면 로그를 씀"""
-    if isinstance(message.channel, DMChannel):
-        log_msg = f"DM <{author.name}> {message.content}"
-    else:
-        guild = message.guild
-        channel = message.channel
-        log_msg = f"<{channel.name} | {author.name}> {message.content} ({guild.name}, {author.id})"
-
-    log(log_msg)
-
-
 def query(message: str):
     """쿼리 로그 옵션이 켜져 있을 때만 기록해 줘요!"""
     if config.query_logging:
