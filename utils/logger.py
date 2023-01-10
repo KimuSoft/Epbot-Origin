@@ -53,8 +53,10 @@ def query(message: str):
 
 def log(message: str, level: str, iserror=False):
     now = datetime.now()
-    log_msg = f"\033[1;36m{now.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]}\033[0m /{Constants.LOGGER_COLORS[level]} {message}\033[0m"
-    print(log_msg)
+    time = now.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+    log_msg = f"{time} / {message}"
+    log_msg_colored = f"\033[1;36m{time}\033[0m /{Constants.LOGGER_COLORS[level]} {message}\033[0m"
+    print(log_msg_colored)
     save(log_msg)
     if iserror:
         save_error(log_msg)
