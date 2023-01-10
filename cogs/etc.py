@@ -72,7 +72,7 @@ class EtcCog(commands.Cog):
             value="https://github.com/KimuSoft/epbot-origin",
             inline=False,
         )
-        embed.add_field(name="기여자 목록", value="KOI#4182(슬래시 커맨드)", inline=False)
+        embed.add_field(name="기여자 목록", value="KOI#4182(슬래시 커맨드)\n스타샤#6724(로거)", inline=False)
 
         embed.add_field(
             name="공식 디스코드 서버", value="[키뮤소프트 디스코드](https://discord.gg/XQuexpQ)"
