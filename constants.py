@@ -211,6 +211,7 @@ class Constants:
         11: "ATTACHMENT"
     }
 
+    # 로거 하이라이팅 컬러
     LOGGER_COLORS = {
         "debug": "\033[1;37m",  # WHITE
         "query": "\033[1;32m",  # GREEN
