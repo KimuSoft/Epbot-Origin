@@ -4,7 +4,6 @@
 """
 
 from datetime import datetime
-from discord import DMChannel
 import os
 import traceback
 
