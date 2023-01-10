@@ -1,5 +1,5 @@
 from discord.ext import commands
-from discord.commands import slash_command
+from discord.commands import slash_command, ApplicationContext
 import discord
 
 import config
@@ -9,6 +9,7 @@ from utils import logger
 import traceback
 import os
 from datetime import datetime
+from constants import Constants
 
 from classes.user import fishing_now
 
@@ -132,8 +133,14 @@ class ManagementCog(commands.Cog):
     """
 
     @commands.Cog.listener()
-    async def on_command(self, ctx):
-        logger.msg(ctx.message)
+    async def on_application_command(self, ctx: ApplicationContext):
+        args = ""
+        if ctx.selected_options:
+            for option in ctx.selected_options:
+                args += f"[Name: {option['name']}, Value: {option['value']}, Type: {Constants.OPTION_TYPES[option['type']]}] "
+            args = args[:-1]
+        guild = f"{ctx.guild}({ctx.guild.id})" if ctx.guild else "DM"
+        logger.info(f"{ctx.user}({ctx.user.id}) in {guild}: /{ctx.command.name} {args}")
 
     @commands.Cog.listener()
     async def on_application_command_error(
