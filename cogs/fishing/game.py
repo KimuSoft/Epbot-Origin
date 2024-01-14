@@ -323,6 +323,7 @@ async def fishing_result(
         fish.cost() + fish.fee(user, room) + fish.maintenance(room) + fish.bonus(room)
     )
     fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
+    after_money = user.money + net_profit # 낚시한 이후 유저의 돈
 
     # 도감 추가 & 기록 추가
     await user.get_fish(fish)
@@ -340,7 +341,7 @@ async def fishing_result(
             owner = await User.fetch(room.owner_id)
             await owner.give_money(fish.fee(user, room) * -1)
 
-    information = f"{fish.rarity_str()} | 📏 {fish.length:,}cm | ✨ {int(fame)} | 💵 {fish.cost():,} `→ {user.money:,} 💰`"
+    information = f"{fish.rarity_str()} | 📏 {fish.length:,}cm | ✨ {int(fame)} | 💵 {net_profit:,} `→ {after_money:,} 💰`"
 
     if await user.update_biggest(fish):
         information += "\n`📏 오늘 낚은 것 중 가장 커! (일일 최고 크기)`"
