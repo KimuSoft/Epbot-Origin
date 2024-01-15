@@ -330,6 +330,7 @@ async def fishing_result(
     fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
     after_money = user.money + net_profit # 낚시한 이후 유저의 돈
 
+    # 레벨 패널티
     noob_weight = 1.0
     if noob:
         limit_level = room.limit_level
@@ -337,14 +338,18 @@ async def fishing_result(
         noob_weight = (user_level / limit_level) ** 2
         if noob_weight > 1: noob_weight = 1
 
+    if fish.cost() > 0:
+        net_profit = int(net_profit * noob_weight)
+        fame = int(fame * noob_weight)
+
     # 도감 추가 & 기록 추가
     await user.get_fish(fish)
 
     # 물고기 금액이 양수일 경우
     if fish.cost() > 0:
         # 개인 명성 & 낚시터 명성 부여
-        await user.add_exp(int(fame * noob_weight))
-        await room.add_exp(int(fame * noob_weight))
+        await user.add_exp(int(fame))
+        await room.add_exp(int(fame))
 
         await user.give_money(net_profit)
 
