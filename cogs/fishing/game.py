@@ -125,26 +125,29 @@ class FishingGameCog(commands.Cog):
             )
 
         # 낚시터 레벨 제한
-        if room.tier == 3 and user.level < 20:
-            return await ctx.respond(
-                "이 낚시터를 사용하기에는 낚시 자격증 레벨이 부족해..."
-                "\n`❗ 3티어 낚시터를 이용하기 위해서는 최소 20레벨이 필요합니다.`"
-            )
-        elif room.tier == 4 and user.level < 40:
-            return await ctx.respond(
-                "이 낚시터를 사용하기에는 낚시 자격증 레벨이 부족해..."
-                "\n`❗ 4티어 낚시터를 이용하기 위해서는 최소 40레벨이 필요합니다.`"
-            )
-        elif room.tier == 5 and user.level < 80:
-            return await ctx.respond(
-                "이 낚시터를 사용하기에는 낚시 자격증 레벨이 부족해..."
-                "\n`❗ 5티어 낚시터를 이용하기 위해서는 최소 80레벨이 필요합니다.`"
-            )
-        elif room.tier == 6 and user.level < 160:
-            return await ctx.respond(
-                "이 낚시터를 사용하기에는 낚시 자격증 레벨이 부족해..."
-                "\n`❗ 6티어 낚시터를 이용하기 위해서는 최소 160레벨이 필요합니다.`"
-            )
+        noob = False
+        if user.level < room.limit_level: noob = True
+
+        # if room.tier == 3 and user.level < 20:
+        #     return await ctx.respond(
+        #         "이 낚시터를 사용하기에는 낚시 자격증 레벨이 부족해..."
+        #         "\n`❗ 3티어 낚시터를 이용하기 위해서는 최소 20레벨이 필요합니다.`"
+        #     )
+        # elif room.tier == 4 and user.level < 40:
+        #     return await ctx.respond(
+        #         "이 낚시터를 사용하기에는 낚시 자격증 레벨이 부족해..."
+        #         "\n`❗ 4티어 낚시터를 이용하기 위해서는 최소 40레벨이 필요합니다.`"
+        #     )
+        # elif room.tier == 5 and user.level < 80:
+        #     return await ctx.respond(
+        #         "이 낚시터를 사용하기에는 낚시 자격증 레벨이 부족해..."
+        #         "\n`❗ 5티어 낚시터를 이용하기 위해서는 최소 80레벨이 필요합니다.`"
+        #     )
+        # elif room.tier == 6 and user.level < 160:
+        #     return await ctx.respond(
+        #         "이 낚시터를 사용하기에는 낚시 자격증 레벨이 부족해..."
+        #         "\n`❗ 6티어 낚시터를 이용하기 위해서는 최소 160레벨이 필요합니다.`"
+        #     )
 
         # 낚시 시작
         user.set_fishing_now(True)
@@ -175,7 +178,7 @@ class FishingGameCog(commands.Cog):
             if not result:
                 view.stop()
                 if view.button_value == "당김":
-                    return await fishing_failed(ctx, user, "찌를 올렸지만 아무 것도 없었다...")
+                    return await fishing_failed(ctx, user, "찌를 올렸지만 아무 것도 없었다...", noob)
                 else:
                     return await fishing_stoped(ctx, user)
 
@@ -213,10 +216,10 @@ class FishingGameCog(commands.Cog):
                     return await fishing_stoped(ctx, user)
 
                 elif timing and result:  # 물고기는 나왔지만 누르지 않은 경우
-                    return await fishing_failed(ctx, user, "물고기가 떠나가 버렸다...")
+                    return await fishing_failed(ctx, user, "물고기가 떠나가 버렸다...", noob)
 
                 elif not timing and view.button_value == "당김":  # 물고기는 없는데 낚아올림
-                    return await fishing_failed(ctx, user, "찌를 올렸지만 아무 것도 없었다...")
+                    return await fishing_failed(ctx, user, "찌를 올렸지만 아무 것도 없었다...", noob)
 
                 elif timing or view.button_value == "당김":  # 물고기 낚기 성공
                     break
@@ -227,18 +230,18 @@ class FishingGameCog(commands.Cog):
                     return None
 
             if not timing:  # 끝날 때까지 한 번도 미동이 없었던 경우:
-                return await fishing_failed(ctx, user, "자리를 잘못 잡았나...?")
+                return await fishing_failed(ctx, user, "자리를 잘못 잡았나...?", noob)
 
             fish = await room.randfish()
 
             if not fish:
                 # 등급을 뽑았는데 해당하는 물고기가 없는 경우
-                return await fishing_failed(ctx, user, "여기는 물고기가 잘 안 낚이는 낚시터일까...?")
+                return await fishing_failed(ctx, user, "여기는 물고기가 잘 안 낚이는 낚시터일까...?", noob)
             else:
                 fish.owner = user
 
             throw, embed, image, bytes = await fishing_result(
-                ctx, user, room, fish, effect
+                ctx, user, room, fish, effect, noob
             )
 
             try:
@@ -305,8 +308,10 @@ async def fishing_stoped(ctx: discord.ApplicationContext, user: User):
     await user.finish_fishing()
 
 
-async def fishing_failed(window: discord.ApplicationContext, user: User, text: str):
+async def fishing_failed(window: discord.ApplicationContext, user: User, text: str, noob: bool):
     """낚시가 실패했을 때"""
+    if noob:
+        text += "\n`❗ 혹시 너무 높은 티어의 낚시터에서 낚시하고 계시지 않나요?`"
     embed = discord.Embed(
         title="낚시 실패", description=text, colour=discord.Colour.light_grey()
     )
@@ -315,7 +320,7 @@ async def fishing_failed(window: discord.ApplicationContext, user: User, text: s
 
 
 async def fishing_result(
-    window: discord.ApplicationContext, user: User, room: Room, fish, effect
+    window: discord.ApplicationContext, user: User, room: Room, fish, effect, noob: bool
 ):
     """낚시가 성공했을 때 결과 보여주기"""
     throw = False
@@ -325,14 +330,21 @@ async def fishing_result(
     fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
     after_money = user.money + net_profit # 낚시한 이후 유저의 돈
 
+    noob_weight = 1.0
+    if noob:
+        limit_level = room.limit_level
+        user_level = user.level
+        noob_weight = (user_level / limit_level) ** 2
+        if noob_weight > 1: noob_weight = 1
+
     # 도감 추가 & 기록 추가
     await user.get_fish(fish)
 
     # 물고기 금액이 양수일 경우
     if fish.cost() > 0:
         # 개인 명성 & 낚시터 명성 부여
-        await user.add_exp(fame)
-        await room.add_exp(fame)
+        await user.add_exp(int(fame * noob_weight))
+        await room.add_exp(int(fame * noob_weight))
 
         await user.give_money(net_profit)
 
@@ -384,6 +396,9 @@ async def fishing_result(
                 f"\n🧹 : {-1 * fish.cost()}💰을 내고 쓰레기를 치운다. (소지금 : {str(user.money)}💰)"
                 "\n💦 : ... 그냥 다시 물에 버리자```"
             )
+
+    if noob:
+        information += "\n`❗ 이 낚시터는 내가 낚시하기엔 조금 어려운거 같다...`"
 
     if throw:
         embed = discord.Embed(
