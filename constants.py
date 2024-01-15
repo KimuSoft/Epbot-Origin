@@ -32,7 +32,7 @@ class Constants:
     CUSTOM_EMOJI = {"fish": "<a:twitterFish:895145412552425472>"}
 
     # 한국어 문자열 값
-    SEASON_KR = ["잘못된 계절", "🌱 봄", "☀️ 여름", "🍂 가을", "☃️ 겨울"]
+    SEASON_KR = ["잘못된 계절", "🌸 봄", "☀️ 여름", "🍁 가을", "❄️ 겨울"]
     BIOME_KR = [
         "🏜️ 메마른 땅",
         "🏖️ 바닷가",
@@ -70,18 +70,19 @@ class Constants:
         "\n<청결도> {clean}"
         "\n<수수료> {fee}"
         "\n<최소ㆍ매입가> {cost}"
+        "\n<권장ㆍ레벨> {limit_level}레벨 이상"
         "\n<역사> {history}"
         "```"
     )
 
     PUBLIC_ROOM_INFO_KR = (
-        "```"
         "🗂️ 낚시터 정보  /  👥 공공 낚시터"
+        "```"
         "\n<계절> {season}"
         "\n<지형> {type}"
         "\n<청결도> {clean}"
         "\n<수수료> 7%"
-        "\n<낚시터ㆍ종류> {type}"
+        "\n<권장ㆍ레벨> {limit_level}레벨 이상"
         "\n<역사> {history}"
         "```"
     )
