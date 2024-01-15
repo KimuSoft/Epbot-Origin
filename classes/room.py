@@ -263,6 +263,19 @@ class Room:
                 cb.append(fac)
         return cb
 
+    @property
+    def limit_level(self):
+        """int: 낚시터에서 낚시가 제한되는 레벨 값을 반환합니다"""
+        tier = self.tier
+        if tier == 0: return 0
+        elif tier == 1: return 0
+        elif tier == 2: return 0
+        elif tier == 3: return 20
+        elif tier == 4: return 40
+        elif tier == 5: return 80
+        elif tier == 6: return 160
+        elif tier == 7: return 0
+
     # ------------------------------------- method(메서드 - 시설 관련) ------------------------------------- #
 
     def can_build_it(self, facility: Facility):
