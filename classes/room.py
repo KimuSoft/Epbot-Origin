@@ -264,7 +264,7 @@ class Room:
         return cb
 
     @property
-    def limit_level(self):
+    def level_limit(self):
         """int: 낚시터에서 낚시가 제한되는 레벨 값을 반환합니다"""
         tier = self.tier
         if tier == 0: return 0
