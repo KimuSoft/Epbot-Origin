@@ -126,7 +126,7 @@ class FishingGameCog(commands.Cog):
 
         # 낚시터 레벨 제한
         noob = False
-        if user.level < room.limit_level: noob = True
+        if user.level < room.level_limit: noob = True
 
         # if room.tier == 3 and user.level < 20:
         #     return await ctx.respond(
@@ -331,16 +331,15 @@ async def fishing_result(
     after_money = user.money + net_profit # 낚시한 이후 유저의 돈
 
     # 레벨 패널티
-    noob_weight = 1.0
-    if noob:
-        limit_level = room.limit_level
-        user_level = user.level
-        noob_weight = (user_level / limit_level) ** 2
-        if noob_weight > 1: noob_weight = 1
+    noob_weight = 1.0 if not noob else user.get_penalty(room)
 
     if fish.cost() > 0:
-        net_profit = int(net_profit * noob_weight)
+        net_profit = (int(fish.cost() * noob_weight)
+                      + int(fish.fee(user, room) * noob_weight)
+                      + int(fish.maintenance(room) * noob_weight)
+                      + int(fish.bonus(room) * noob_weight))
         fame = int(fame * noob_weight)
+        after_money = user.money + net_profit
 
     # 도감 추가 & 기록 추가
     await user.get_fish(fish)
@@ -348,8 +347,8 @@ async def fishing_result(
     # 물고기 금액이 양수일 경우
     if fish.cost() > 0:
         # 개인 명성 & 낚시터 명성 부여
-        await user.add_exp(int(fame))
-        await room.add_exp(int(fame))
+        await user.add_exp(fame)
+        await room.add_exp(fame)
 
         await user.give_money(net_profit)
 
