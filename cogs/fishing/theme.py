@@ -20,7 +20,7 @@ class ThemeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    theme_group = _theme_group
+    # theme_group = _theme_group
 
     """
     @theme_group.command(name="설정", description="낚시카드의 테마를 선택하세요!")

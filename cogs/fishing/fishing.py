@@ -54,7 +54,7 @@ class InfoCog(commands.Cog):
                 + ")"
             ),
             "owner": f"<@{room.owner_id}>",
-            "limit_level": f"{room.limit_level}",
+            "level_limit": f"{room.level_limit}",
         }
 
         # 수수료 설정이 가능한 경우

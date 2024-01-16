@@ -3,6 +3,7 @@
 - user를 통해 객체를 생성합니다.
 (user.id로도 생성할 수 있지만 기능이 제한됩니다.)
 """
+import math
 
 from db.seta_pgsql import S_PgSQL
 from db.seta_json import get_json
@@ -135,6 +136,13 @@ class User:
         await db.update_sql(
             "users", f"theme='{await db.json_convert(self._theme)}'", f"id='{self.id}'"
         )
+
+    def get_penalty(self, room: Room):
+        """레벨 제한에 따른 경험치/돈의 배율을 float로 반환합니다"""
+        level_limit = room.level_limit
+        penalty = (self.level / level_limit) ** 2
+        if penalty >= 1: return 1.0
+        return (math.ceil(penalty * 100)) / 100.0
 
     # ------------------------------------- method(메서드) ------------------------------------- #
 
