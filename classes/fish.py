@@ -100,6 +100,14 @@ class Fish:
         """물고기가 주는 명성 = 가격 / 100"""
         return round(self.cost() / 100)
 
+    # ------------------------------------- setter(쓰기 전용) ------------------------------------- #
+
+    def set_penalty(self, penalty: float):
+        while self.length <= 0:
+            self.length = round(self.average_length * random.gauss(1, 0.15), 2)
+        self.length = round(self.length * penalty, 2)
+        return 0
+
     # ------------------------------------- method(메서드) ------------------------------------- #
 
     def fee(self, user, room):
