@@ -240,6 +240,9 @@ class FishingGameCog(commands.Cog):
             else:
                 fish.owner = user
 
+            # 패널티 적용하기
+            fish.set_penalty(await user.get_penalty(room))
+
             throw, embed, image, bytes = await fishing_result(
                 ctx, user, room, fish, effect, noob
             )
@@ -329,17 +332,6 @@ async def fishing_result(
     )
     fame = fish.exp() * effect["_exp"] if fish.exp() >= 0 else 0  # 명성 계산
     after_money = user.money + net_profit # 낚시한 이후 유저의 돈
-
-    # 레벨 패널티
-    noob_weight = 1.0 if not noob else user.get_penalty(room)
-
-    if fish.cost() > 0:
-        net_profit = (int(fish.cost() * noob_weight)
-                      + int(fish.fee(user, room) * noob_weight)
-                      + int(fish.maintenance(room) * noob_weight)
-                      + int(fish.bonus(room) * noob_weight))
-        fame = int(fame * noob_weight)
-        after_money = user.money + net_profit
 
     # 도감 추가 & 기록 추가
     await user.get_fish(fish)
