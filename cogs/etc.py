@@ -20,7 +20,6 @@ from utils import logger
 VERSION = Constants.VERSION
 INFORMATION = (
     "[공식 도움말 낚시 편](https://blog.naver.com/hon20ke/222241633386)"
-    "\n[공식 사이트 도움말](https://epbot.kro.kr/)"
     "\n※ 대부분의 물고기 데이터는 국립수산과학원 수산생명자원정보센터의 데이터를 참고하였습니다."
 )
 
@@ -72,10 +71,10 @@ class EtcCog(commands.Cog):
             value="https://github.com/KimuSoft/epbot-origin",
             inline=False,
         )
-        embed.add_field(name="기여자 목록", value="KOI#4182(슬래시 커맨드)\n스타샤#6724(로거)", inline=False)
+        embed.add_field(name="기여자 목록", value="KOI(슬래시 커맨드)\n스타샤(로거)", inline=False)
 
         embed.add_field(
-            name="공식 디스코드 서버", value="[키뮤소프트 디스코드](https://discord.gg/XQuexpQ)"
+            name="공식 디스코드 서버", value="[키뮤스토리 디스코드](https://discord.gg/XQuexpQ)"
         )
 
         embed.add_field(
@@ -91,7 +90,7 @@ class EtcCog(commands.Cog):
             not (await User.fetch(ctx.author)).admin
             and not ctx.author.guild_permissions.manage_roles
         ):
-            await ctx.respond("마력을 더욱 쌓고 오거라!!")
+            await ctx.respond("마력을 더욱 쌓고 오거라!!\n`❗이 명령어를 사용할 권한이 부족한 것 같습니다.`")
             return
         limit += 1
         if limit <= 101:
@@ -100,7 +99,7 @@ class EtcCog(commands.Cog):
                 content=f"{ctx.author.mention}님, {limit-1}개의 메세지를 지웠어요!", delete_after=4
             )
         else:
-            await ctx.respond("마력을 더어어어어 더욱 쌓고 오거라!!")
+            await ctx.respond("마력을 더어어어어 더욱 쌓고 오거라!!\n`❗메시지가 너무 많습니다.`")
 
 
 def setup(bot):
