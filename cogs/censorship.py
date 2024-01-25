@@ -18,7 +18,7 @@ class InviteView(discord.ui.View):
             discord.ui.Button(
                 label="위브 초대하기",
                 style=discord.ButtonStyle.link,
-                url="https://kimusoft.dev",
+                url="https://yp.kimustory.net/",
                 emoji="🔗",
             )
         )
@@ -33,12 +33,12 @@ class CensorshipCog(commands.Cog):
         embed = discord.Embed(title="검열 기능은 어디로 갔나요?", colour=0x4BC59F)
         embed.add_field(
             name="왜 없어졌나요?",
-            value="디스코드의 메세지 인텐트 정책에 의거해, 2022.09.01 부터는 검열 기능이 정상적으로 작동하지 않고 있습니다!",
+            value="디스코드의 메세지 인텐트 정책에 의거해, 2022.09.01 부터는 검열 기능이 정상적으로 작동하지 않습니다.",
             inline=False,
         )
         embed.add_field(
             name="그럼 검열은 어디에서 해야 하나요?",
-            value="키뮤소프트가 새롭게 개발중인 봇 `위브`는 검열을 위한 봇입니다! 검열 기능은 [위브](https://kimusoft.dev)로 이관될 예정이니 많은 관심 부탁드릴게요!",
+            value="키뮤소프트가 새로운 봇 `위브`는 검열을 위한 봇 이에요! 검열 기능은 [위브](https://yp.kimustory.net/)에게 부탁드려요!",
             inline=False,
         )
         await ctx.respond(embed=embed, view=InviteView())
