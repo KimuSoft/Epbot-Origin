@@ -38,7 +38,7 @@ class CensorshipCog(commands.Cog):
         )
         embed.add_field(
             name="그럼 검열은 어디에서 해야 하나요?",
-            value="키뮤소프트가 새로운 봇 `위브`는 검열을 위한 봇 이에요! 검열 기능은 [위브](https://yp.kimustory.net/)에게 부탁드려요!",
+            value="키뮤소프트의 새로운 봇 `위브`는 검열을 위한 봇 이에요! 검열 기능은 [위브](https://yp.kimustory.net/)에게 부탁드려요!",
             inline=False,
         )
         await ctx.respond(embed=embed, view=InviteView())
