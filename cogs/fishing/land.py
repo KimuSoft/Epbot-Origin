@@ -450,7 +450,7 @@ class LandCog(commands.Cog):
         ),
     ):
         await ctx.defer()
-        room = await Room.fetch(ctx.channel.id)
+        room = await Room.fetch(ctx.channel)
 
         if room.get_working_now():
             return await ctx.respond(
