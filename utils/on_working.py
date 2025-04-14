@@ -1,5 +1,5 @@
 import discord
-from discord import Thread, DMChannel
+from discord import Thread, DMChannel, VoiceChannel
 from discord.ext.commands import check
 
 from classes.room import Room, get_working_now
@@ -46,6 +46,12 @@ def on_working(
             #     except Exception:
             #         pass
             #     return False
+        
+        if isinstance(channel, VoiceChannel):
+            await ctx.respond(
+                content=f"음성 채널...? 여기는 어디야?\n`❗ 음성 채널에서는 낚시를 할 수 없습니다.`"
+            )
+            return False
 
         if prohibition:  # 낚시금지를 했다면 금지
             if (
