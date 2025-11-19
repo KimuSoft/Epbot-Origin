@@ -35,16 +35,15 @@ class CycleCog(commands.Cog):
         logger.info("discord.ext.tasks 스케쥴 시작")
         self.change_activity.start()  # pylint: disable=maybe-no-member
         self.cleaner.start()  # pylint: disable=maybe-no-member
+        self.sched = AsyncIOScheduler()
 
     @commands.Cog.listener()
     async def on_ready(self):
         logger.info("AsyncIOScheduler 스케쥴 시작")
-        self.sched = AsyncIOScheduler()
 
         job_id = "day_end_schedule"
-
-        if not self.sched.get_job(job_id):
-            self.sched.add_job(self.day_end_schedule, "cron", hour="23", minute="55", id=job_id)
+        if self.sched.get_job(job_id) is None:
+            self.sched.add_job(self.day_end_schedule, "cron", hour="23", minute="29", id=job_id)
             # self.sched.add_job(self.day_end_schedule, 'cron', minute='*/5')
         
         if not self.sched.running:
