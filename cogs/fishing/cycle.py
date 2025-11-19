@@ -41,9 +41,14 @@ class CycleCog(commands.Cog):
         logger.info("AsyncIOScheduler 스케쥴 시작")
         self.sched = AsyncIOScheduler()
 
-        self.sched.add_job(self.day_end_schedule, "cron", hour="23", minute="55")
-        # self.sched.add_job(self.day_end_schedule, 'cron', minute='*/5')
-        self.sched.start()
+        job_id = "day_end_schedule"
+
+        if not self.sched.get_job(job_id):
+            self.sched.add_job(self.day_end_schedule, "cron", hour="23", minute="55", id=job_id)
+            # self.sched.add_job(self.day_end_schedule, 'cron', minute='*/5')
+        
+        if not self.sched.running:
+            self.sched.start()
 
     @tasks.loop(seconds=30)
     async def change_activity(self):
