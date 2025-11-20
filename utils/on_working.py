@@ -1,5 +1,5 @@
 import discord
-from discord import Thread, DMChannel
+from discord import Thread, DMChannel, VoiceChannel, ForumChannel
 from discord.ext.commands import check
 
 from classes.room import Room, get_working_now
@@ -20,12 +20,21 @@ def on_working(
     async def predicate(ctx):
         channel = ctx.channel
 
+        print(channel)
+        print(type(channel))
+
         if isinstance(channel, DMChannel):
             await ctx.respond(
                 content=f"으에, 이프는 DM은 안 받고 이써!\n`❗ 이프와는 개인 메시지로 놀 수 없습니다.`"
             )
             return False
 
+        if isinstance(channel, VoiceChannel):
+            await ctx.respond(
+                content=f"음성 채널...? 여기는 어디야?\n`❗ 음성 채널에서는 낚시를 할 수 없습니다.`"
+            )
+            return False
+                
         if fishing:  # 낚시 중에는 금지
             if await on_fishing(ctx.author.id):
                 try:
