@@ -11,7 +11,7 @@ autopep8==2.3.2
 beautifulsoup4==4.12.3
 black==24.10.0
 bs4==0.0.2
-certifi==2024.12.14
+certifi==2025.11.12
 cffi==1.17.1
 chardet==5.2.0
 charset-normalizer==3.4.1
