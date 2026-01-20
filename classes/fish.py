@@ -87,10 +87,16 @@ class Fish:
             return "🗑️"
         elif self.rarity == 1:
             return Constants.CUSTOM_EMOJI["fish"]
-        elif self.rarity >= 2:
+        elif self.rarity == 2:
             return "🐠"
-        elif self.rarity == 5:
+        elif self.rarity == 3:
             return "🐡"
+        elif self.rarity == 4:
+            return "🐬"
+        elif self.rarity == 5:
+            return "🐳"
+        elif self.rarity == 6:
+            return "🐉"
 
     def cost(self):
         """물고기의 가격은 물고기 종류, 크기에 따라 자동 생성됩니다."""
