@@ -3,7 +3,10 @@ import traceback
 from datetime import datetime
 
 import discord
-from discord.commands import slash_command, ApplicationContext
+try::
+    from discord.commands import slash_command, ApplicationContext
+except ImportError:
+    from discord_compat import slash_command, ApplicationContext
 from discord.ext import commands
 
 import config
@@ -25,7 +28,7 @@ intents = discord.Intents.default()
 fishdb = S_SQLite("static/fishing.db")
 
 
-class EpBot(discord.AutoShardedBot):
+class EpBot(dcommands.AutoShardedBot):
     def __init__(self):
         super().__init__(
             help_command=None,
