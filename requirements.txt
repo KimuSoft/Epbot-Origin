@@ -30,7 +30,7 @@ pillow==11.1.0
 platformdirs==4.3.6
 propcache==0.2.1
 psycopg2==2.9.10
-psycopg2-binary==2.9.10
+psycopg2-binary==2.9.12
 py-cord==2.6.1
 pycodestyle==2.12.1
 pycparser==2.22
