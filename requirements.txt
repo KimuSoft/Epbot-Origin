@@ -8,7 +8,7 @@ async-timeout==4.0.3
 asyncpg==0.30.0
 attrs==24.3.0
 autopep8==2.3.2
-beautifulsoup4==4.12.3
+beautifulsoup4==4.15.0
 black==24.10.0
 bs4==0.0.2
 certifi==2024.12.14
