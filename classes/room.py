@@ -507,6 +507,7 @@ class Room:
             channel = channel.parent
             if not channel:
                 raise Exception
+            room.channel = channel
             room.id = channel.id
             room.name = channel.name.replace('"', "").replace("'", "")
             room.history = (datetime.now(timezone.utc) - channel.created_at).days

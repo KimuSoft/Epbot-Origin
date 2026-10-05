@@ -2,6 +2,7 @@
 from discord.commands import slash_command
 from discord.commands import Option
 from discord.ext import commands
+from discord import Thread
 import discord
 import os
 import ast
@@ -37,6 +38,7 @@ class InfoCog(commands.Cog):
         fee_range = room.fee_range
         cleans = await room.get_cleans()
         created_at = room.channel.created_at
+        
         print(room.channel, created_at)
 
         # 기본 정보

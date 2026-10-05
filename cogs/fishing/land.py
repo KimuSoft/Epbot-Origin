@@ -154,6 +154,11 @@ class LandCog(commands.Cog):
         user = await User.fetch(ctx.author)
         if land_num is not None:
             lands = await user.get_lands()
+            if land_num < 0 or len(lands) < land_num:
+                await ctx.respond(
+                "존재하지 않는 땅인거 같아!\n`❗ 보유하지 않은 땅 번호를 입력하였다.`"
+                )
+                return None
             room = await Room.fetch(lands[land_num - 1][0])
         else:
             room = await Room.fetch(ctx.channel)
@@ -445,7 +450,7 @@ class LandCog(commands.Cog):
         ),
     ):
         await ctx.defer()
-        room = await Room.fetch(ctx.channel.id)
+        room = await Room.fetch(ctx.channel)
 
         if room.get_working_now():
             return await ctx.respond(

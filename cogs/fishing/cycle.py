@@ -35,15 +35,19 @@ class CycleCog(commands.Cog):
         logger.info("discord.ext.tasks 스케쥴 시작")
         self.change_activity.start()  # pylint: disable=maybe-no-member
         self.cleaner.start()  # pylint: disable=maybe-no-member
+        self.sched = AsyncIOScheduler()
 
     @commands.Cog.listener()
     async def on_ready(self):
         logger.info("AsyncIOScheduler 스케쥴 시작")
-        self.sched = AsyncIOScheduler()
 
-        self.sched.add_job(self.day_end_schedule, "cron", hour="23", minute="55")
-        # self.sched.add_job(self.day_end_schedule, 'cron', minute='*/5')
-        self.sched.start()
+        job_id = "day_end_schedule"
+        if self.sched.get_job(job_id) is None:
+            self.sched.add_job(self.day_end_schedule, "cron", hour="5", minute="30", id=job_id)
+            # self.sched.add_job(self.day_end_schedule, 'cron', minute='*/5')
+        
+        if not self.sched.running:
+            self.sched.start()
 
     @tasks.loop(seconds=30)
     async def change_activity(self):
@@ -71,7 +75,8 @@ class CycleCog(commands.Cog):
         description="관리자 디버그용 도구입니다. (관리자 전용)",
     )
     async def force_schedule(self, ctx: discord.ApplicationContext):
-        await ctx.defer()
+        await self.on_ready()
+        #await ctx.defer()
         await self.day_end_schedule()
         await ctx.respond("강제결산 완료!")
 
